@@ -1,22 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from 'react'
+import { players } from '../players'
 import Image from 'next/image'
-import players from '../players'
 import capitalize from '../modules/capitalize'
-import Context from '../context/Context'
+import Context from '../context/game/Context'
 
 export default function Teams() {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, abilities } = useContext(Context);
+    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, abilityCategories } = useContext(Context);
     const [currentTeam, setCurrentTeam] = useState(1);
-
-    useEffect(() => {
-        setTeam1([])
-        setTeam2([])
-        sessionStorage.removeItem('team1')
-        sessionStorage.removeItem('team2')
-        sessionStorage.removeItem('turn')
-        sessionStorage.removeItem('turnmeter')
-    }, [])
 
     useEffect(() => {
         if (team1.length == 5 && team2.length == 5) {
@@ -51,7 +42,7 @@ export default function Teams() {
                 {details.map(detail => <span key={detail}>{capitalize(detail)}: {hoverPlayer[detail]}</span>)}
             </div>
             <div>
-                {abilities.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3'>
+                {abilityCategories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3'>
                     <span>{capitalize(ability)}:</span>
                     {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && <div key={feature} className='ml-3 text-sm'>{capitalize(feature)}: {hoverPlayer[ability][feature]}</div>)}
                 </div>)}

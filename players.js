@@ -4,8 +4,7 @@ const A = {
     name: 'Bastila Shan', health: random(350, 550), type: 'Dark', speed: random(10, 15), stun: false,
     basic: {
         damage: random(50, 80),
-        description: 'This attack has a 50% chance to grant a random ally 100% turn meter.',
-        ability: () => { }
+        description: 'This attack has a 50% chance to grant a random ally 100% turn meter.'
     },
     special: { damage: random(125, 150), description: 'Stun the opponent.', cooldown: 1 },
     leader: { description: 'Dark side allies have +25% of their offense.' }
@@ -64,6 +63,17 @@ const J = {
     special: { damage: random(100, 150), description: 'Call another random ally to assist and increase speed of this player  and assisted ally by 2.', cooldown: 1 }, stun: false,
     leader: { description: 'Whenever an ally uses a special ability, all allies gain 10% of their current health.' }
 }
-const players = [A, B, C, D, E, F, G, H, I, J]
+export const players = [A, B, C, D, E, F, G, H, I, J]
 
-export default players
+export const abilities = {
+    'Bastila Shan': {
+        basic: (player, enemy, allyTeam, enemyTeam, turnTeam) => {
+            const chance = random(0, 1)
+            console.log(turnmeter)
+            // if (!chance) return
+            let tempmeter = [...turnmeter]
+            tempmeter[turnTeam * 5 - 5] = 1000000000
+            setTurnmeter(tempmeter)
+        }
+    }
+}
