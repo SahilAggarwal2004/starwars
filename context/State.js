@@ -37,6 +37,7 @@ const State = props => {
             tempmeter[turnTeam * 5 - 5 + player] = 0
             setTurnmeter(tempmeter)
             setTimeout(() => attack(assistPlayer, enemy, 'basic', true), 100);
+            return 2000
         },
         block: ({ enemyTeam, enemy }) => delete enemyTeam[enemy].special,
         revive: (allyTeam, health) => {
@@ -71,7 +72,10 @@ const State = props => {
                     allyTeam[index].stun = false
                     isAssisting = false
                 });
-                isAssisting && general.assist(player, enemy, allyTeam, enemyTeam, tempmeter)
+                if (isAssisting) {
+                    const wait = general.assist(player, enemy, allyTeam, enemyTeam, tempmeter)
+                    return wait
+                }
             }
         },
         'Darth Vader': {
@@ -130,7 +134,8 @@ const State = props => {
         'Jedi Consular': {
             special: ({ player, enemy, allyTeam, enemyTeam, tempmeter }) => {
                 allyTeam[player].speed += 2;
-                general.assist(player, enemy, allyTeam, enemyTeam, tempmeter)
+                const wait = general.assist(player, enemy, allyTeam, enemyTeam, tempmeter)
+                return wait
             }
         }
     }
@@ -194,10 +199,6 @@ const State = props => {
         }, 0);
     }
 
-    async function multiBullets() {
-
-    }
-
     function attack(player, enemy, ability = 'basic', assist = false) {
         if (player < 0 || player > 4 || bullet) return
         animateBullet(player, enemy)
@@ -210,17 +211,16 @@ const State = props => {
             enemyTeam = [...team1];
         }
         setTimeout(() => {
-            // if (allyTeam[player].special.cooldown) {
-            //     ability = 'basic'
-            //     allyTeam[player].special.cooldown--
-            // } else if (ability == 'special') players.forEach(item => { if (item.name == allyTeam[player].name) allyTeam[player].special.cooldown = item.special.cooldown })
-
+            if (allyTeam[player].special.cooldown) {
+                ability = 'basic'
+                allyTeam[player].special.cooldown--
+            } else if (ability == 'special') players.forEach(item => { if (item.name == allyTeam[player].name) allyTeam[player].special.cooldown = item.special.cooldown })
             if (!allyTeam[player][ability]) ability = 'basic'
             enemyTeam[enemy].health -= allyTeam[player][ability].damage
             if (allyTeam[player].health < initialHealth[turn]) allyTeam[player].health += allyTeam[player][ability].damage * healthSteal[turnTeam - 1]
-            abilities[allyTeam[player].name]?.[ability] && abilities[allyTeam[player].name][ability]({ player, enemy, allyTeam, enemyTeam, tempmeter })
+            const wait = abilities[allyTeam[player].name][ability]?.({ player, enemy, allyTeam, enemyTeam, tempmeter })
             turnTeam == 1 ? updateTeams(allyTeam, enemyTeam) : updateTeams(enemyTeam, allyTeam)
-            !assist && newTurn(updateTurnmeter(tempmeter, player + turnTeam * 5 - 5))
+            setTimeout(() => !assist && newTurn(updateTurnmeter(tempmeter, player + turnTeam * 5 - 5)), wait || 0);
         }, 2000);
     }
 
