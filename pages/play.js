@@ -11,9 +11,8 @@ export default function Play() {
     function handleClick(event, index, i) {
         event.preventDefault()
         let ability;
-        const { target: { x, y } } = event;
         if (event.type == 'contextmenu') ability = 'special'
-        attack(x, y, turn - 5 + index * 5, i, ability)
+        attack(turn - 5 + index * 5, i, ability)
     }
 
     useEffect(() => {
@@ -41,7 +40,7 @@ export default function Play() {
     }, [teams])
 
     return <>
-        {[team1, team2].map((team, index) => <div key={index} className={`fixed top-0 ${index ? 'right-5' : 'left-5'} space-y-4 w-max flex flex-col items-center justify-center h-full`}>
+        {[team1, team2].map((team, index) => <div id={`team${index + 1}`} key={index} className={`fixed top-0 ${index ? 'right-5' : 'left-5'} space-y-4 w-max flex flex-col items-center justify-center h-full`}>
             <span className='font-semibold text-center'>Team {index + 1}</span>
             {team.map((player, i) => {
                 return <div className={`relative w-[6vw] aspect-square flex flex-col justify-center ${(i == turn - index * 5) && 'outline border-2 outline-green-500'} hover:border-2 hover:outline hover:outline-black border-transparent rounded-sm ${player.stun && 'opacity-50'} ${player.health <= 0 && 'invisible'}`} key={i} onMouseOver={() => setHoverPlayer(player)} onMouseOut={() => setHoverPlayer()} onClick={event => handleClick(event, index, i)} onContextMenu={event => handleClick(event, index, i)}>
@@ -61,6 +60,6 @@ export default function Play() {
                 </div>)}
             </div>
         </div>}
-        <span id="bullet" className={`fixed block bg-red-500 top-[var(--y)] left-[var(--x)] -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 ${bullet ? 'transition-all ease-linear duration-[2000ms]' : 'invisible'}`}></span>
+        <span id='bullet' className={`fixed block bg-red-500 top-[var(--y)] left-[var(--x)] -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 ${bullet ? 'transition-all ease-linear duration-[2000ms]' : 'invisible'}`}></span>
     </>
 }
