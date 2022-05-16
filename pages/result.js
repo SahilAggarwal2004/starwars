@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import Context from '../context/game/Context'
+import Context from '../context/Context'
 
 export default function Result() {
     const { router } = useContext(Context)

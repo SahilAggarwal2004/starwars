@@ -1,18 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from 'react'
-import { players } from '../players'
 import Image from 'next/image'
 import capitalize from '../modules/capitalize'
-import Context from '../context/game/Context'
+import Context from '../context/Context'
 
-export default function Teams() {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, abilityCategories } = useContext(Context);
+export default function TeamSelection() {
+    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players } = useContext(Context);
     const [currentTeam, setCurrentTeam] = useState(1);
 
     useEffect(() => {
         if (team1.length == 5 && team2.length == 5) {
             sessionStorage.setItem('team1', JSON.stringify(team1))
             sessionStorage.setItem('team2', JSON.stringify(team2))
+            let initialHealth = [];
+            [...team1, ...team2].map(player => initialHealth.push(player.health))
+            sessionStorage.setItem('initial-health', JSON.stringify(initialHealth))
             router.push('/play')
         }
     }, [team1, team2])
@@ -42,7 +44,7 @@ export default function Teams() {
                 {details.map(detail => <span key={detail}>{capitalize(detail)}: {hoverPlayer[detail]}</span>)}
             </div>
             <div>
-                {abilityCategories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3'>
+                {categories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3'>
                     <span>{capitalize(ability)}:</span>
                     {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && <div key={feature} className='ml-3 text-sm'>{capitalize(feature)}: {hoverPlayer[ability][feature]}</div>)}
                 </div>)}
