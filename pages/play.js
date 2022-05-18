@@ -6,7 +6,7 @@ import capitalize from "../modules/capitalize"
 import { maximum } from "../modules/math"
 
 export default function Play() {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, updateTurnmeter, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal } = useContext(Context)
+    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal } = useContext(Context)
 
     function handleClick(event, index, i) {
         event.preventDefault()
@@ -29,7 +29,7 @@ export default function Play() {
 
     useEffect(() => {
         setTimeout(() => { if (!sessionStorage.getItem('team1') || !sessionStorage.getItem('team2')) router.push('/team-selection') }, 50);
-        if (turnmeter.length != teams.length) newTurn(updateTurnmeter())
+        if (turnmeter.length != teams.length) newTurn()
         let sum1 = 0, sum2 = 0;
         team1.forEach(player => { if (player.health <= 0) sum1++ });
         team2.forEach(player => { if (player.health <= 0) sum2++ });
@@ -39,7 +39,7 @@ export default function Play() {
         }
     }, [teams])
 
-    return <>
+    return <main>
         {[team1, team2].map((team, index) => <div id={`team${index + 1}`} key={index} className={`fixed top-0 ${index ? 'right-5' : 'left-5'} space-y-4 w-max flex flex-col items-center justify-center h-full`}>
             <span className='font-semibold text-center'>Team {index + 1}</span>
             {team.map((player, i) => {
@@ -61,5 +61,5 @@ export default function Play() {
             </div>
         </div>}
         <span id='bullet' className={`fixed block bg-red-500 top-[var(--y)] left-[var(--x)] -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 ${bullet ? 'transition-all ease-linear duration-[2000ms]' : 'invisible'}`}></span>
-    </>
+    </main>
 }

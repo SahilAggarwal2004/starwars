@@ -151,30 +151,20 @@ const State = props => {
         sessionStorage.removeItem('health-steal')
     }
 
-    function updateTeams(teamone = team1, teamtwo = team2) {
-        setTeam1(teamone)
-        setTeam2(teamtwo)
-        sessionStorage.setItem('team1', JSON.stringify(teamone))
-        sessionStorage.setItem('team2', JSON.stringify(teamtwo))
-    }
-
-    function updateTurnmeter(tempmeter = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], correction) {
+    function newTurn(tempmeter = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], correction) {
+        sessionStorage.setItem('team1', JSON.stringify(team1))
+        sessionStorage.setItem('team2', JSON.stringify(team2))
         teams.forEach((player, index) => { player.health > 0 ? tempmeter[index] += player.speed : tempmeter[index] = -1 })
         if (correction != undefined) tempmeter[correction] = 0
         setTurnmeter(tempmeter)
         sessionStorage.setItem('turnmeter', JSON.stringify(tempmeter))
-        return tempmeter
-    }
-
-    function newTurn(meter) {
-        const max = maximum(meter)
+        const max = maximum(tempmeter)
         let indexes = [];
-        meter.forEach((value, index) => { if (value == max) indexes.push(index) })
+        tempmeter.forEach((value, index) => { if (value == max) indexes.push(index) })
         const index = randomElement(indexes)
         if (teams[index]?.stun) {
             teams[index].stun = false
-            updateTeams()
-            newTurn(updateTurnmeter(meter, index))
+            newTurn(tempmeter, index)
         } else {
             setTurn(index)
             sessionStorage.setItem('turn', index)
@@ -199,16 +189,20 @@ const State = props => {
         }, 0);
     }
 
+    function multiAttack(player, enemyTeam) {
+
+    }
+
     function attack(player, enemy, ability = 'basic', assist = false) {
         if (player < 0 || player > 4 || bullet) return
         animateBullet(player, enemy)
         let allyTeam, enemyTeam, tempmeter = [...turnmeter];
         if (turnTeam == 1) {
-            allyTeam = [...team1];
-            enemyTeam = [...team2];
+            allyTeam = team1;
+            enemyTeam = team2;
         } else {
-            allyTeam = [...team2];
-            enemyTeam = [...team1];
+            allyTeam = team2;
+            enemyTeam = team1;
         }
         setTimeout(() => {
             if (allyTeam[player].special.cooldown) {
@@ -219,13 +213,12 @@ const State = props => {
             enemyTeam[enemy].health -= allyTeam[player][ability].damage
             if (allyTeam[player].health < initialHealth[turn]) allyTeam[player].health += allyTeam[player][ability].damage * healthSteal[turnTeam - 1]
             const wait = abilities[allyTeam[player].name][ability]?.({ player, enemy, allyTeam, enemyTeam, tempmeter })
-            turnTeam == 1 ? updateTeams(allyTeam, enemyTeam) : updateTeams(enemyTeam, allyTeam)
-            setTimeout(() => !assist && newTurn(updateTurnmeter(tempmeter, player + turnTeam * 5 - 5)), wait || 0);
+            setTimeout(() => !assist && newTurn(tempmeter, player + turnTeam * 5 - 5), wait || 0);
         }, 2000);
     }
 
     return (
-        <Context.Provider value={{ router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, updateTurnmeter, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal }}>
+        <Context.Provider value={{ router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal }}>
             {props.children}
         </Context.Provider>
     )
