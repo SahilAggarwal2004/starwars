@@ -6,13 +6,25 @@ import capitalize from "../modules/capitalize"
 import { maximum } from "../modules/math"
 
 export default function Play() {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal } = useContext(Context)
+    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking } = useContext(Context)
 
     function handleClick(event, index, i) {
         event.preventDefault()
         let ability;
         if (event.type == 'contextmenu') ability = 'special'
         attack(turn - 5 + index * 5, i, ability)
+    }
+
+    function updatePositions() {
+        let positions = [];
+        [1, 2].forEach(team => {
+            [0, 1, 2, 3, 4].forEach(enemy => {
+                let position = document.getElementById(`team${team}`).children[enemy + 1].getBoundingClientRect()
+                positions.push({ top: position.top, left: position.left })
+            })
+        })
+        sessionStorage.setItem('positions', JSON.stringify(positions))
+
     }
 
     useEffect(() => {
@@ -25,6 +37,7 @@ export default function Play() {
         const tempturn = +sessionStorage.getItem('turn') || 0
         setTurn(tempturn)
         setTurnTeam(Math.ceil((tempturn + 1) / 5))
+        try { updatePositions() } catch { window.addEventListener('resize', updatePositions) }
     }, [])
 
     useEffect(() => {
@@ -39,7 +52,7 @@ export default function Play() {
         }
     }, [teams])
 
-    return <main>
+    return <>
         {[team1, team2].map((team, index) => <div id={`team${index + 1}`} key={index} className={`fixed top-0 ${index ? 'right-5' : 'left-5'} space-y-4 w-max flex flex-col items-center justify-center h-full`}>
             <span className='font-semibold text-center'>Team {index + 1}</span>
             {team.map((player, i) => {
@@ -49,7 +62,7 @@ export default function Play() {
                 </div>
             })}
         </div>)}
-        {hoverPlayer && !bullet && <div className='bg-black text-white fixed top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 flex space-x-8 items-center justify-center px-5 pt-3 pb-0 rounded z-10 w-[calc(100vw-15rem)] h-[calc(100vh-6vw-4rem)]'>
+        {hoverPlayer && !isAttacking && <div className='bg-black text-white fixed top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 flex space-x-8 items-center justify-center px-5 pt-3 pb-0 rounded z-10 w-[calc(100vw-15rem)] h-[calc(100vh-6vw-4rem)]'>
             <div className='flex flex-col min-w-max'>
                 {details.map(detail => <span key={detail}>{capitalize(detail)}: {detail == 'health' ? Math.ceil(hoverPlayer[detail]) : hoverPlayer[detail]}</span>)}
             </div>
@@ -60,6 +73,6 @@ export default function Play() {
                 </div>)}
             </div>
         </div>}
-        <span id='bullet' className={`fixed block bg-red-500 top-[var(--y)] left-[var(--x)] -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 ${bullet ? 'transition-all ease-linear duration-[2000ms]' : 'invisible'}`}></span>
-    </main>
+        {[0, 1, 2, 3, 4].map(number => <span key={number} id={`bullet${number}`} className={`fixed block bg-red-500 top-[var(--y)] left-[var(--x)] -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 ${bullet[number] ? 'transition-all ease-linear duration-[2000ms]' : 'invisible'}`} />)}
+    </>
 }

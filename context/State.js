@@ -15,7 +15,8 @@ const State = props => {
     const [hoverPlayer, setHoverPlayer] = useState()
     const [turn, setTurn] = useState(0)
     const [turnTeam, setTurnTeam] = useState(1)
-    const [bullet, setBullet] = useState(false)
+    const [isAttacking, setAttacking] = useState(false)
+    const [bullet, setBullet] = useState({ 0: false, 1: false, 2: false, 3: false, 4: false })
     const [healthSteal, setHealthSteal] = useState([0, 0])
     const details = ['name', 'health', 'type', 'speed'];
     const categories = ['basic', 'special', 'unique', 'leader'];
@@ -47,6 +48,15 @@ const State = props => {
             if (revivePlayer == undefined) return
             allyTeam[revivePlayer].health = health
             allyTeam[revivePlayer].stun = false
+        },
+        verify: (type, name, allyTeam) => {
+            let result = 'enemy';
+            if (type == 'leader') {
+                if (allyTeam[0].name == name) result = 'ally'
+            } else {
+                allyTeam.forEach(ally => { if (ally.name == name) result = 'ally' })
+            }
+            return result
         }
     }
 
@@ -62,7 +72,14 @@ const State = props => {
                 tempmeter[turnTeam * 5 - 5 + randomPlayer] = 10000
                 setTurnmeter(tempmeter)
             },
-            special: general.stun
+            special: general.stun,
+            leader: ({ allyTeam }) => {
+                allyTeam.forEach((ally, index) => {
+                    if (ally.type != 'Dark') return
+                    allyTeam[index].basic.damage *= 1.25
+                    allyTeam[index].special.damage *= 1.25
+                })
+            }
         },
         'Jolee Bindo': {
             special: ({ player, enemy, allyTeam, enemyTeam, tempmeter }) => {
@@ -76,18 +93,24 @@ const State = props => {
                     const wait = general.assist(player, enemy, allyTeam, enemyTeam, tempmeter)
                     return wait
                 }
-            }
+            },
+            leader: ({ allyTeam }) => allyTeam.forEach((ally, index) => allyTeam[index].health *= 1.25)
         },
         'Darth Vader': {
-            special: general.block
+            special: general.block,
+            leader: ({ allyTeam }) => allyTeam.forEach((ally, index) => allyTeam[index].speed += 1)
         },
         'Old Daka': {
-            special: ({ player, allyTeam }) => general.revive(allyTeam, allyTeam[player].health * 2)
+            special: ({ player, allyTeam }) => general.revive(allyTeam, allyTeam[player].health * 2),
+            leader: ({ enemy, enemyTeam }) => {
+                const result = general.verify('leader', 'Old Daka', enemyTeam)
+                if (result == 'ally') enemyTeam[enemy].health *= 1.2
+            }
         },
         'Chewbecca': {
             basic: ({ allyTeam }) => {
                 const chance = random(0, 9)
-                !chance && allyTeam.forEach((ally, index) => { if (ally.type == 'Light' && ally.health > 0) allyTeam[index].health *= 2 })
+                !chance && allyTeam.forEach((ally, index) => { if (ally.type == 'Light') allyTeam[index].health *= 2 })
             },
             special: ({ player, allyTeam, tempmeter }) => {
                 allyTeam.forEach((ally, index) => {
@@ -101,8 +124,14 @@ const State = props => {
         'Jedi Knight Revan': {
             basic: ({ allyTeam }) => allyTeam.forEach((ally, index) => { if (ally.type == 'Light' && ally.health > 0) allyTeam[index].health += 100 }),
             special: ({ allyTeam, enemyTeam }) => {
-                allyTeam.forEach((ally, index) => { if (ally.health > 0 && allyTeam[index].special) allyTeam[index].special.cooldown = 0 })
-                enemyTeam.forEach((enemy, index) => { if (enemy.health > 0) enemyTeam[index].speed -= 1 })
+                allyTeam.forEach((ally, index) => { if (ally.health > 0 && ally.name != 'Jedi Knight Revan' && allyTeam[index].special) allyTeam[index].special.cooldown = 0 })
+                enemyTeam.forEach((enemy, index) => { if (enemy.health > 0 && enemyTeam[index].speed > 1) enemyTeam[index].speed -= 1 })
+            },
+            leader: ({ ability, allyTeam }) => {
+                const result = general.verify('leader', 'Jedi Knight Revan', allyTeam)
+                if (ability == 'basic' && result == 'ally') allyTeam.forEach((ally, index) => {
+                    if (ally.name == 'Jedi Knight Revan' && allyTeam[index].special?.cooldown > 0) allyTeam[index].special.cooldown -= 1
+                })
             }
         },
         'Darth Revan': {
@@ -112,7 +141,8 @@ const State = props => {
                 sessionStorage.setItem('health-steal', JSON.stringify(tempHealthSteal))
                 setHealthSteal(tempHealthSteal)
             },
-            special: general.block
+            special: general.block,
+            leader: ({ enemyTeam }) => enemyTeam.forEach((enemy, index) => enemyTeam[index].speed -= 1)
         },
         'Count Dooku': {
             basic: ({ allyTeam }) => {
@@ -129,13 +159,18 @@ const State = props => {
             special: ({ player, allyTeam, enemyTeam }) => {
                 allyTeam.forEach((ally, index) => { if (ally.health > 0) allyTeam[index].health += allyTeam[player].health * 0.25 })
                 enemyTeam.forEach((enemy, index) => { if (enemy.health > 0) enemyTeam[index].health -= allyTeam[player].special.damage })
-            }
+            },
+            leader: ({ allyTeam }) => allyTeam.forEach((ally, index) => { if (ally.type == 'Dark') allyTeam[index].health *= 1.40 })
         },
         'Jedi Consular': {
             special: ({ player, enemy, allyTeam, enemyTeam, tempmeter }) => {
                 allyTeam[player].speed += 2;
                 const wait = general.assist(player, enemy, allyTeam, enemyTeam, tempmeter)
                 return wait
+            },
+            leader: ({ ability, allyTeam }) => {
+                const result = general.verify('leader', 'Jedi Consular', allyTeam)
+                if (ability == 'special' && result == 'ally') allyTeam.forEach((ally, index) => allyTeam[index].health *= 1.1)
             }
         }
     }
@@ -149,6 +184,7 @@ const State = props => {
         sessionStorage.removeItem('turnmeter')
         sessionStorage.removeItem('initial-health')
         sessionStorage.removeItem('health-steal')
+        sessionStorage.removeItem('positions')
     }
 
     function newTurn(tempmeter = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], correction) {
@@ -173,29 +209,89 @@ const State = props => {
     }
 
     async function animateBullet(player, enemy) {
-        const { left: playerLeft, top: playerTop } = document.getElementById(`team${turnTeam}`).children[player + 1].getBoundingClientRect()
-        const { left: enemyLeft, top: enemyTop } = document.getElementById(`team${turnTeam == 1 ? '2' : '1'}`).children[enemy + 1].getBoundingClientRect()
-        const bulletRef = document.getElementById('bullet').style
+        const positions = JSON.parse(sessionStorage.getItem('positions'));
+        const { left: playerLeft, top: playerTop } = positions[turnTeam * 5 - 5 + player]
+        const { left: enemyLeft, top: enemyTop } = positions[(turnTeam == 1 ? 2 : 1) * 5 - 5 + enemy]
+        const bulletRef = document.getElementById(`bullet${enemy}`).style
         bulletRef.left = `calc(${playerLeft}px + 3vw)`;
         bulletRef.top = `calc(${playerTop}px + 3vw)`;
         setTimeout(() => {
-            setBullet(true)
+            setBullet({ ...bullet, [enemy]: true })
             bulletRef.left = `calc(${enemyLeft}px + 3vw)`;
             bulletRef.top = `calc(${enemyTop}px + 3vw)`;
             setTimeout(() => {
-                setBullet(false)
+                setBullet({ ...bullet, [enemy]: false })
                 setHoverPlayer()
             }, 2000)
         }, 0);
     }
 
-    function multiAttack(player, enemyTeam) {
-
+    async function multiAttack(player, enemyTeam) {
+        const positions = JSON.parse(sessionStorage.getItem('positions'));
+        const { left: playerLeft, top: playerTop } = positions[turnTeam * 5 - 5 + player]
+        const enemyLeft = positions[(turnTeam == 1 ? 2 : 1) * 5 - 5].left
+        let bulletRef, bulletRef1, bulletRef2, bulletRef3, bulletRef4, enemyTop, enemyTop1, enemyTop2, enemyTop3, enemyTop4
+        if (enemyTeam[0].health > 0) {
+            enemyTop = positions[(turnTeam == 1 ? 2 : 1) * 5 - 5].top
+            bulletRef = document.getElementById('bullet0').style
+            bulletRef.left = `calc(${playerLeft}px + 3vw)`;
+            bulletRef.top = `calc(${playerTop}px + 3vw)`;
+        }
+        if (enemyTeam[1].health > 0) {
+            enemyTop1 = positions[(turnTeam == 1 ? 2 : 1) * 5 - 4].top
+            bulletRef1 = document.getElementById('bullet1').style
+            bulletRef1.left = `calc(${playerLeft}px + 3vw)`;
+            bulletRef1.top = `calc(${playerTop}px + 3vw)`;
+        }
+        if (enemyTeam[2].health > 0) {
+            enemyTop2 = positions[(turnTeam == 1 ? 2 : 1) * 5 - 3].top
+            bulletRef2 = document.getElementById('bullet2').style
+            bulletRef2.left = `calc(${playerLeft}px + 3vw)`;
+            bulletRef2.top = `calc(${playerTop}px + 3vw)`;
+        }
+        if (enemyTeam[3].health > 0) {
+            enemyTop3 = positions[(turnTeam == 1 ? 2 : 1) * 5 - 2].top
+            bulletRef3 = document.getElementById('bullet3').style
+            bulletRef3.left = `calc(${playerLeft}px + 3vw)`;
+            bulletRef3.top = `calc(${playerTop}px + 3vw)`;
+        }
+        if (enemyTeam[4].health > 0) {
+            enemyTop4 = positions[(turnTeam == 1 ? 2 : 1) * 5 - 1].top
+            bulletRef4 = document.getElementById('bullet4').style
+            bulletRef4.left = `calc(${playerLeft}px + 3vw)`;
+            bulletRef4.top = `calc(${playerTop}px + 3vw)`;
+        }
+        setTimeout(() => {
+            setBullet({ 0: enemyTeam[0].health > 0, 1: enemyTeam[1].health > 0, 2: enemyTeam[2].health > 0, 3: enemyTeam[3].health > 0, 4: enemyTeam[4].health > 0 })
+            if (enemyTeam[0].health > 0) {
+                bulletRef.left = `calc(${enemyLeft}px + 3vw)`;
+                bulletRef.top = `calc(${enemyTop}px + 3vw)`;
+            }
+            if (enemyTeam[1].health > 0) {
+                bulletRef1.left = `calc(${enemyLeft}px + 3vw)`;
+                bulletRef1.top = `calc(${enemyTop1}px + 3vw)`;
+            }
+            if (enemyTeam[2].health > 0) {
+                bulletRef2.left = `calc(${enemyLeft}px + 3vw)`;
+                bulletRef2.top = `calc(${enemyTop2}px + 3vw)`;
+            }
+            if (enemyTeam[3].health > 0) {
+                bulletRef3.left = `calc(${enemyLeft}px + 3vw)`;
+                bulletRef3.top = `calc(${enemyTop3}px + 3vw)`;
+            }
+            if (enemyTeam[4].health > 0) {
+                bulletRef4.left = `calc(${enemyLeft}px + 3vw)`;
+                bulletRef4.top = `calc(${enemyTop4}px + 3vw)`;
+            }
+            setTimeout(() => {
+                setBullet({ 0: false, 1: false, 2: false, 3: false, 4: false })
+                setHoverPlayer()
+            }, 2000)
+        }, 0);
     }
 
     function attack(player, enemy, ability = 'basic', assist = false) {
-        if (player < 0 || player > 4 || bullet) return
-        animateBullet(player, enemy)
+        if (player < 0 || player > 4 || isAttacking) return
         let allyTeam, enemyTeam, tempmeter = [...turnmeter];
         if (turnTeam == 1) {
             allyTeam = team1;
@@ -204,21 +300,33 @@ const State = props => {
             allyTeam = team2;
             enemyTeam = team1;
         }
+        setAttacking(true)
+
+        if (allyTeam[player].special.cooldown) {
+            ability = 'basic'
+            allyTeam[player].special.cooldown--
+        } else if (ability == 'special') players.forEach(item => { if (item.name == allyTeam[player].name) allyTeam[player].special.cooldown = item.special.cooldown })
+        if (!allyTeam[player][ability]) ability = 'basic'
+
+        ability == 'special' && allyTeam[player].name == 'Mother Talzin' ? multiAttack(player, enemyTeam) : animateBullet(player, enemy)
         setTimeout(() => {
-            if (allyTeam[player].special.cooldown) {
-                ability = 'basic'
-                allyTeam[player].special.cooldown--
-            } else if (ability == 'special') players.forEach(item => { if (item.name == allyTeam[player].name) allyTeam[player].special.cooldown = item.special.cooldown })
-            if (!allyTeam[player][ability]) ability = 'basic'
-            enemyTeam[enemy].health -= allyTeam[player][ability].damage
+            enemyTeam[enemy].health -= allyTeam[player][ability].damage * enemyTeam[enemy].multiplier
             if (allyTeam[player].health < initialHealth[turn]) allyTeam[player].health += allyTeam[player][ability].damage * healthSteal[turnTeam - 1]
             const wait = abilities[allyTeam[player].name][ability]?.({ player, enemy, allyTeam, enemyTeam, tempmeter })
-            setTimeout(() => !assist && newTurn(tempmeter, player + turnTeam * 5 - 5), wait || 0);
+
+            // In-game leader abilities:
+            if (allyTeam[0].leader?.type == 'In-game') abilities[allyTeam[0].name].leader?.({ enemy, ability, allyTeam, enemyTeam })
+            if (enemyTeam[0].leader?.type == 'In-game') abilities[enemyTeam[0].name].leader?.({ enemy, ability, allyTeam, enemyTeam })
+            setTimeout(() => {
+                if (assist) return
+                setAttacking(false)
+                newTurn(tempmeter, player + turnTeam * 5 - 5)
+            }, wait || 0);
         }, 2000);
     }
 
     return (
-        <Context.Provider value={{ router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal }}>
+        <Context.Provider value={{ router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities }}>
             {props.children}
         </Context.Provider>
     )

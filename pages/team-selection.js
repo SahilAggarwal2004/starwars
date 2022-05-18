@@ -5,11 +5,13 @@ import capitalize from '../modules/capitalize'
 import Context from '../context/Context'
 
 export default function TeamSelection() {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players } = useContext(Context);
+    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players, abilities } = useContext(Context);
     const [currentTeam, setCurrentTeam] = useState(1);
 
     useEffect(() => {
         if (team1.length == 5 && team2.length == 5) {
+            if (team1[0].leader?.type == 'Start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
+            if (team2[0].leader?.type == 'Start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
             sessionStorage.setItem('team1', JSON.stringify(team1))
             sessionStorage.setItem('team2', JSON.stringify(team2))
             let initialHealth = [];
