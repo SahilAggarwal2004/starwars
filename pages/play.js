@@ -6,7 +6,7 @@ import capitalize from "../modules/capitalize"
 import { maximum } from "../modules/math"
 
 export default function Play() {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking } = useContext(Context)
+    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes } = useContext(Context)
 
     function handleClick(event, index, i) {
         event.preventDefault()
@@ -18,7 +18,7 @@ export default function Play() {
     function updatePositions() {
         let positions = [];
         [1, 2].forEach(team => {
-            [0, 1, 2, 3, 4].forEach(enemy => {
+            indexes.forEach(enemy => {
                 let position = document.getElementById(`team${team}`).children[enemy + 1].getBoundingClientRect()
                 positions.push({ top: position.top, left: position.left })
             })
@@ -69,10 +69,10 @@ export default function Play() {
             <div>
                 {categories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3'>
                     <span>{capitalize(ability)}:</span>
-                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && <div key={feature} className='ml-3 text-sm'>{capitalize(feature)}: {hoverPlayer[ability][feature]}</div>)}
+                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 text-sm'>{capitalize(feature)}: {hoverPlayer[ability][feature]}</div>)}
                 </div>)}
             </div>
         </div>}
-        {[0, 1, 2, 3, 4].map(number => <span key={number} id={`bullet${number}`} className={`fixed block bg-red-500 top-[var(--y)] left-[var(--x)] -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 ${bullet[number] ? 'transition-all ease-linear duration-[2000ms]' : 'invisible'}`} />)}
+        {indexes.map(number => <span key={number} id={`bullet${number}`} className={`fixed block bg-red-500 top-[var(--y)] left-[var(--x)] -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 ${bullet[number] ? 'transition-all ease-linear duration-[2000ms]' : 'invisible'}`} />)}
     </>
 }

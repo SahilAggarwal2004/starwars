@@ -5,17 +5,17 @@ import capitalize from '../modules/capitalize'
 import Context from '../context/Context'
 
 export default function TeamSelection() {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players, abilities } = useContext(Context);
+    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players, abilities } = useContext(Context);
     const [currentTeam, setCurrentTeam] = useState(1);
 
     useEffect(() => {
         if (team1.length == 5 && team2.length == 5) {
-            if (team1[0].leader?.type == 'Start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
-            if (team2[0].leader?.type == 'Start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
+            if (team1[0].leader?.type == 'start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
+            if (team2[0].leader?.type == 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
             sessionStorage.setItem('team1', JSON.stringify(team1))
             sessionStorage.setItem('team2', JSON.stringify(team2))
             let initialHealth = [];
-            [...team1, ...team2].map(player => initialHealth.push(player.health))
+            teams.map(player => initialHealth.push(player.health))
             sessionStorage.setItem('initial-health', JSON.stringify(initialHealth))
             router.push('/play')
         }
@@ -48,7 +48,7 @@ export default function TeamSelection() {
             <div>
                 {categories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3'>
                     <span>{capitalize(ability)}:</span>
-                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && <div key={feature} className='ml-3 text-sm'>{capitalize(feature)}: {hoverPlayer[ability][feature]}</div>)}
+                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 text-sm'>{capitalize(feature)}: {hoverPlayer[ability][feature]}</div>)}
                 </div>)}
             </div>
         </div>}
