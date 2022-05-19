@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import React, { useEffect, useContext } from 'react'
 import Context from '../context/Context'
 
@@ -8,7 +9,7 @@ export default function Home() {
   useEffect(() => window.addEventListener('keypress', event => { if (event.key == 'Enter') router.push('/team-selection') }), [])
 
   return <>
-    <div>Star Wars</div>
-    <div>Press Enter to play!</div>
+    <Image alt='Star Wars' src='/logo.webp' layout='fill' />
+    <div className='fixed text-white font-semibold text-2xl bottom-8 x-center'>Press Enter to play!</div>
   </>
 }

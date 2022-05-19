@@ -11,6 +11,6 @@ export default function Result() {
     }, [])
 
     return <>
-        {winner && <div>Winner: Team {winner}</div>}
+        {winner && <div className='fixed font-semibold text-2xl center'>Congratulations! Team {winner} won the game.</div>}
     </>
 }

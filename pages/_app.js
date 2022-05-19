@@ -9,7 +9,9 @@ function MyApp({ Component, pageProps }) {
       <meta name="description" content="" />
       <link rel="icon" href="/favicon.ico" />
     </Head>
-    <Component {...pageProps} />
+    <div className='font-mono'>
+      <Component {...pageProps} />
+    </div>
   </State>
 }
 

@@ -62,7 +62,7 @@ export default function Play() {
                 </div>
             })}
         </div>)}
-        {hoverPlayer && !isAttacking && <div className='bg-black text-white fixed top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 flex space-x-8 items-center justify-center px-5 pt-3 pb-0 rounded z-10 w-[calc(100vw-15rem)] h-[calc(100vh-6vw-4rem)]'>
+        {hoverPlayer && !isAttacking && <div className='detail-container center w-[calc(100vw-15rem)]'>
             <div className='flex flex-col min-w-max'>
                 {details.map(detail => <span key={detail}>{capitalize(detail)}: {detail == 'health' ? Math.ceil(hoverPlayer[detail]) : hoverPlayer[detail]}</span>)}
             </div>
