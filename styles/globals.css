@@ -1,6 +1,5 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities;
 
 .center {
     @apply top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
@@ -19,9 +18,11 @@
 }
 
 .detail-text {
-    @apply ml-3 text-2xs sm:text-xs md:text-sm
+    @apply text-2xs sm:text-xs md:text-sm
 }
 
 .main-heading {
     @apply sm:text-xl md:text-2xl fixed font-semibold
 }
+
+@tailwind utilities;

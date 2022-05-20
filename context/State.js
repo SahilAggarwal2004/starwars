@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react'
 import Context from "./Context";
 import players from '../players';
 import { maximum, random, randomElement } from '../modules/math';
-import { stun, assist, block, revive, verify, animateBullet, multiAttack } from '../modules/functions';
+import { stun, assist, block, revive, verify } from '../modules/functions';
+import { animateBullet, multiAttack } from '../modules/animation'
 
 const State = props => {
     const preserveGame = ['/play', '/how-to-play']
@@ -14,8 +15,8 @@ const State = props => {
     const [initialHealth, setInitialHealth] = useState([])
     const [turnmeter, setTurnmeter] = useState([])
     const [hoverPlayer, setHoverPlayer] = useState()
-    const [turn, setTurn] = useState(0)
-    const [turnTeam, setTurnTeam] = useState(1)
+    const [turn, setTurn] = useState()
+    const [turnTeam, setTurnTeam] = useState()
     const [isAttacking, setAttacking] = useState(false)
     const [bullet, setBullet] = useState({ 0: false, 1: false, 2: false, 3: false, 4: false })
     const [healthSteal, setHealthSteal] = useState([0, 0])
@@ -94,7 +95,7 @@ const State = props => {
             unique: ({ enemy, enemyTeam }) => {
                 let taunt, stealth;
                 const { result, index } = verify('member', 'Chewbecca', enemyTeam)
-                if (!result) return
+                if (!result || enemyTeam[index].health <= 0) return
                 if (enemy == index && enemyTeam[index].health < 100) stealth = true
                 if (stealth) {
                     let randomEnemies = []
@@ -215,18 +216,18 @@ const State = props => {
         let teams = [allyTeam, enemyTeam];
         setAttacking(true)
 
-        if (allyTeam[player].special.cooldown) {
+        if (!allyTeam[player].special) ability = 'basic'
+        if (allyTeam[player].special?.cooldown) {
             ability = 'basic'
             allyTeam[player].special.cooldown--
-        } else if (ability == 'special') players.forEach(item => { if (item.name == allyTeam[player].name) allyTeam[player].special.cooldown = item.special.cooldown })
-        if (!allyTeam[player][ability]) ability = 'basic'
+        }
+        else if (ability == 'special') players.forEach(item => { if (item.name == allyTeam[player].name) allyTeam[player].special.cooldown = item.special.cooldown })
 
         // Before attack unique abilities:
-        teams.forEach(team => team.forEach(item => {
-            if (item.unique?.type == 'before') {
-                const data = abilities[item.name].unique?.({ enemy, enemyTeam, isAssisting })
-                if (data) returnUnique = { ...returnUnique, ...data }
-            }
+        !isAssisting && !isCountering && teams.forEach(team => team.forEach(item => {
+            if (item.unique?.type != 'before') return
+            const data = abilities[item.name].unique?.({ enemy, enemyTeam, isAssisting })
+            if (data) returnUnique = { ...returnUnique, ...data }
         }))
         enemy = returnUnique.enemy || enemy
 
@@ -243,10 +244,9 @@ const State = props => {
             setTimeout(() => {
                 // After attack unique abilities:
                 teams.forEach(team => team.forEach(item => {
-                    if (item.unique?.type == 'after') {
-                        const data = abilities[item.name].unique?.({ player, enemy, allyTeam, enemyTeam, tempmeter, ability })
-                        if (data) returnUnique = { ...returnUnique, ...data }
-                    }
+                    if (item.unique?.type != 'after') return
+                    const data = abilities[item.name].unique?.({ player, enemy, allyTeam, enemyTeam, tempmeter, ability })
+                    if (data) returnUnique = { ...returnUnique, ...data }
                 }))
                 setTimeout(() => {
                     setAttacking(false)

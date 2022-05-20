@@ -54,7 +54,7 @@ export default function TeamSelection() {
             <div>
                 {categories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
                     <span>{capitalize(ability)}:</span>
-                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='detail-text'>{capitalize(feature)}: {hoverPlayer[ability][feature]}</div>)}
+                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 detail-text'>{capitalize(feature)}: {hoverPlayer[ability][feature]}</div>)}
                 </div>)}
             </div>
         </div>}
