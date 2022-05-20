@@ -1,15 +1,12 @@
 import Image from 'next/image'
-import React, { useEffect, useContext } from 'react'
+import React, { useContext } from 'react'
 import Context from '../context/Context'
 
 export default function Home() {
   const { router } = useContext(Context)
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => window.addEventListener('keypress', event => { if (event.key == 'Enter') router.push('/team-selection') }), [])
-
   return <>
     <Image alt='Star Wars' src='/logo.webp' layout='fill' />
-    <div className='fixed text-white font-semibold text-2xl bottom-8 x-center'>Press Enter to play!</div>
+    <button className='text-xl fixed font-semibold text-white rounded bg-custom-gradient from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 px-3 py-1 bottom-8 x-center' onClick={() => router.push('/team-selection')}>Play Offline</button>
   </>
 }

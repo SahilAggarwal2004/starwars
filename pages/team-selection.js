@@ -21,7 +21,13 @@ export default function TeamSelection() {
         }
     }, [team1, team2])
 
-    function selectPlayer(player) {
+    function hover(event, player) {
+        event.preventDefault()
+        setHoverPlayer(player)
+    }
+
+    function selectPlayer(event, player) {
+        event.preventDefault()
         if (team1.includes(player) || team2.includes(player)) return
         if (currentTeam == 1) {
             setTeam1([...team1, player])
@@ -33,9 +39,9 @@ export default function TeamSelection() {
     }
 
     return <>
-        <span className='text-2xl fixed x-center top-32 font-semibold'>Select {(currentTeam == 1 && team1.length) || (currentTeam == 2 && team2.length) ? 'player' : 'leader'} for Team {currentTeam}</span>
+        <span className='main-heading x-center top-32'>Select {(currentTeam == 1 && team1.length) || (currentTeam == 2 && team2.length) ? 'player' : 'leader'} for Team {currentTeam}</span>
         <div className='grid grid-cols-10 fixed x-center bottom-3.5 gap-x-2.5 min-w-max'>
-            {players.map(player => <div className='relative w-[6vw] aspect-square flex justify-center hover:border-2 hover:outline border-transparent rounded-sm' key={player.name} onMouseOver={() => setHoverPlayer(player)} onMouseOut={() => setHoverPlayer()} onClick={() => selectPlayer(player)}>
+            {players.map(player => <div className='relative w-[6vw] aspect-square flex justify-center hover:border-2 hover:outline border-transparent rounded-sm' key={player.name} onMouseOver={event => hover(event, player)} onMouseOut={event => hover(event)} onClick={event => selectPlayer(event, player)}>
                 <Image src={`/${player.name}.jpg`} alt={player.name} width='120' height='120' className='rounded-sm' />
                 {team1.includes(player) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-blue-500 z-10'>1</div>}
                 {team2.includes(player) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10'>2</div>}
@@ -43,12 +49,12 @@ export default function TeamSelection() {
         </div>
         {hoverPlayer && <div className='detail-container top-5 x-center w-[calc(100vw-4rem)]'>
             <div className='flex flex-col min-w-max'>
-                {details.map(detail => <span key={detail}>{capitalize(detail)}: {hoverPlayer[detail]}</span>)}
+                {details.map(detail => <span key={detail} className='detail-heading'>{capitalize(detail)}: {hoverPlayer[detail]}</span>)}
             </div>
             <div>
-                {categories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3'>
+                {categories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
                     <span>{capitalize(ability)}:</span>
-                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 text-sm'>{capitalize(feature)}: {hoverPlayer[ability][feature]}</div>)}
+                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='detail-text'>{capitalize(feature)}: {hoverPlayer[ability][feature]}</div>)}
                 </div>)}
             </div>
         </div>}

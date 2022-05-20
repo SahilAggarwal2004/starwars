@@ -20,7 +20,7 @@ export default function Play() {
         [1, 2].forEach(team => {
             indexes.forEach(enemy => {
                 let position = document.getElementById(`team${team}`).children[enemy + 1].getBoundingClientRect()
-                positions.push({ top: position.top, left: position.left })
+                positions.push(position)
             })
         })
         sessionStorage.setItem('positions', JSON.stringify(positions))
@@ -56,7 +56,7 @@ export default function Play() {
         {[team1, team2].map((team, index) => <div id={`team${index + 1}`} key={index} className={`fixed top-0 ${index ? 'right-5' : 'left-5'} space-y-4 w-max flex flex-col items-center justify-center h-full`}>
             <span className='font-semibold text-center'>Team {index + 1}</span>
             {team.map((player, i) => {
-                return <div className={`relative w-[6vw] aspect-square flex flex-col justify-center ${(i == turn - index * 5) && 'outline border-2 outline-green-500'} hover:border-2 hover:outline hover:outline-black border-transparent rounded-sm ${player.stun && 'opacity-50'} ${player.health <= 0 && 'invisible'}`} key={i} onMouseOver={() => setHoverPlayer(player)} onMouseOut={() => setHoverPlayer()} onClick={event => handleClick(event, index, i)} onContextMenu={event => handleClick(event, index, i)}>
+                return <div className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${(i == turn - index * 5) && 'outline border-2 outline-green-500'} hover:border-2 hover:outline hover:outline-black border-transparent rounded-sm ${player.stun && 'opacity-50'} ${player.health <= 0 && 'invisible'}`} key={i} onMouseOver={() => setHoverPlayer(player)} onMouseOut={() => setHoverPlayer()} onClick={event => handleClick(event, index, i)} onContextMenu={event => handleClick(event, index, i)}>
                     <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5 max-w-full' style={{ width: `${turnmeter[i + index * 5] / maximum(turnmeter) * 6}vw` }} />
                     <Image src={`/${player.name}.jpg`} alt={player.name} width='120' height='120' className='rounded-sm' />
                 </div>
@@ -64,12 +64,12 @@ export default function Play() {
         </div>)}
         {hoverPlayer && !isAttacking && <div className='detail-container center w-[calc(100vw-15rem)]'>
             <div className='flex flex-col min-w-max'>
-                {details.map(detail => <span key={detail}>{capitalize(detail)}: {detail == 'health' ? Math.ceil(hoverPlayer[detail]) : hoverPlayer[detail]}</span>)}
+                {details.map(detail => <span key={detail} className='detail-heading'>{capitalize(detail)}: {detail == 'health' ? Math.ceil(hoverPlayer[detail]) : hoverPlayer[detail]}</span>)}
             </div>
             <div>
-                {categories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3'>
+                {categories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
                     <span>{capitalize(ability)}:</span>
-                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 text-sm'>{capitalize(feature)}: {hoverPlayer[ability][feature]}</div>)}
+                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='deatil-text'>{capitalize(feature)}: {hoverPlayer[ability][feature]}</div>)}
                 </div>)}
             </div>
         </div>}

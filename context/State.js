@@ -140,8 +140,8 @@ const State = props => {
                 if (enemy == index || (ability == 'special' && multiAttackers.includes(allyTeam[player].name))) {
                     tempmeter[turnTeam * 5 - 5 + player] = 0
                     setTurnmeter(tempmeter)
-                    setTimeout(() => !enemyTeam[index].stun && attack(index, player, 'basic', false, true), 300);
-                    return { wait: 2300 }
+                    setTimeout(() => !enemyTeam[index].stun && enemyTeam[index].health > 0 && attack(index, player, 'basic', false, true), 500);
+                    return { wait: 2500 }
                 }
             }
         },
