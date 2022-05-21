@@ -13,7 +13,7 @@ export async function animateBullet(player, enemy, turnTeam, bullet, setBullet, 
         setTimeout(() => {
             setHoverPlayer()
             setBullet({ ...bullet, [enemy]: false })
-        }, 1950)
+        }, 1900)
     }, 0);
 }
 
@@ -78,6 +78,6 @@ export async function multiAttack(player, enemyTeam, turnTeam, setBullet, setHov
         setTimeout(() => {
             setHoverPlayer()
             setBullet({ 0: false, 1: false, 2: false, 3: false, 4: false })
-        }, 2000)
+        }, 1900)
     }, 0);
 }

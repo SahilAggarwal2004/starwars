@@ -65,7 +65,7 @@ export default function Play() {
             let enemies = []
             team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
             const enemy = randomElement(enemies)
-            setTimeout(() => attack(turn - 5, enemy, 'special'), 250);
+            setTimeout(() => attack(turn - 5, enemy, 'special'), 500);
         }
     }, [turn])
 
@@ -88,6 +88,6 @@ export default function Play() {
                 </div>)}
             </div>
         </div>}
-        {indexes.map(number => <span key={number} id={`bullet${number}`} className={`fixed block bg-red-500 top-[var(--y)] left-[var(--x)] -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 ${bullet[number] ? 'transition-all ease-linear duration-[2000ms]' : 'invisible'}`} />)}
+        {indexes.map(number => <span key={number} id={`bullet${number}`} className={`fixed block bg-red-500 top-[var(--y)] left-[var(--x)] -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 ${bullet[number] ? 'transition-all ease-linear duration-[1900ms]' : 'invisible'}`} />)}
     </>
 }
