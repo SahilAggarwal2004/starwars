@@ -3,10 +3,10 @@ import Image from "next/image"
 import React, { useContext, useEffect } from "react"
 import Context from "../context/Context"
 import capitalize from "../modules/capitalize"
-import { maximum } from "../modules/math"
+import { maximum, randomElement } from "../modules/math"
 
 export default function Play() {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes } = useContext(Context)
+    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, mode } = useContext(Context)
 
     function checkResult() {
         let gameover = false, sum1 = 0, sum2 = 0, winner;
@@ -42,9 +42,11 @@ export default function Play() {
         setTurnmeter(JSON.parse(sessionStorage.getItem('turnmeter')) || [])
         setHealthSteal(JSON.parse(sessionStorage.getItem('health-steal')) || [0, 0])
         setHoverPlayer()
-        const tempturn = +sessionStorage.getItem('turn') || 0
-        setTurn(tempturn)
-        setTurnTeam(Math.ceil((tempturn + 1) / 5))
+        if (sessionStorage.getItem('turn')) {
+            const tempturn = +sessionStorage.getItem('turn')
+            setTurn(tempturn)
+            setTurnTeam(Math.ceil((tempturn + 1) / 5))
+        }
         try { updatePositions() } catch { window.addEventListener('resize', updatePositions) }
     }, [])
 
@@ -58,9 +60,18 @@ export default function Play() {
         }
     }, [teams])
 
+    useEffect(() => {
+        if (mode == 'computer' && turnTeam == 2) {
+            let enemies = []
+            team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
+            const enemy = randomElement(enemies)
+            setTimeout(() => attack(turn - 5, enemy, 'special'), 250);
+        }
+    }, [turn])
+
     return <>
         {[team1, team2].map((team, index) => <div id={`team${index + 1}`} key={index} className={`fixed top-0 ${index ? 'right-5' : 'left-5'} space-y-4 w-max flex flex-col items-center justify-center h-full`}>
-            <span className='detail-heading font-semibold text-center'>Team {index + 1}</span>
+            <span className='detail-heading font-semibold text-center'>{mode == 'computer' && index ? 'Computer' : `Team ${index + 1}`}</span>
             {team.map((player, i) => <div className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${(i == turn - index * 5) && 'outline border-2 outline-green-500'} hover:border-2 hover:outline hover:outline-black border-transparent rounded-sm ${player.stun && 'opacity-50'} ${player.health <= 0 && 'invisible'}`} key={i} onMouseOver={() => setHoverPlayer(player)} onMouseOut={() => setHoverPlayer()} onClick={event => handleClick(event, index, i)} onContextMenu={event => handleClick(event, index, i)}>
                 <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5 max-w-full' style={{ width: `${turnmeter[i + index * 5] / maximum(turnmeter) * 6}vw` }} />
                 <Image src={`/${player.name}.jpg`} alt={player.name} width='120' height='120' className='rounded-sm' />

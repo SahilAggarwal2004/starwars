@@ -3,8 +3,8 @@ import { randomElement } from "./math";
 export const stun = ({ enemy, enemyTeam }) => enemyTeam[enemy].stun = true
 
 export const assist = (player, enemy, allyTeam, enemyTeam, tempmeter, turnTeam, setTurnmeter, attack) => {
-    let assistPlayers = [];
     if (enemyTeam[enemy].health <= 0) return
+    let assistPlayers = [];
     allyTeam.forEach((ally, index) => { if (!ally.stun && index != player && ally.health > 0) assistPlayers.push(index) })
     const assistPlayer = randomElement(assistPlayers);
     if (assistPlayer == undefined) return

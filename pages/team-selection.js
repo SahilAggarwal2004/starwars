@@ -3,13 +3,14 @@ import React, { useState, useEffect, useContext } from 'react'
 import Image from 'next/image'
 import capitalize from '../modules/capitalize'
 import Context from '../context/Context'
+import { randomElement } from '../modules/math';
 
 export default function TeamSelection() {
-    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players, abilities } = useContext(Context);
+    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players, abilities, mode } = useContext(Context);
     const [currentTeam, setCurrentTeam] = useState(1);
 
     useEffect(() => {
-        if (team1.length == 5 && team2.length == 5) {
+        if (teams.length == 10) {
             if (team1[0].leader?.type == 'start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
             if (team2[0].leader?.type == 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
             sessionStorage.setItem('team1', JSON.stringify(team1))
@@ -19,15 +20,17 @@ export default function TeamSelection() {
             sessionStorage.setItem('initial-health', JSON.stringify(initialHealth))
             router.push('/play')
         }
-    }, [team1, team2])
+    }, [teams])
 
-    function hover(event, player) {
-        event.preventDefault()
-        setHoverPlayer(player)
-    }
+    useEffect(() => {
+        if (mode == 'computer' && currentTeam == 2) {
+            let player;
+            do { player = randomElement(players) } while (teams.length != 10 && teams.includes(player));
+            selectPlayer(player)
+        }
+    }, [currentTeam])
 
-    function selectPlayer(event, player) {
-        event.preventDefault()
+    function selectPlayer(player) {
         if (team1.includes(player) || team2.includes(player)) return
         if (currentTeam == 1) {
             setTeam1([...team1, player])
@@ -41,10 +44,10 @@ export default function TeamSelection() {
     return <>
         <span className='main-heading x-center top-32'>Select {(currentTeam == 1 && team1.length) || (currentTeam == 2 && team2.length) ? 'player' : 'leader'} for Team {currentTeam}</span>
         <div className='grid grid-cols-10 fixed x-center bottom-3.5 gap-x-2.5 min-w-max'>
-            {players.map(player => <div className='relative w-[6vw] aspect-square flex justify-center hover:border-2 hover:outline border-transparent rounded-sm' key={player.name} onMouseOver={event => hover(event, player)} onMouseOut={event => hover(event)} onClick={event => selectPlayer(event, player)}>
+            {players.map(player => <div className='relative w-[6vw] aspect-square flex justify-center hover:border-2 hover:outline border-transparent rounded-sm' key={player.name} onMouseOver={() => setHoverPlayer(player)} onMouseOut={() => setHoverPlayer()} onClick={() => selectPlayer(player)} onContextMenu={event => event.preventDefault()}>
                 <Image src={`/${player.name}.jpg`} alt={player.name} width='120' height='120' className='rounded-sm' />
                 {team1.includes(player) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-blue-500 z-10'>1</div>}
-                {team2.includes(player) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10'>2</div>}
+                {team2.includes(player) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10'>{mode == 'computer' ? 'C' : 2}</div>}
             </div>)}
         </div>
         {hoverPlayer && <div className='detail-container top-5 x-center w-[calc(100vw-4rem)]'>

@@ -9,6 +9,7 @@ import { animateBullet, multiAttack } from '../modules/animation'
 const State = props => {
     const preserveGame = ['/play', '/how-to-play']
     const router = useRouter();
+    const [mode, setMode] = useState()
     const [team1, setTeam1] = useState([])
     const [team2, setTeam2] = useState([])
     const teams = [...team1, ...team2]
@@ -26,8 +27,10 @@ const State = props => {
     const multiAttackers = ['Mother Talzin']
 
     useEffect(() => {
+        if (router.pathname == '/') sessionStorage.removeItem('mode')
         if (!preserveGame.includes(router.pathname)) resetGame()
         if (router.pathname != '/result') sessionStorage.removeItem('winner')
+        setMode(sessionStorage.getItem('mode'))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -130,18 +133,29 @@ const State = props => {
             leader: ({ enemyTeam }) => indexes.forEach(index => enemyTeam[index].speed -= 1)
         },
         'Count Dooku': {
-            basic: ({ allyTeam }) => {
-                const chance = random(1, 4)
-                chance == 2 && revive(allyTeam, initialHealth[turn])
+            basic: ({ allyTeam, isCountering, turnTeam }) => {
+                let tempTurn = turn;
+                // const chance = random(1, 4)
+                const chance = 2
+                if (chance != 2) return
+                if (isCountering) {
+                    const { index } = verify('member', 'Count Dooku', allyTeam)
+                    tempTurn = index - 5 + (turnTeam == 1 ? 2 : 1) * 5
+                }
+                revive(allyTeam, initialHealth[tempTurn])
             },
             special: stun,
             unique: ({ player, enemy, allyTeam, enemyTeam, tempmeter, ability }) => {
                 const { result, index } = verify('member', 'Count Dooku', enemyTeam)
                 if (!result || enemyTeam[index].stun) return
                 if (enemy == index || (ability == 'special' && multiAttackers.includes(allyTeam[player].name))) {
-                    tempmeter[turnTeam * 5 - 5 + player] = 0
-                    setTurnmeter(tempmeter)
-                    setTimeout(() => !enemyTeam[index].stun && enemyTeam[index].health > 0 && attack(index, player, 'basic', false, true), 500);
+                    setTimeout(() => {
+                        if (!enemyTeam[index].stun && enemyTeam[index].health > 0) {
+                            enemyTeam[index].health *= 1.05
+                            tempmeter[turnTeam * 5 - 5 + player] = 0
+                            attack(index, player, 'basic', false, true)
+                        }
+                    }, 500);
                     return { wait: 2500 }
                 }
             }
@@ -217,7 +231,7 @@ const State = props => {
         setAttacking(true)
 
         if (!allyTeam[player].special) ability = 'basic'
-        if (allyTeam[player].special?.cooldown) {
+        if (allyTeam[player].special?.cooldown && !isAssisting && !isCountering) {
             ability = 'basic'
             allyTeam[player].special.cooldown--
         }
@@ -235,7 +249,7 @@ const State = props => {
         setTimeout(() => {
             enemyTeam[enemy].health -= allyTeam[player][ability].damage * enemyTeam[enemy].multiplier
             if (allyTeam[player].health < initialHealth[turn]) allyTeam[player].health += allyTeam[player][ability].damage * healthSteal[turnTeam - 1]
-            let wait = abilities[allyTeam[player].name][ability]?.({ player, enemy, allyTeam, enemyTeam, tempmeter })
+            let wait = abilities[allyTeam[player].name][ability]?.({ player, enemy, allyTeam, enemyTeam, tempmeter, isCountering, turnTeam })
 
             // In-game leader abilities:
             teams.forEach(team => { if (team[0].leader?.type == 'in-game') abilities[team[0].name].leader?.({ enemy, ability, allyTeam, enemyTeam, isAssisting }) })
@@ -257,7 +271,7 @@ const State = props => {
     }
 
     return (
-        <Context.Provider value={{ router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes }}>
+        <Context.Provider value={{ router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes, mode, setMode }}>
             {props.children}
         </Context.Provider>
     )

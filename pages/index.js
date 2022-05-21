@@ -3,10 +3,21 @@ import React, { useContext } from 'react'
 import Context from '../context/Context'
 
 export default function Home() {
-  const { router } = useContext(Context)
+  const { router, setMode } = useContext(Context)
+
+  function handlePlay(event) {
+    const mode = event.target.getAttribute('mode')
+    setMode(mode)
+    sessionStorage.setItem('mode', mode)
+    router.push('/team-selection')
+  }
 
   return <>
     <Image alt='Star Wars' src='/logo.webp' layout='fill' />
-    <button className='text-xl fixed font-semibold text-white rounded bg-custom-gradient from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 px-3 py-1 bottom-8 x-center' onClick={() => router.push('/team-selection')}>Play Offline</button>
+    <div className='fixed bottom-8 x-center space-y-3 w-full text-center px-5'>
+      <button mode='computer' className='main-button' onClick={handlePlay}>Play vs Computer</button>
+      <button mode='offline' className='main-button' onClick={handlePlay}>Play vs Player</button>
+      {/* <button mode='online' className='main-button' onClick={handlePlay}>Play Online</button> */}
+    </div>
   </>
 }

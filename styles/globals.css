@@ -25,4 +25,12 @@
     @apply sm:text-xl md:text-2xl fixed font-semibold
 }
 
+.main-button {
+    @apply rounded bg-custom-gradient from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 px-3 py-1 w-fit text-white text-sm sm:text-base md:text-xl font-semibold mx-2.5
+}
+
 @tailwind utilities;
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
