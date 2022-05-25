@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className='font-mono'>
-        <ToastContainer pauseOnFocusLoss={false} position='bottom-right' />
+        <ToastContainer pauseOnFocusLoss={false} />
         <Component {...pageProps} />
       </div>
     </SocketProvider>
