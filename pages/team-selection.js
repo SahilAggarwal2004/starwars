@@ -4,29 +4,32 @@ import Image from 'next/image'
 import capitalize from '../modules/capitalize'
 import { randomElement } from '../modules/math';
 import { useGameContext } from '../contexts/ContextProvider';
+import { useSocket } from '../contexts/SocketProvider';
 
 export default function TeamSelection() {
     const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players, abilities, mode } = useGameContext();
+    const { connection } = useSocket()
     const [currentTeam, setCurrentTeam] = useState(1);
 
     useEffect(() => {
-        if (teams.length == 10) {
-            if (team1[0].leader?.type == 'start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
-            if (team2[0].leader?.type == 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
-            sessionStorage.setItem('team1', JSON.stringify(team1))
-            sessionStorage.setItem('team2', JSON.stringify(team2))
-            let initialHealth = [];
-            teams.map(player => initialHealth.push(player.health))
-            sessionStorage.setItem('initial-health', JSON.stringify(initialHealth))
-            router.push('/play')
-        }
+        if (teams.length != 10) return
+        if (team1[0].leader?.type == 'start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
+        if (team2[0].leader?.type == 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
+        sessionStorage.setItem('team1', JSON.stringify(team1))
+        sessionStorage.setItem('team2', JSON.stringify(team2))
+        let initialHealth = [];
+        teams.map(player => initialHealth.push(player.health))
+        sessionStorage.setItem('initial-health', JSON.stringify(initialHealth))
+        router.push('/play')
     }, [teams])
 
     useEffect(() => {
         if (mode == 'computer' && currentTeam == 2) {
             let player;
-            do { player = randomElement(players) } while (teams.length != 10 && teams.includes(player));
+            do { player = randomElement(players) } while (teams.length != 10 && teams.includes(player))
             selectPlayer(player)
+        } else if (mode == 'online') {
+            if (!connection) return router.push('/room')
         }
     }, [currentTeam])
 

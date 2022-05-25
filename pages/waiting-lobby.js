@@ -6,10 +6,20 @@ import { useSocket } from '../contexts/SocketProvider'
 
 export default function Waiting() {
     const { router } = useGameContext()
-    const { users, connection } = useSocket()
+    const { socket, users, connection, resetConnection } = useSocket()
+
+    function exit() {
+        socket.emit('leave-room', () => {
+            resetConnection()
+            router.push('/room')
+        })
+    }
 
     useEffect(() => { if (!connection) router.push('/room') }, [])
     useEffect(() => { if (Object.keys(users).length == 2) router.push('/team-selection') }, [users])
 
-    return <div className='fixed center text-xl'>Waiting for the opponent to join...</div>
+    return <>
+        <div className='fixed center text-xl'>Waiting for the opponent to join...</div>
+        <button className='fixed top-2 right-2 px-2 py-1 bg-green-500 rounded hover:bg-green-600 text-white' onClick={exit}>Exit</button>
+    </>
 }

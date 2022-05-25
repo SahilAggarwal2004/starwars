@@ -18,6 +18,11 @@ export default function SocketProvider({ children }) {
     const [pass, setPass] = useStorage('pass')
     const [users, setUsers] = useStorage('users', {}, { local: false, session: true })
 
+    function resetConnection() {
+        setConnection(false)
+        setUsers({})
+    }
+
     useEffect(() => {
         if (!localStorage.getItem('userId')) localStorage.setItem('userId', v4())
         const newSocket = io('http://localhost:5000', { query: { userId: localStorage.getItem('userId') } })
@@ -38,7 +43,7 @@ export default function SocketProvider({ children }) {
     }, [])
 
     return (
-        <Context.Provider value={{ socket, name, setName, room, setRoom, pass, setPass, users, setUsers, connection, setConnection }}>
+        <Context.Provider value={{ socket, name, setName, room, setRoom, pass, setPass, users, setUsers, connection, setConnection, resetConnection }}>
             {children}
         </Context.Provider>
     )
