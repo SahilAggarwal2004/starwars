@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import capitalize from '../modules/capitalize'
-import Context from '../context/Context'
 import { randomElement } from '../modules/math';
+import { useGameContext } from '../contexts/ContextProvider';
 
 export default function TeamSelection() {
-    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players, abilities, mode } = useContext(Context);
+    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players, abilities, mode } = useGameContext();
     const [currentTeam, setCurrentTeam] = useState(1);
 
     useEffect(() => {

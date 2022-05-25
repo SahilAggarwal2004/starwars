@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Image from "next/image"
-import React, { useContext, useEffect } from "react"
-import Context from "../context/Context"
+import React, { useEffect } from "react"
+import { useGameContext } from "../contexts/ContextProvider"
 import capitalize from "../modules/capitalize"
 import { maximum, randomElement } from "../modules/math"
 
-export default function Play() {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, mode } = useContext(Context)
+export default function Offline() {
+    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, mode } = useGameContext()
 
     function checkResult() {
         let gameover = false, sum1 = 0, sum2 = 0, winner;
@@ -51,7 +51,7 @@ export default function Play() {
     }, [])
 
     useEffect(() => {
-        setTimeout(() => { if (!sessionStorage.getItem('team1') || !sessionStorage.getItem('team2')) router.push('/team-selection') }, 50);
+        setTimeout(() => { if (!sessionStorage.getItem('team1') || !sessionStorage.getItem('team2')) router.push('/') }, 50);
         if (turnmeter.length != teams.length) newTurn()
         const { gameover, winner } = checkResult()
         if (gameover) {

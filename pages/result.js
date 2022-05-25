@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useContext } from 'react'
-import Context from '../context/Context'
+import React, { useEffect, useState } from 'react'
+import { useGameContext } from '../contexts/ContextProvider'
 
 export default function Result() {
-    const { router, mode } = useContext(Context)
+    const { router, mode } = useGameContext()
     const [winner, setWinner] = useState()
     useEffect(() => {
         const winner = sessionStorage.getItem('winner')
-        winner ? setWinner(winner) : router.push('/team-selection')
+        winner ? setWinner(winner) : router.push('/')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

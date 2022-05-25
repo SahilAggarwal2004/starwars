@@ -1,14 +1,16 @@
 import { useRouter } from 'next/router';
-import React, { useState, useEffect } from 'react'
-import Context from "./Context";
+import React, { createContext, useState, useEffect, useContext } from 'react'
 import players from '../players';
 import { maximum, random, randomElement } from '../modules/math';
 import { stun, assist, block, revive, verify } from '../modules/functions';
 import { animateBullet, multiAttack } from '../modules/animation'
 
-const State = props => {
-    const preserveGame = ['/play', '/how-to-play']
+const Context = createContext();
+export const useGameContext = () => useContext(Context)
+
+const ContextProvider = props => {
     const router = useRouter();
+    const preserveGame = ['/play', '/how-to-play']
     const [mode, setMode] = useState()
     const [team1, setTeam1] = useState([])
     const [team2, setTeam2] = useState([])
@@ -27,7 +29,6 @@ const State = props => {
     const multiAttackers = ['Mother Talzin']
 
     useEffect(() => {
-        if (router.pathname == '/') sessionStorage.removeItem('mode')
         if (!preserveGame.includes(router.pathname)) resetGame()
         if (router.pathname != '/result') sessionStorage.removeItem('winner')
         setMode(sessionStorage.getItem('mode'))
@@ -277,4 +278,4 @@ const State = props => {
     )
 }
 
-export default State;
+export default ContextProvider;
