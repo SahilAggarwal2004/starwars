@@ -7,9 +7,8 @@ import { useGameContext } from '../contexts/ContextProvider';
 import { useSocket } from '../contexts/SocketProvider';
 
 export default function TeamSelection() {
-    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players, abilities, mode } = useGameContext();
+    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players, abilities, mode, currentTeam, setCurrentTeam } = useGameContext();
     const { socket, connection } = useSocket()
-    const [currentTeam, setCurrentTeam] = useState(1);
 
     useEffect(() => {
         if (teams.length != 10) return
@@ -30,17 +29,11 @@ export default function TeamSelection() {
             let player;
             do { player = randomElement(players) } while (teams.length != 10 && teams.includes(player))
             selectPlayer(player)
-        } else if (mode == 'online') {
-            if (!connection) return router.push('/room')
-            if (!team1.length && !team2.length) return
-            socket.emit('selecting', { team1, team2, currentTeam })
         }
+        // else if (mode == 'online') { if (!connection) return router.push('/room') }
     }, [currentTeam])
 
-    function handleClick(event) { if (mode != 'online') selectPlayer(event.target.getAttribute('player')) }
-
-    function selectPlayer(player) {
-        if (team1.includes(player) || team2.includes(player)) return
+    function addPlayer(player) {
         if (currentTeam == 1) {
             setTeam1([...team1, player])
             setCurrentTeam(2)
@@ -50,10 +43,16 @@ export default function TeamSelection() {
         }
     }
 
+    function selectPlayer(player) {
+        if (team1.includes(player) || team2.includes(player)) return
+        if (mode == 'online') socket.emit('select-player', { team1, team2, currentTeam, player }, () => addPlayer(player))
+        else addPlayer(player)
+    }
+
     return <>
         <span className='main-heading x-center top-32'>Select {(currentTeam == 1 && team1.length) || (currentTeam == 2 && team2.length) ? 'player' : 'leader'} for Team {currentTeam}</span>
         <div className='grid grid-cols-10 fixed x-center bottom-3.5 gap-x-2.5 min-w-max'>
-            {players.map(player => <div player={player} className='relative w-[6vw] aspect-square flex justify-center hover:border-2 hover:outline border-transparent rounded-sm' key={player.name} onMouseOver={() => setHoverPlayer(player)} onMouseOut={() => setHoverPlayer()} onClick={handleClick} onContextMenu={event => event.preventDefault()}>
+            {players.map(player => <div className='relative w-[6vw] aspect-square flex justify-center hover:border-2 hover:outline border-transparent rounded-sm' key={player.name} onMouseOver={() => setHoverPlayer(player)} onMouseOut={() => setHoverPlayer()} onClick={() => selectPlayer(player)} onContextMenu={event => event.preventDefault()}>
                 <Image src={`/${player.name}.jpg`} alt={player.name} width='120' height='120' className='rounded-sm' />
                 {team1.includes(player) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-blue-500 z-10'>1</div>}
                 {team2.includes(player) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10'>{mode == 'computer' ? 'C' : 2}</div>}

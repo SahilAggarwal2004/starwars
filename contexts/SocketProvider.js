@@ -10,7 +10,7 @@ const Context = createContext();
 export const useSocket = () => useContext(Context)
 
 export default function SocketProvider({ children }) {
-    const { router, mode } = useGameContext();
+    const { router, mode, setTeam1, setTeam2, setCurrentTeam } = useGameContext();
     const [socket, setSocket] = useState()
     const [connection, setConnection] = useStorage('connection', false, { local: false, session: true })
     const [name, setName] = useStorage('name')
@@ -39,6 +39,12 @@ export default function SocketProvider({ children }) {
                 toast.error(`${name} left the lobby.`)
                 setOpponent('')
                 router.push('/waiting-lobby')
+            })
+            newSocket.on('selected-player', ({ team1, team2, currentTeam }) => {
+                console.log(team1)
+                setTeam1(team1)
+                setTeam2(team2)
+                setCurrentTeam(currentTeam)
             })
         })
         setSocket(newSocket)

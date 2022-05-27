@@ -16,6 +16,7 @@ const ContextProvider = props => {
     const [team1, setTeam1] = useState([])
     const [team2, setTeam2] = useState([])
     const teams = [...team1, ...team2]
+    const [currentTeam, setCurrentTeam] = useState(1);
     const [initialHealth, setInitialHealth] = useState([])
     const [turnmeter, setTurnmeter] = useState([])
     const [hoverPlayer, setHoverPlayer] = useState()
@@ -273,7 +274,7 @@ const ContextProvider = props => {
     }
 
     return (
-        <Context.Provider value={{ router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes, mode, setMode }}>
+        <Context.Provider value={{ router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes, mode, setMode, currentTeam, setCurrentTeam }}>
             {props.children}
         </Context.Provider>
     )
