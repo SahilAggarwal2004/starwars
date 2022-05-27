@@ -10,40 +10,46 @@ const Context = createContext();
 export const useSocket = () => useContext(Context)
 
 export default function SocketProvider({ children }) {
-    const { router } = useGameContext();
+    const { router, mode } = useGameContext();
     const [socket, setSocket] = useState()
     const [connection, setConnection] = useStorage('connection', false, { local: false, session: true })
     const [name, setName] = useStorage('name')
     const [room, setRoom] = useStorage('room')
     const [pass, setPass] = useStorage('pass')
-    const [users, setUsers] = useStorage('users', {}, { local: false, session: true })
+    const [opponent, setOpponent] = useStorage('opponent', '', { local: false, session: true })
 
     function resetConnection() {
+        socket?.emit('leave-room')
         setConnection(false)
-        setUsers({})
+        setOpponent('')
+        if (router.pathname == '/waiting-lobby') router.push('/room')
     }
 
     useEffect(() => {
+        if (mode != 'online') return resetConnection()
         if (!localStorage.getItem('userId')) localStorage.setItem('userId', v4())
         const newSocket = io('http://localhost:5000', { query: { userId: localStorage.getItem('userId') } })
         newSocket.on('connect', () => {
             newSocket.on('error', error => toast.error(error))
-            newSocket.on('new-user', ({ name, users }) => {
+            newSocket.on('new-user', name => {
                 toast.success(`${name} joined the room!`)
-                setUsers(users)
+                setOpponent(name)
             })
-            newSocket.on('left', users => {
-                toast.error('Opponent left the lobby.')
-                setUsers(users)
+            newSocket.on('left', name => {
+                toast.error(`${name} left the lobby.`)
+                setOpponent('')
                 router.push('/waiting-lobby')
             })
         })
         setSocket(newSocket)
-        return () => newSocket.close()
-    }, [])
+        return () => {
+            resetConnection()
+            newSocket.close()
+        }
+    }, [mode])
 
     return (
-        <Context.Provider value={{ socket, name, setName, room, setRoom, pass, setPass, users, setUsers, connection, setConnection, resetConnection }}>
+        <Context.Provider value={{ socket, name, setName, room, setRoom, pass, setPass, opponent, setOpponent, connection, setConnection, resetConnection }}>
             {children}
         </Context.Provider>
     )

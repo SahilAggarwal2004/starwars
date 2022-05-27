@@ -7,9 +7,8 @@ export default function Home() {
 
   function handlePlay(event) {
     const mode = event.target.getAttribute('mode')
-    setMode(mode)
-    sessionStorage.setItem('mode', mode)
     mode != 'online' ? router.push('/team-selection') : router.push('/room')
+    setMode(mode)
   }
 
   useEffect(() => sessionStorage.removeItem('mode'), [])

@@ -1,4 +1,4 @@
-export async function animateBullet(player, enemy, turnTeam, bullet, setBullet, setHoverPlayer, isCountering) {
+export async function animateBullet(player, enemy, turnTeam, setBullet, setHoverPlayer, isCountering) {
     if (isCountering) turnTeam = turnTeam == 1 ? 2 : 1
     const positions = JSON.parse(sessionStorage.getItem('positions'));
     const { left: playerLeft, right: playerRight, top: playerTop, bottom: playerBottom } = positions[turnTeam * 5 - 5 + player]
@@ -7,12 +7,12 @@ export async function animateBullet(player, enemy, turnTeam, bullet, setBullet, 
     bulletRef.left = `${(playerLeft + playerRight) / 2}px`;
     bulletRef.top = `${(playerTop + playerBottom) / 2}px`;
     setTimeout(() => {
-        setBullet({ ...bullet, [enemy]: true })
+        setBullet(bullet => ({ ...bullet, [enemy]: true }))
         bulletRef.left = `${(enemyLeft + enemyRight) / 2}px`;
         bulletRef.top = `${(enemyTop + enemyBottom) / 2}px`;
         setTimeout(() => {
             setHoverPlayer()
-            setBullet({ ...bullet, [enemy]: false })
+            setBullet(bullet => ({ ...bullet, [enemy]: false }))
         }, 1900)
     }, 0);
 }

@@ -7,7 +7,7 @@ import { useSocket } from '../contexts/SocketProvider';
 
 export default function Room() {
     const { router } = useGameContext()
-    const { socket, name, setName, room, setRoom, pass, setPass, setUsers, connection, setConnection } = useSocket()
+    const { socket, name, setName, room, setRoom, pass, setPass, setOpponent, connection, setConnection, resetConnection } = useSocket()
     const roomRef = useRef();
     const passRef = useRef();
     const nameRef = useRef();
@@ -17,17 +17,17 @@ export default function Room() {
         if (!tempRoom || !tempPassword || !tempName) return toast.error('Please fill the required fields first')
         setName(tempName)
         const method = event.target.getAttribute('method')
-        socket.emit(method, { room: tempRoom, password: tempPassword, name: tempName }, ({ message, room, pass, users }) => {
+        socket.emit(method, { room: tempRoom, password: tempPassword, name: tempName }, ({ message, room, pass, opponent }) => {
             toast.success(message)
             setRoom(room)
             setPass(pass)
-            setUsers(users)
             setConnection(true)
+            if (opponent) setOpponent(opponent)
             router.push('/waiting-lobby')
         })
     }
 
-    useEffect(() => { if (connection) router.push('/waiting-lobby') }, [])
+    useEffect(() => { resetConnection() }, [])
 
     return <form className='flex flex-col items-center h-screen justify-center space-y-10' onSubmit={event => event.preventDefault()}>
         <div className='flex flex-col space-y-1'>

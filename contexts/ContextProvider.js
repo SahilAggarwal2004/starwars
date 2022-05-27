@@ -4,6 +4,7 @@ import players from '../players';
 import { maximum, random, randomElement } from '../modules/math';
 import { stun, assist, block, revive, verify } from '../modules/functions';
 import { animateBullet, multiAttack } from '../modules/animation'
+import { useStorage } from '../hooks';
 
 const Context = createContext();
 export const useGameContext = () => useContext(Context)
@@ -11,7 +12,7 @@ export const useGameContext = () => useContext(Context)
 const ContextProvider = props => {
     const router = useRouter();
     const preserveGame = ['/play', '/how-to-play']
-    const [mode, setMode] = useState()
+    const [mode, setMode] = useStorage('mode', '', { local: false, session: true })
     const [team1, setTeam1] = useState([])
     const [team2, setTeam2] = useState([])
     const teams = [...team1, ...team2]
@@ -29,9 +30,9 @@ const ContextProvider = props => {
     const multiAttackers = ['Mother Talzin']
 
     useEffect(() => {
+        if (!mode) router.push('/')
         if (!preserveGame.includes(router.pathname)) resetGame()
         if (router.pathname != '/result') sessionStorage.removeItem('winner')
-        setMode(sessionStorage.getItem('mode'))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -246,7 +247,7 @@ const ContextProvider = props => {
         }))
         enemy = returnUnique.enemy || enemy
 
-        ability == 'special' && multiAttackers.includes(allyTeam[player].name) ? multiAttack(player, enemyTeam, turnTeam, setBullet, setHoverPlayer, isCountering) : animateBullet(player, enemy, turnTeam, bullet, setBullet, setHoverPlayer, isCountering)
+        ability == 'special' && multiAttackers.includes(allyTeam[player].name) ? multiAttack(player, enemyTeam, turnTeam, setBullet, setHoverPlayer, isCountering) : animateBullet(player, enemy, turnTeam, setBullet, setHoverPlayer, isCountering)
         setTimeout(() => {
             enemyTeam[enemy].health -= allyTeam[player][ability].damage * enemyTeam[enemy].multiplier
             if (allyTeam[player].health < initialHealth[turn]) allyTeam[player].health += allyTeam[player][ability].damage * healthSteal[turnTeam - 1]
