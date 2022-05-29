@@ -16,19 +16,23 @@ export default function SocketProvider({ children }) {
     const [name, setName] = useStorage('name')
     const [room, setRoom] = useStorage('room')
     const [pass, setPass] = useStorage('pass')
+    const [userId, setUserId] = useStorage('userId', v4())
     const [opponent, setOpponent] = useStorage('opponent', '', { local: false, session: true })
+    // const onlineConnected = ['/waiting-lobby', '/team-selection', '/play']
 
-    function resetConnection() {
+    function resetConnection(type = 'redirect') {
         socket?.emit('leave-room')
         setConnection(false)
         setOpponent('')
-        if (router.pathname == '/waiting-lobby') router.push('/room')
+        if (router.pathname == '/waiting-lobby' && type == 'redirect') router.push('/room')
     }
+
+    // useEffect(() => { if (mode == 'online' && connection == false && onlineConnected.includes(router.pathname)) router.push('/room') }, [router.pathname])
 
     useEffect(() => {
         if (mode != 'online') return resetConnection()
-        if (!localStorage.getItem('userId')) localStorage.setItem('userId', v4())
-        const newSocket = io('http://localhost:5000', { query: { userId: localStorage.getItem('userId') } })
+        setUserId(userId)
+        const newSocket = io('http://localhost:5000', { query: { userId } })
         newSocket.on('connect', () => {
             newSocket.on('error', error => toast.error(error))
             newSocket.on('new-user', name => {
@@ -40,16 +44,15 @@ export default function SocketProvider({ children }) {
                 setOpponent('')
                 router.push('/waiting-lobby')
             })
-            newSocket.on('selected-player', ({ team1, team2, currentTeam }) => {
-                console.log(team1)
-                setTeam1(team1)
-                setTeam2(team2)
+            newSocket.on('selected-player', ({ teamone, teamtwo, currentTeam }) => {
+                if (teamone) setTeam1(teamone)
+                if (teamtwo) setTeam2(teamtwo)
                 setCurrentTeam(currentTeam)
             })
         })
         setSocket(newSocket)
         return () => {
-            resetConnection()
+            resetConnection('no-redirect')
             newSocket.close()
         }
     }, [mode])

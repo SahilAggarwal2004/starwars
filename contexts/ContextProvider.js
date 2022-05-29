@@ -35,7 +35,7 @@ const ContextProvider = props => {
         if (!preserveGame.includes(router.pathname)) resetGame()
         if (router.pathname != '/result') sessionStorage.removeItem('winner')
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [router.pathname])
 
     const abilities = {
         'Bastila Shan': {

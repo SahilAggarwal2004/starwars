@@ -7,8 +7,14 @@ import { useGameContext } from '../contexts/ContextProvider';
 import { useSocket } from '../contexts/SocketProvider';
 
 export default function TeamSelection() {
-    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players, abilities, mode, currentTeam, setCurrentTeam } = useGameContext();
-    const { socket, connection } = useSocket()
+    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players: offlinePlayers, abilities, mode, currentTeam, setCurrentTeam } = useGameContext();
+    const { socket } = useSocket();
+    const [players, setPlayers] = useState([]);
+
+    useEffect(() => {
+        if (players.length) return
+        mode != 'online' ? setPlayers(offlinePlayers) : socket?.emit("get-players", onlinePlayers => setPlayers(onlinePlayers))
+    }, [mode, socket])
 
     useEffect(() => {
         if (teams.length != 10) return
@@ -25,12 +31,10 @@ export default function TeamSelection() {
     }, [teams])
 
     useEffect(() => {
-        if (mode == 'computer' && currentTeam == 2) {
-            let player;
-            do { player = randomElement(players) } while (teams.length != 10 && teams.includes(player))
-            selectPlayer(player)
-        }
-        // else if (mode == 'online') { if (!connection) return router.push('/room') }
+        if (mode != 'computer' || currentTeam != 2) return
+        let player;
+        do { player = randomElement(players) } while (teams.length != 10 && teams.includes(player))
+        selectPlayer(player)
     }, [currentTeam])
 
     function addPlayer(player) {
@@ -44,9 +48,8 @@ export default function TeamSelection() {
     }
 
     function selectPlayer(player) {
-        if (team1.includes(player) || team2.includes(player)) return
         if (mode == 'online') socket.emit('select-player', { team1, team2, currentTeam, player }, () => addPlayer(player))
-        else addPlayer(player)
+        else if (!team1.includes(player) && !team2.includes(player)) addPlayer(player)
     }
 
     return <>
@@ -54,8 +57,8 @@ export default function TeamSelection() {
         <div className='grid grid-cols-10 fixed x-center bottom-3.5 gap-x-2.5 min-w-max'>
             {players.map(player => <div className='relative w-[6vw] aspect-square flex justify-center hover:border-2 hover:outline border-transparent rounded-sm' key={player.name} onMouseOver={() => setHoverPlayer(player)} onMouseOut={() => setHoverPlayer()} onClick={() => selectPlayer(player)} onContextMenu={event => event.preventDefault()}>
                 <Image src={`/${player.name}.jpg`} alt={player.name} width='120' height='120' className='rounded-sm' />
-                {team1.includes(player) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-blue-500 z-10'>1</div>}
-                {team2.includes(player) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10'>{mode == 'computer' ? 'C' : 2}</div>}
+                {JSON.stringify(team1).includes(player.name) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-blue-500 z-10'>1</div>}
+                {JSON.stringify(team2).includes(player.name) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10'>{mode == 'computer' ? 'C' : 2}</div>}
             </div>)}
         </div>
         {hoverPlayer && <div className='detail-container top-5 x-center w-[calc(100vw-4rem)]'>

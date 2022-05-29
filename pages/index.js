@@ -11,7 +11,7 @@ export default function Home() {
     setMode(mode)
   }
 
-  useEffect(() => sessionStorage.removeItem('mode'), [])
+  useEffect(() => { sessionStorage.removeItem('mode') }, [])
 
   return <>
     <Image alt='Star Wars' src='/logo.webp' layout='fill' />
