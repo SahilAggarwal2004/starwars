@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
-import capitalize from '../modules/capitalize'
 import { randomElement } from '../modules/math';
 import { useGameContext } from '../contexts/ContextProvider';
 import { useSocket } from '../contexts/SocketProvider';
@@ -63,12 +62,12 @@ export default function TeamSelection() {
         </div>
         {hoverPlayer && <div className='detail-container top-5 x-center w-[calc(100vw-4rem)]'>
             <div className='flex flex-col min-w-max'>
-                {details.map(detail => <span key={detail} className='detail-heading'>{capitalize(detail)}: {hoverPlayer[detail]}</span>)}
+                {details.map(detail => <span key={detail} className='detail-heading capitalize'>{detail}: {hoverPlayer[detail]}</span>)}
             </div>
             <div>
                 {categories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
-                    <span>{capitalize(ability)}:</span>
-                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 detail-text'>{capitalize(feature)}: {hoverPlayer[ability][feature]}</div>)}
+                    <span className='capitalize'>{ability}:</span>
+                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
                 </div>)}
             </div>
         </div>}

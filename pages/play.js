@@ -2,7 +2,6 @@
 import Image from "next/image"
 import React, { useEffect } from "react"
 import { useGameContext } from "../contexts/ContextProvider"
-import capitalize from "../modules/capitalize"
 import { maximum, randomElement } from "../modules/math"
 
 export default function Offline() {
@@ -28,7 +27,7 @@ export default function Offline() {
         let positions = [];
         [1, 2].forEach(team => {
             indexes.forEach(enemy => {
-                let position = document.getElementById(`team${team}`).children[enemy + 1].getBoundingClientRect()
+                let position = document.getElementById(`team${team}`)?.children[enemy + 1]?.getBoundingClientRect()
                 positions.push(position)
             })
         })
@@ -51,7 +50,9 @@ export default function Offline() {
     }, [])
 
     useEffect(() => {
-        setTimeout(() => { if (!sessionStorage.getItem('team1') || !sessionStorage.getItem('team2')) router.push('/') }, 50);
+        let teamone = JSON.parse(sessionStorage.getItem('team1'))
+        let teamtwo = JSON.parse(sessionStorage.getItem('team2'))
+        if (!teamone?.length || !teamtwo.length ) router.push('/')
         if (turnmeter.length != teams.length) newTurn()
         const { gameover, winner } = checkResult()
         if (gameover) {
@@ -79,12 +80,12 @@ export default function Offline() {
         </div>)}
         {hoverPlayer && !isAttacking && <div className='detail-container center w-[calc(100vw-15rem)]'>
             <div className='flex flex-col min-w-max'>
-                {details.map(detail => <span key={detail} className='detail-heading'>{capitalize(detail)}: {detail == 'health' ? Math.ceil(hoverPlayer[detail]) : hoverPlayer[detail]}</span>)}
+                {details.map(detail => <span key={detail} className='detail-heading capitalize'>{detail}: {detail == 'health' ? Math.ceil(hoverPlayer[detail]) : hoverPlayer[detail]}</span>)}
             </div>
             <div>
                 {categories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
-                    <span>{capitalize(ability)}:</span>
-                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 detail-text'>{capitalize(feature)}: {hoverPlayer[ability][feature]}</div>)}
+                    <span className="capitalize">{ability}:</span>
+                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
                 </div>)}
             </div>
         </div>}

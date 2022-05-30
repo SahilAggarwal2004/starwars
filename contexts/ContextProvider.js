@@ -15,7 +15,7 @@ const ContextProvider = props => {
     const [mode, setMode] = useStorage('mode', '', { local: false, session: true })
     const [team1, setTeam1] = useState([])
     const [team2, setTeam2] = useState([])
-    const teams = [...team1, ...team2]
+    const teams = team1.concat(team2)
     const [currentTeam, setCurrentTeam] = useState(1);
     const [initialHealth, setInitialHealth] = useState([])
     const [turnmeter, setTurnmeter] = useState([])
