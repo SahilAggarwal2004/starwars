@@ -6,7 +6,6 @@ import SocketProvider from '../contexts/SocketProvider'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect, useRef, useState } from 'react'
-import Error from '../components/Error'
 
 function MyApp({ Component, pageProps }) {
   const [isMobile, setMobile] = useState()
@@ -38,7 +37,7 @@ function MyApp({ Component, pageProps }) {
       </Head>
       <div ref={fullscreenElement} className='font-mono'>
         <ToastContainer pauseOnFocusLoss={false} />
-        {height > width ? <Error error='Please rotate the device' /> :
+        {height > width ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div> :
           !isMobile || isFullscreen ? <Component {...pageProps} /> :
             <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
               <div>Please enter full screen mode</div>
