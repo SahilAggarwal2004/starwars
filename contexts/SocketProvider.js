@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { createContext, useState, useEffect, useContext } from 'react'
-import { useStorage } from '../hooks'
 import { io } from 'socket.io-client';
 import { v4 } from 'uuid';
 import { toast } from 'react-toastify';
 import { useGameContext } from './ContextProvider';
+import useStorage from '../hooks/useStorage';
 
 const Context = createContext();
 export const useSocket = () => useContext(Context)

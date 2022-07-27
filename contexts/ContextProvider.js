@@ -4,7 +4,7 @@ import players from '../players';
 import { maximum, random, randomElement } from '../modules/math';
 import { stun, assist, block, revive, verify } from '../modules/functions';
 import { animateBullet, multiAttack } from '../modules/animation'
-import { useStorage } from '../hooks';
+import useStorage from '../hooks/useStorage';
 
 const Context = createContext();
 export const useGameContext = () => useContext(Context)
