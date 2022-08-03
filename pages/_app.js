@@ -16,12 +16,12 @@ function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     setMobile(navigator.userAgentData?.mobile)
-    setWidth(window.outerWidth)
-    setHeight(window.outerHeight)
+    // setWidth(window.outerWidth)
+    // setHeight(window.outerHeight)
     setFullscreen(document.fullscreen)
     window.addEventListener('resize', () => {
-      setWidth(window.outerWidth)
-      setHeight(window.outerHeight)
+      // setWidth(window.outerWidth)
+      // setHeight(window.outerHeight)
     })
     document.addEventListener('fullscreenchange', () => setFullscreen(document.fullscreen))
   }, [])

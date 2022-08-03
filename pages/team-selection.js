@@ -12,25 +12,30 @@ export default function TeamSelection() {
 
     useEffect(() => {
         if (players.length) return
-        mode != 'online' ? setPlayers(offlinePlayers) : socket?.emit("get-players", onlinePlayers => setPlayers(onlinePlayers))
+        mode !== 'online' ? setPlayers(offlinePlayers) : socket?.emit("get-players", (onlinePlayers, team1, team2) => {
+            setPlayers(onlinePlayers)
+            setTeam1(team1)
+            setTeam2(team2)
+            setCurrentTeam(team1.length > team2.length ? 2 : 1)
+        })
     }, [mode, socket])
 
     useEffect(() => {
         if (teams.length != 10) return
         if (team1[0].leader?.type == 'start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
         if (team2[0].leader?.type == 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
-        let initialHealth = [];
-        teams.map(player => initialHealth.push(player.health))
-        if (mode != 'online') {
+        if (mode !== 'online') {
+            let initialHealth = [];
+            teams.forEach(player => { initialHealth.push(player.health) })
             sessionStorage.setItem('team1', JSON.stringify(team1))
             sessionStorage.setItem('team2', JSON.stringify(team2))
             sessionStorage.setItem('initial-health', JSON.stringify(initialHealth))
-        }
+        } else socket.emit("initiate-play")
         router.push('/play')
     }, [teams])
 
     useEffect(() => {
-        if (mode != 'computer' || currentTeam != 2) return
+        if (mode !== 'computer' || currentTeam !== 2) return
         let player;
         do { player = randomElement(players) } while (teams.length != 10 && teams.includes(player))
         selectPlayer(player)
