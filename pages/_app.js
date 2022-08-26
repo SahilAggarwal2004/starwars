@@ -3,6 +3,7 @@ import '../styles/globals.css'
 import Head from 'next/head'
 import ContextProvider from '../contexts/ContextProvider'
 import { useEffect, useRef, useState } from 'react'
+import { Workbox } from 'workbox-window'
 
 function MyApp({ Component, pageProps }) {
   const [isMobile, setMobile] = useState()
@@ -12,6 +13,12 @@ function MyApp({ Component, pageProps }) {
   const fullscreenElement = useRef()
 
   useEffect(() => {
+    // && process.env.NODE_ENV === "production"
+    if ("serviceWorker" in navigator) {
+      const wb = new Workbox("/sw.js", { scope: "/" });
+      wb.addEventListener('installed', event => { if (event.isUpdate) window.location.reload() })
+      wb.register();
+    }
     setMobile(navigator.userAgentData?.mobile)
     setWidth(window.outerWidth)
     setHeight(window.outerHeight)

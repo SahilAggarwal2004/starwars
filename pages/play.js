@@ -76,7 +76,7 @@ export default function Offline() {
             <span className='detail-heading font-semibold text-center'>{mode == 'computer' && index ? 'Computer' : `Team ${index + 1}`}</span>
             {team.map((player, i) => <div className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${(i == turn - index * 5) && 'outline border-2 outline-green-500'} hover:border-2 hover:outline hover:outline-black border-transparent rounded-sm ${player.stun && 'opacity-50'} ${player.health <= 0 && 'invisible'}`} key={i} onMouseOver={() => setHoverPlayer(player)} onMouseOut={() => setHoverPlayer()} onClick={event => handleClick(event, index, i)} onContextMenu={event => handleClick(event, index, i)}>
                 <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5 max-w-full' style={{ width: `${turnmeter[i + index * 5] / maximum(turnmeter) * 6}vw` }} />
-                <Image src={`/${player.name}.jpg`} alt={player.name} width='120' height='120' className='rounded-sm' />
+                <Image src={`/${player.name}.jpg`} alt={player.name} width='120' height='120' className='rounded-sm' quality={5} />
             </div>)}
         </div>)}
         {hoverPlayer && !isAttacking && <div className='detail-container center w-[calc(100vw-15rem)]'>
