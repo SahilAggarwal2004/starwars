@@ -7,8 +7,7 @@ const nextConfig = {}
 module.exports = withWorkbox({
     workbox: {
         dest: 'public',
-        swSrc: './sw.js',
-        force: true
+        swSrc: './sw.js'
     },
     ...nextConfig
 })

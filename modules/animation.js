@@ -7,14 +7,13 @@ export async function animateBullet(player, enemy, turnTeam, setBullet, setHover
     bulletRef.left = `${(playerLeft + playerRight) / 2}px`;
     bulletRef.top = `${(playerTop + playerBottom) / 2}px`;
     setTimeout(() => {
-        setBullet(bullet => ({ ...bullet, [enemy]: true }))
         bulletRef.left = `${(enemyLeft + enemyRight) / 2}px`;
         bulletRef.top = `${(enemyTop + enemyBottom) / 2}px`;
         setTimeout(() => {
             setHoverPlayer()
             setBullet(bullet => ({ ...bullet, [enemy]: false }))
         }, 1900)
-    }, 0);
+    }, 50);
 }
 
 export async function multiAttack(player, enemyTeam, turnTeam, setBullet, setHoverPlayer, isCountering) {
@@ -54,7 +53,6 @@ export async function multiAttack(player, enemyTeam, turnTeam, setBullet, setHov
         bulletRef4.top = `calc(${playerTop}px + 3vw)`;
     }
     setTimeout(() => {
-        setBullet({ 0: enemyTeam[0].health > 0, 1: enemyTeam[1].health > 0, 2: enemyTeam[2].health > 0, 3: enemyTeam[3].health > 0, 4: enemyTeam[4].health > 0 })
         if (enemyTeam[0].health > 0) {
             bulletRef.left = `calc(${enemyLeft}px + 3vw)`;
             bulletRef.top = `calc(${enemyTop}px + 3vw)`;
@@ -79,5 +77,5 @@ export async function multiAttack(player, enemyTeam, turnTeam, setBullet, setHov
             setHoverPlayer()
             setBullet({ 0: false, 1: false, 2: false, 3: false, 4: false })
         }, 1900)
-    }, 0);
+    }, 50);
 }

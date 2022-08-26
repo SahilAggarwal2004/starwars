@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Image from "next/image"
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useGameContext } from "../contexts/ContextProvider"
 import { maximum, randomElement } from "../modules/math"
 
 export default function Offline() {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, mode } = useGameContext()
+    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, mode: actualMode } = useGameContext()
+    const [mode, setMode] = useState()
 
     function checkResult() {
         let gameover = false, sum1 = 0, sum2 = 0, winner;
@@ -37,6 +38,7 @@ export default function Offline() {
     useEffect(() => {
         setTeam1(JSON.parse(sessionStorage.getItem('team1')) || [])
         setTeam2(JSON.parse(sessionStorage.getItem('team2')) || [])
+        setMode(actualMode)
         setInitialHealth(JSON.parse(sessionStorage.getItem('initial-health')) || [])
         setTurnmeter(JSON.parse(sessionStorage.getItem('turnmeter')) || [])
         setHealthSteal(JSON.parse(sessionStorage.getItem('health-steal')) || [0, 0])
@@ -46,7 +48,9 @@ export default function Offline() {
             setTurnTeam(Math.ceil((tempturn + 1) / 5))
         }
         setHoverPlayer()
-        try { updatePositions() } catch { window.addEventListener('resize', updatePositions) }
+        setTimeout(() => {
+            try { updatePositions() } catch { window.addEventListener('resize', updatePositions) }
+        }, 1);
     }, [])
 
     useEffect(() => {
@@ -90,6 +94,6 @@ export default function Offline() {
                 </div>)}
             </div>
         </div>}
-        {indexes.map(number => <span key={number} id={`bullet${number}`} className={`fixed block bg-red-500 top-[var(--y)] left-[var(--x)] -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 ${bullet[number] ? 'transition-all ease-linear duration-[1900ms]' : 'invisible'}`} />)}
+        {indexes.map(number => bullet[number] && <span key={number} id={`bullet${number}`} className='fixed block bg-red-500 top-[var(--y)] left-[var(--x)] -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 transition-all ease-linear duration-[1900ms]' />)}
     </>
 }

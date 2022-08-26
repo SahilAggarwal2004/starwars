@@ -248,7 +248,13 @@ const ContextProvider = props => {
         }))
         enemy = returnUnique.enemy || enemy
 
-        ability == 'special' && multiAttackers.includes(allyTeam[player].name) ? multiAttack(player, enemyTeam, turnTeam, setBullet, setHoverPlayer, isCountering) : animateBullet(player, enemy, turnTeam, setBullet, setHoverPlayer, isCountering)
+        if (ability == 'special' && multiAttackers.includes(allyTeam[player].name)) {
+            setBullet({ 0: enemyTeam[0].health > 0, 1: enemyTeam[1].health > 0, 2: enemyTeam[2].health > 0, 3: enemyTeam[3].health > 0, 4: enemyTeam[4].health > 0 })
+            setTimeout(() => multiAttack(player, enemyTeam, turnTeam, setBullet, setHoverPlayer, isCountering), 0);
+        } else {
+            setBullet(bullet => ({ ...bullet, [enemy]: true }))
+            setTimeout(() => animateBullet(player, enemy, turnTeam, setBullet, setHoverPlayer, isCountering), 0);
+        }
         setTimeout(() => {
             enemyTeam[enemy].health -= allyTeam[player][ability].damage * enemyTeam[enemy].multiplier
             if (allyTeam[player].health < initialHealth[turn]) allyTeam[player].health += allyTeam[player][ability].damage * healthSteal[turnTeam - 1]
