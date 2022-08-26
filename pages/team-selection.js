@@ -1,36 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import Image from 'next/image'
 import { randomElement } from '../modules/math';
 import { useGameContext } from '../contexts/ContextProvider';
-import { useSocket } from '../contexts/SocketProvider';
 
 export default function TeamSelection() {
-    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players: offlinePlayers, abilities, mode, currentTeam, setCurrentTeam } = useGameContext();
-    const { socket } = useSocket();
-    const [players, setPlayers] = useState([]);
-
-    useEffect(() => {
-        if (players.length) return
-        mode !== 'online' ? setPlayers(offlinePlayers) : socket?.emit("get-players", (onlinePlayers, team1, team2) => {
-            setPlayers(onlinePlayers)
-            setTeam1(team1)
-            setTeam2(team2)
-            setCurrentTeam(team1.length > team2.length ? 2 : 1)
-        })
-    }, [mode, socket])
+    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players, abilities, mode, currentTeam, setCurrentTeam } = useGameContext();
 
     useEffect(() => {
         if (teams.length != 10) return
         if (team1[0].leader?.type == 'start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
         if (team2[0].leader?.type == 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
-        if (mode !== 'online') {
-            let initialHealth = [];
-            teams.forEach(player => { initialHealth.push(player.health) })
-            sessionStorage.setItem('team1', JSON.stringify(team1))
-            sessionStorage.setItem('team2', JSON.stringify(team2))
-            sessionStorage.setItem('initial-health', JSON.stringify(initialHealth))
-        } else socket.emit("initiate-play")
+        let initialHealth = [];
+        teams.forEach(player => { initialHealth.push(player.health) })
+        sessionStorage.setItem('team1', JSON.stringify(team1))
+        sessionStorage.setItem('team2', JSON.stringify(team2))
+        sessionStorage.setItem('initial-health', JSON.stringify(initialHealth))
         router.push('/play')
     }, [teams])
 
@@ -51,10 +36,7 @@ export default function TeamSelection() {
         }
     }
 
-    function selectPlayer(player) {
-        if (mode == 'online') socket.emit('select-player', { team1, team2, currentTeam, player }, () => addPlayer(player))
-        else if (!team1.includes(player) && !team2.includes(player)) addPlayer(player)
-    }
+    function selectPlayer(player) { if (!team1.includes(player) && !team2.includes(player)) addPlayer(player) }
 
     return <>
         <span className='main-heading x-center top-32'>Select {(currentTeam == 1 && team1.length) || (currentTeam == 2 && team2.length) ? 'player' : 'leader'} for Team {currentTeam}</span>

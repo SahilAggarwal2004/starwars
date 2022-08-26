@@ -2,12 +2,10 @@
 import Image from "next/image"
 import React, { useEffect } from "react"
 import { useGameContext } from "../contexts/ContextProvider"
-import { useSocket } from "../contexts/SocketProvider"
 import { maximum, randomElement } from "../modules/math"
 
 export default function Offline() {
     const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, mode } = useGameContext()
-    const { socket } = useSocket()
 
     function checkResult() {
         let gameover = false, sum1 = 0, sum2 = 0, winner;
@@ -37,39 +35,29 @@ export default function Offline() {
     }
 
     useEffect(() => {
-        if (mode !== 'online') {
-            setTeam1(JSON.parse(sessionStorage.getItem('team1')) || [])
-            setTeam2(JSON.parse(sessionStorage.getItem('team2')) || [])
-            setInitialHealth(JSON.parse(sessionStorage.getItem('initial-health')) || [])
-            setTurnmeter(JSON.parse(sessionStorage.getItem('turnmeter')) || [])
-            setHealthSteal(JSON.parse(sessionStorage.getItem('health-steal')) || [0, 0])
-            if (sessionStorage.getItem('turn')) {
-                const tempturn = +sessionStorage.getItem('turn')
-                setTurn(tempturn)
-                setTurnTeam(Math.ceil((tempturn + 1) / 5))
-            }
-        } else {
-            socket?.emit("initiate-play", (team1, team2) => {
-                setTeam1(team1)
-                setTeam2(team2)
-
-            })
+        setTeam1(JSON.parse(sessionStorage.getItem('team1')) || [])
+        setTeam2(JSON.parse(sessionStorage.getItem('team2')) || [])
+        setInitialHealth(JSON.parse(sessionStorage.getItem('initial-health')) || [])
+        setTurnmeter(JSON.parse(sessionStorage.getItem('turnmeter')) || [])
+        setHealthSteal(JSON.parse(sessionStorage.getItem('health-steal')) || [0, 0])
+        if (sessionStorage.getItem('turn')) {
+            const tempturn = +sessionStorage.getItem('turn')
+            setTurn(tempturn)
+            setTurnTeam(Math.ceil((tempturn + 1) / 5))
         }
         setHoverPlayer()
         try { updatePositions() } catch { window.addEventListener('resize', updatePositions) }
-    }, [socket])
+    }, [])
 
     useEffect(() => {
-        if (mode !== 'online') {
-            let teamone = JSON.parse(sessionStorage.getItem('team1'))
-            let teamtwo = JSON.parse(sessionStorage.getItem('team2'))
-            if (!teamone?.length || !teamtwo.length) router.push('/')
-            if (turnmeter.length != teams.length) newTurn()
-            const { gameover, winner } = checkResult()
-            if (gameover) {
-                sessionStorage.setItem('winner', winner)
-                router.push('/result')
-            }
+        let teamone = JSON.parse(sessionStorage.getItem('team1'))
+        let teamtwo = JSON.parse(sessionStorage.getItem('team2'))
+        if (!teamone?.length || !teamtwo.length) router.push('/')
+        if (turnmeter.length != teams.length) newTurn()
+        const { gameover, winner } = checkResult()
+        if (gameover) {
+            sessionStorage.setItem('winner', winner)
+            router.push('/result')
         }
     }, [teams])
 

@@ -2,9 +2,6 @@
 import '../styles/globals.css'
 import Head from 'next/head'
 import ContextProvider from '../contexts/ContextProvider'
-import SocketProvider from '../contexts/SocketProvider'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css';
 import { useEffect, useRef, useState } from 'react'
 
 function MyApp({ Component, pageProps }) {
@@ -16,12 +13,12 @@ function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     setMobile(navigator.userAgentData?.mobile)
-    // setWidth(window.outerWidth)
-    // setHeight(window.outerHeight)
-    setFullscreen(document.fullscreen)
+    setWidth(window.outerWidth)
+    setHeight(window.outerHeight)
+    setFullscreen(document.fullscreenEnabled)
     window.addEventListener('resize', () => {
-      // setWidth(window.outerWidth)
-      // setHeight(window.outerHeight)
+      setWidth(window.outerWidth)
+      setHeight(window.outerHeight)
     })
     document.addEventListener('fullscreenchange', () => setFullscreen(document.fullscreen))
   }, [])
@@ -29,23 +26,20 @@ function MyApp({ Component, pageProps }) {
   function enterFullscreen() { fullscreenElement.current?.requestFullscreen?.() }
 
   return <ContextProvider>
-    <SocketProvider>
-      <Head>
-        <title>Star Wars</title>
-        <meta name="description" content="" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <div ref={fullscreenElement} className='font-mono'>
-        <ToastContainer pauseOnFocusLoss={false} />
-        {height > width ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div> :
-          !isMobile || isFullscreen ? <Component {...pageProps} /> :
-            <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
-              <div>Please enter full screen mode</div>
-              <button onClick={enterFullscreen}>Click Here</button>
-            </div>
-        }
-      </div>
-    </SocketProvider>
+    <Head>
+      <title>Star Wars</title>
+      <meta name="description" content="" />
+      <link rel="icon" href="/favicon.ico" />
+    </Head>
+    <div ref={fullscreenElement} className='font-mono'>
+      {height > width ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div> :
+        !isMobile || isFullscreen ? <Component {...pageProps} /> :
+          <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
+            <div>Please enter full screen mode</div>
+            <button onClick={enterFullscreen}>Click Here</button>
+          </div>
+      }
+    </div>
   </ContextProvider>
 }
 

@@ -6,9 +6,8 @@ export default function Home() {
   const { router, setMode } = useGameContext()
 
   function handlePlay(event) {
-    const mode = event.target.getAttribute('mode')
-    mode != 'online' ? router.push('/team-selection') : router.push('/room')
-    setMode(mode)
+    setMode(event.target.getAttribute('mode'))
+    router.push('/team-selection')
   }
 
   useEffect(() => { sessionStorage.removeItem('mode') }, [])
@@ -18,7 +17,6 @@ export default function Home() {
     <div className='fixed bottom-8 x-center space-y-3 w-full text-center px-5'>
       <button mode='computer' className='main-button' onClick={handlePlay}>Play vs Computer</button>
       <button mode='offline' className='main-button' onClick={handlePlay}>Play vs Player</button>
-      <button mode='online' className='main-button' onClick={handlePlay}>Play Online</button>
     </div>
   </>
 }
