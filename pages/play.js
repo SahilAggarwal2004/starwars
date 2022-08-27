@@ -1,12 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Image from "next/image"
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
 import { useGameContext } from "../contexts/ContextProvider"
 import { maximum, randomElement } from "../modules/math"
 
-export default function Offline() {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, mode: actualMode } = useGameContext()
-    const [mode, setMode] = useState()
+export default function Offline({ mode }) {
+    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, modes } = useGameContext()
 
     function checkResult() {
         let gameover = false, sum1 = 0, sum2 = 0, winner;
@@ -36,9 +35,9 @@ export default function Offline() {
     }
 
     useEffect(() => {
+        if (!modes.includes(router.query.mode)) router.push('/')
         setTeam1(JSON.parse(sessionStorage.getItem('team1')) || [])
         setTeam2(JSON.parse(sessionStorage.getItem('team2')) || [])
-        setMode(actualMode)
         setInitialHealth(JSON.parse(sessionStorage.getItem('initial-health')) || [])
         setTurnmeter(JSON.parse(sessionStorage.getItem('turnmeter')) || [])
         setHealthSteal(JSON.parse(sessionStorage.getItem('health-steal')) || [0, 0])
@@ -67,7 +66,7 @@ export default function Offline() {
 
     // Computer mode
     useEffect(() => {
-        if (mode == 'computer' && turnTeam == 2) {
+        if (mode === 'computer' && turnTeam === 2) {
             let enemies = []
             team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
             const enemy = randomElement(enemies)
@@ -77,7 +76,7 @@ export default function Offline() {
 
     return <>
         {[team1, team2].map((team, index) => <div id={`team${index + 1}`} key={index} className={`fixed top-0 ${index ? 'right-5' : 'left-5'} space-y-4 w-max flex flex-col items-center justify-center h-full`}>
-            <span className='detail-heading font-semibold text-center'>{mode == 'computer' && index ? 'Computer' : `Team ${index + 1}`}</span>
+            <span className='detail-heading font-semibold text-center'>{mode === 'computer' && index ? 'Computer' : `Team ${index + 1}`}</span>
             {team.map((player, i) => <div className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${(i == turn - index * 5) && 'outline border-2 outline-green-500'} hover:border-2 hover:outline hover:outline-black border-transparent rounded-sm ${player.stun && 'opacity-50'} ${player.health <= 0 && 'invisible'}`} key={i} onMouseOver={() => setHoverPlayer(player)} onMouseOut={() => setHoverPlayer()} onClick={event => handleClick(event, index, i)} onContextMenu={event => handleClick(event, index, i)}>
                 <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5 max-w-full' style={{ width: `${turnmeter[i + index * 5] / maximum(turnmeter) * 6}vw` }} />
                 <Image src={`/images/${player.name}.jpg`} alt={player.name} width='120' height='120' className='rounded-sm' quality={5} />
@@ -97,3 +96,5 @@ export default function Offline() {
         {indexes.map(number => bullet[number] && <span key={number} id={`bullet${number}`} className='fixed block bg-red-500 -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 transition-all ease-linear duration-[1900ms]' />)}
     </>
 }
+
+export const getServerSideProps = context => { return { props: { mode: context.query.mode } } }

@@ -4,15 +4,12 @@ import players from '../players';
 import { maximum, random, randomElement } from '../modules/math';
 import { stun, assist, block, revive, verify } from '../modules/functions';
 import { animateBullet, multiAttack } from '../modules/animation'
-import useStorage from '../hooks/useStorage';
 
 const Context = createContext();
 export const useGameContext = () => useContext(Context)
 
 const ContextProvider = props => {
     const router = useRouter();
-    const preserveGame = ['/play', '/how-to-play']
-    const [mode, setMode] = useStorage('mode', '', { local: false, session: true })
     const [team1, setTeam1] = useState([])
     const [team2, setTeam2] = useState([])
     const teams = team1.concat(team2)
@@ -25,15 +22,16 @@ const ContextProvider = props => {
     const [isAttacking, setAttacking] = useState(false)
     const [bullet, setBullet] = useState({ 0: false, 1: false, 2: false, 3: false, 4: false })
     const [healthSteal, setHealthSteal] = useState([0, 0])
+    const preserveGame = ['/play', '/how-to-play']
+    const modes = ['computer', 'player']
     const details = ['name', 'health', 'type', 'speed'];
     const categories = ['basic', 'special', 'unique', 'leader'];
     const indexes = [0, 1, 2, 3, 4]
     const multiAttackers = ['Mother Talzin']
 
     useEffect(() => {
-        if (!mode) router.push('/')
         if (!preserveGame.includes(router.pathname)) resetGame()
-        if (router.pathname != '/result') sessionStorage.removeItem('winner')
+        if (router.pathname !== '/result') sessionStorage.removeItem('winner')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [router.pathname])
 
@@ -280,7 +278,7 @@ const ContextProvider = props => {
     }
 
     return (
-        <Context.Provider value={{ router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes, mode, setMode, currentTeam, setCurrentTeam }}>
+        <Context.Provider value={{ router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes, currentTeam, setCurrentTeam, modes }}>
             {props.children}
         </Context.Provider>
     )

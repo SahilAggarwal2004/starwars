@@ -4,8 +4,10 @@ import Image from 'next/image'
 import { randomElement } from '../modules/math';
 import { useGameContext } from '../contexts/ContextProvider';
 
-export default function TeamSelection() {
-    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players, abilities, mode, currentTeam, setCurrentTeam } = useGameContext();
+export default function TeamSelection({ mode }) {
+    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players, abilities, currentTeam, setCurrentTeam, modes } = useGameContext();
+
+    useEffect(() => { if (!modes.includes(mode)) router.push('/') }, [])
 
     useEffect(() => {
         if (teams.length != 10) return
@@ -16,11 +18,11 @@ export default function TeamSelection() {
         sessionStorage.setItem('team1', JSON.stringify(team1))
         sessionStorage.setItem('team2', JSON.stringify(team2))
         sessionStorage.setItem('initial-health', JSON.stringify(initialHealth))
-        router.push('/play')
+        router.push(`/play?mode=${mode}`)
     }, [teams])
 
     useEffect(() => {
-        if (mode !== 'computer' || currentTeam !== 2) return
+        if (mode === 'player' || currentTeam !== 2) return
         let player;
         do { player = randomElement(players) } while (teams.length != 10 && teams.includes(player))
         selectPlayer(player)
@@ -44,7 +46,7 @@ export default function TeamSelection() {
             {players.map(player => <div className='relative w-[6vw] aspect-square flex justify-center hover:border-2 hover:outline border-transparent rounded-sm' key={player.name} onMouseOver={() => setHoverPlayer(player)} onMouseOut={() => setHoverPlayer()} onClick={() => selectPlayer(player)} onContextMenu={event => event.preventDefault()}>
                 <Image src={`/images/${player.name}.jpg`} alt={player.name} width='120' height='120' className='rounded-sm' quality={5} />
                 {JSON.stringify(team1).includes(player.name) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-blue-500 z-10'>1</div>}
-                {JSON.stringify(team2).includes(player.name) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10'>{mode == 'computer' ? 'C' : 2}</div>}
+                {JSON.stringify(team2).includes(player.name) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10'>{mode === 'computer' ? 'C' : 2}</div>}
             </div>)}
         </div>
         {hoverPlayer && <div className='detail-container top-5 x-center w-[calc(100vw-4rem)]'>
@@ -60,3 +62,5 @@ export default function TeamSelection() {
         </div>}
     </>
 }
+
+export const getServerSideProps = context => { return { props: { mode: context.query.mode } } }
