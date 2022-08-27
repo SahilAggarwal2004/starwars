@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }) {
 		setMobile(navigator.userAgentData?.mobile)
 		setWidth(window.outerWidth)
 		setHeight(window.outerHeight)
-		setFullscreen(document.fullscreenEnabled)
+		setFullscreen(document.fullscreen)
 		window.addEventListener('resize', () => {
 			setWidth(window.outerWidth)
 			setHeight(window.outerHeight)
