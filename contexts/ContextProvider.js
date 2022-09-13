@@ -18,6 +18,7 @@ const ContextProvider = props => {
     const [turnmeter, setTurnmeter] = useState([])
     const [hoverPlayer, setHoverPlayer] = useState()
     const [turn, setTurn] = useState()
+    const [enemy, setEnemy] = useState(0)
     const [turnTeam, setTurnTeam] = useState()
     const [isAttacking, setAttacking] = useState(false)
     const [bullet, setBullet] = useState({ 0: false, 1: false, 2: false, 3: false, 4: false })
@@ -60,7 +61,7 @@ const ContextProvider = props => {
             special: ({ player, enemy, allyTeam, enemyTeam, tempmeter }) => {
                 let isAssisting = true
                 allyTeam.forEach((ally, index) => {
-                    if (!ally.stun) return
+                    if (!ally.stun || ally.health <= 0) return
                     allyTeam[index].stun = false
                     isAssisting = false
                 });
@@ -135,10 +136,9 @@ const ContextProvider = props => {
         },
         'Count Dooku': {
             basic: ({ allyTeam, isCountering, turnTeam }) => {
+                const chance = random(1, 4)
+                if (chance !== 2) return
                 let tempTurn = turn;
-                // const chance = random(1, 4)
-                const chance = 2
-                if (chance != 2) return
                 if (isCountering) {
                     const { index } = verify('member', 'Count Dooku', allyTeam)
                     tempTurn = index - 5 + (turnTeam == 1 ? 2 : 1) * 5
@@ -240,7 +240,7 @@ const ContextProvider = props => {
 
         // Before attack unique abilities:
         !isAssisting && !isCountering && teams.forEach(team => team.forEach(item => {
-            if (item.unique?.type != 'before') return
+            if (item.unique?.type !== 'before') return
             const data = abilities[item.name].unique?.({ enemy, enemyTeam, isAssisting })
             if (data) returnUnique = { ...returnUnique, ...data }
         }))
@@ -278,7 +278,7 @@ const ContextProvider = props => {
     }
 
     return (
-        <Context.Provider value={{ router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes, currentTeam, setCurrentTeam, modes }}>
+        <Context.Provider value={{ router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes, currentTeam, setCurrentTeam, modes, enemy, setEnemy }}>
             {props.children}
         </Context.Provider>
     )

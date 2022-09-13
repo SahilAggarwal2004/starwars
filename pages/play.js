@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Image from "next/image"
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useGameContext } from "../contexts/ContextProvider"
 import { maximum, randomElement } from "../modules/math"
 
-export default function Offline({ mode }) {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, modes } = useGameContext()
+export default function Play({ mode }) {
+    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, modes, enemy, setEnemy } = useGameContext()
+    const [hoverAbility, setHoverAbility] = useState()
 
     function checkResult() {
         let gameover = false, sum1 = 0, sum2 = 0, winner;
@@ -16,11 +17,17 @@ export default function Offline({ mode }) {
         return { gameover, winner }
     }
 
-    function handleClick(event, index, i) {
-        event.preventDefault()
-        let ability;
-        if (event.type == 'contextmenu') ability = 'special'
-        attack(turn - 5 + index * 5, i, ability)
+    function handleAttack(ability, index) {
+        if (enemy === undefined) return
+        if (ability === 'basic' || ability === 'special') {
+            setHoverPlayer()
+            setHoverAbility()
+            attack(index, enemy, ability)
+        }
+    }
+
+    function selectEnemy(enemy, index) {
+        if (index !== turnTeam - 1) setEnemy(enemy)
     }
 
     function updatePositions() {
@@ -60,39 +67,72 @@ export default function Offline({ mode }) {
         const { gameover, winner } = checkResult()
         if (gameover) {
             sessionStorage.setItem('winner', winner)
-            router.push('/result')
+            router.push(`/result?mode=${mode}`)
         }
     }, [teams])
 
     // Computer mode
     useEffect(() => {
-        if (mode === 'computer' && turnTeam === 2) {
-            let enemies = []
-            team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
-            const enemy = randomElement(enemies)
-            setTimeout(() => attack(turn - 5, enemy, 'special'), 500);
+        if (turnTeam === 1) {
+            if (team2.length && team2[enemy].health < 0) {
+                let enemies = [];
+                team2.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
+                setEnemy(randomElement(enemies))
+            }
+        } else {
+            if (mode === 'computer') {
+                let enemies = []
+                team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
+                const enemy = randomElement(enemies)
+                setTimeout(() => attack(turn - 5, enemy, 'special'), 500);
+            } else if (team1.length && team1[enemy].health < 0) {
+                let enemies = [];
+                team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
+                setEnemy(randomElement(enemies))
+            }
         }
     }, [turn])
 
     return <>
         {[team1, team2].map((team, index) => <div id={`team${index + 1}`} key={index} className={`fixed top-0 ${index ? 'right-5' : 'left-5'} space-y-4 w-max flex flex-col items-center justify-center h-full`}>
             <span className='detail-heading font-semibold text-center'>{mode === 'computer' && index ? 'Computer' : `Team ${index + 1}`}</span>
-            {team.map((player, i) => <div className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${(i == turn - index * 5) && 'outline border-2 outline-green-500'} hover:border-2 hover:outline hover:outline-black border-transparent rounded-sm ${player.stun && 'opacity-50'} ${player.health <= 0 && 'invisible'}`} key={i} onMouseOver={() => setHoverPlayer(player)} onMouseOut={() => setHoverPlayer()} onClick={event => handleClick(event, index, i)} onContextMenu={event => handleClick(event, index, i)}>
-                <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5 max-w-full' style={{ width: `${turnmeter[i + index * 5] / maximum(turnmeter) * 6}vw` }} />
-                <Image src={`/images/${player.name}.jpg`} alt={player.name} width='120' height='120' className='rounded-sm' quality={5} />
-            </div>)}
-        </div>)}
-        {hoverPlayer && !isAttacking && <div className='detail-container center w-[calc(100vw-15rem)]'>
-            <div className='flex flex-col min-w-max'>
-                {details.map(detail => <span key={detail} className='detail-heading capitalize'>{detail}: {detail == 'health' ? Math.ceil(hoverPlayer[detail]) : hoverPlayer[detail]}</span>)}
+            {team.map((player, i) => {
+                const playerIndex = i + index * 5
+                const selectedPlayer = turn === playerIndex
+                const selectedEnemy = enemy === i
+                return <div key={i} className={`${player.health <= 0 && 'invisible'}`}>
+                    <div className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${selectedPlayer ? 'outline border-2 outline-green-500' : selectedEnemy && turnTeam !== index + 1 && 'outline border-2 outline-red-500'} hover:border-2 hover:outline hover:outline-black border-transparent rounded-sm ${player.stun && 'opacity-50'}`} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => selectEnemy(i, index)} onContextMenu={event => event.preventDefault()}>
+                        <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5 max-w-full' style={{ width: `${turnmeter[playerIndex] / maximum(turnmeter) * 6}vw` }} />
+                        <Image src={`/images/${player.name}.jpg`} alt={player.name} width='120' height='120' className='rounded-sm' quality={5} />
+                    </div>
+                    {!(mode === 'computer' && turnTeam === 2) && selectedPlayer && !isAttacking && <div className="fixed flex x-center bottom-3 space-x-2">
+                        {['basic', 'special', 'unique'].map(ability => teams[turn][ability] && <div key={ability} className={`ability ${teams[turn][ability].cooldown && 'opacity-50'}`} onPointerEnter={() => setHoverAbility(ability)} onPointerLeave={() => setHoverAbility()} onClick={() => !teams[turn][ability].cooldown && handleAttack(ability, i)}>{ability[0]}</div>)}
+                    </div>}
+                </div>
+            })}
+        </div>)
+        }
+        {
+            hoverPlayer && !isAttacking && <div className='detail-container center w-[calc(100vw-15rem)]'>
+                <div className='flex flex-col min-w-max'>
+                    {details.map(detail => <span key={detail} className='detail-heading capitalize'>{detail}: {detail == 'health' ? Math.ceil(hoverPlayer[detail]) : hoverPlayer[detail]}</span>)}
+                </div>
+                <div>
+                    {categories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
+                        <span className="capitalize">{ability}:</span>
+                        {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
+                    </div>)}
+                </div>
             </div>
-            <div>
-                {categories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
-                    <span className="capitalize">{ability}:</span>
-                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
-                </div>)}
+        }
+        {
+            hoverAbility && !isAttacking && <div className='detail-container center w-[calc(100vw-15rem)]'>
+                <span className="capitalize">{hoverAbility}:</span>
+                <div>
+                    {Object.keys(teams[turn][hoverAbility]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {teams[turn][hoverAbility][feature]}</div>)}
+                </div>
             </div>
-        </div>}
+        }
         {indexes.map(number => bullet[number] && <span key={number} id={`bullet${number}`} className='fixed block bg-red-500 -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 transition-all ease-linear duration-[1900ms]' />)}
     </>
 }

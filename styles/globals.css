@@ -10,7 +10,7 @@
 }
 
 .detail-container {
-    @apply bg-black text-white fixed flex space-x-8 items-center justify-center px-10 pt-3 pb-0 rounded z-10 h-[calc(100vh-6vw-4rem)]
+    @apply bg-black text-white fixed flex space-x-8 items-center justify-center px-10 pt-3 pb-0 rounded z-10 min-h-[60vh] max-h-[calc(100vh-6vw-4rem)]
 }
 
 .detail-heading {
@@ -27,6 +27,10 @@
 
 .main-button {
     @apply rounded bg-custom-gradient from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 px-3 py-1 w-fit text-white text-sm sm:text-base md:text-xl font-semibold mx-2.5
+}
+
+.ability {
+    @apply bg-black text-white px-3 py-1 cursor-pointer capitalize select-none
 }
 
 @tailwind utilities;
