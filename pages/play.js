@@ -126,10 +126,10 @@ export default function Play({ mode }) {
             </div>
         }
         {
-            hoverAbility && !isAttacking && <div className='bg-black text-white fixed flex flex-col space-y-5 items-center justify-center px-10 rounded z-10 min-h-[50vh] detail-heading center max-w-[calc(100vw-15rem)]'>
+            hoverAbility && !isAttacking && <div className='bg-black text-white fixed flex flex-col space-x-0 space-y-5 items-center justify-center p-10 rounded z-10 detail-heading center max-w-[calc(100vw-15rem)]'>
                 <span className="capitalize">{hoverAbility}:</span>
                 <div>
-                    {Object.keys(teams[turn][hoverAbility]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {teams[turn][hoverAbility][feature]}</div>)}
+                    {Object.keys(teams[turn][hoverAbility]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='detail-text'><span className="capitalize">{feature}</span>: {teams[turn][hoverAbility][feature]}</div>)}
                 </div>
             </div>
         }

@@ -6,8 +6,8 @@ export default function Home() {
   const { router, enterFullscreen } = useGameContext()
 
   const handlePlay = event => {
-    enterFullscreen()
     router.push(`/team-selection?mode=${event.target.getAttribute('mode')}`)
+    enterFullscreen()
   }
 
   useEffect(() => { sessionStorage.removeItem('mode') }, [])
