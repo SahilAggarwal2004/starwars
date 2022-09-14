@@ -79,7 +79,7 @@ export default function Play({ mode }) {
                 team2.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
                 setEnemy(randomElement(enemies))
             }
-        } else {
+        } else if (turnTeam === 2) {
             if (mode === 'computer') {
                 let enemies = []
                 team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
