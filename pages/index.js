@@ -3,9 +3,12 @@ import React, { useEffect } from 'react'
 import { useGameContext } from '../contexts/ContextProvider'
 
 export default function Home() {
-  const { router } = useGameContext()
-  
-  const handlePlay = event => router.push(`/team-selection?mode=${event.target.getAttribute('mode')}`)
+  const { router, enterFullscreen } = useGameContext()
+
+  const handlePlay = event => {
+    enterFullscreen()
+    router.push(`/team-selection?mode=${event.target.getAttribute('mode')}`)
+  }
 
   useEffect(() => { sessionStorage.removeItem('mode') }, [])
 

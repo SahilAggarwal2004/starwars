@@ -4,8 +4,10 @@ import Head from 'next/head'
 import ContextProvider from '../contexts/ContextProvider'
 import { useEffect, useRef, useState } from 'react'
 import { Workbox } from 'workbox-window'
+import { useRouter } from 'next/router'
 
 function MyApp({ Component, pageProps }) {
+	const router = useRouter();
 	const [isMobile, setMobile] = useState()
 	const [isFullscreen, setFullscreen] = useState()
 	const [orientation, setOrientation] = useState()
@@ -28,7 +30,7 @@ function MyApp({ Component, pageProps }) {
 		screen.orientation.lock('landscape').then(() => setOrientation(true)).catch(() => setOrientation(false))
 	}
 
-	return <ContextProvider>
+	return <ContextProvider router={router} enterFullscreen={enterFullscreen}>
 		<Head>
 			<meta charSet="utf-8" />
 			<title>Star Wars</title>
@@ -88,7 +90,7 @@ function MyApp({ Component, pageProps }) {
 			<link rel="apple-touch-startup-image" href="icons/apple-splash-1136-640.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
 		</Head>
 		<div ref={fullscreenElement} className='font-mono'>
-			{!isMobile ? <Component {...pageProps} /> : !isFullscreen ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
+			{!isMobile || router.pathname === '/' ? <Component {...pageProps} /> : !isFullscreen ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
 				<div>Please enter full screen mode</div>
 				<button onClick={enterFullscreen}>Click Here</button>
 			</div> : !orientation ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div> : <Component {...pageProps} />}

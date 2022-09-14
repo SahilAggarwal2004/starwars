@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, { createContext, useState, useEffect, useContext } from 'react'
 import players from '../players';
 import { maximum, random, randomElement } from '../modules/math';
@@ -9,7 +8,7 @@ const Context = createContext();
 export const useGameContext = () => useContext(Context)
 
 const ContextProvider = props => {
-    const router = useRouter();
+    const { router, enterFullscreen } = props
     const [team1, setTeam1] = useState([])
     const [team2, setTeam2] = useState([])
     const teams = team1.concat(team2)
@@ -278,7 +277,7 @@ const ContextProvider = props => {
     }
 
     return (
-        <Context.Provider value={{ router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes, currentTeam, setCurrentTeam, modes, enemy, setEnemy }}>
+        <Context.Provider value={{ router, enterFullscreen, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes, currentTeam, setCurrentTeam, modes, enemy, setEnemy }}>
             {props.children}
         </Context.Provider>
     )
