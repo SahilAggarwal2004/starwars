@@ -5,7 +5,7 @@ import { randomElement } from '../modules/math';
 import { useGameContext } from '../contexts/ContextProvider';
 
 export default function TeamSelection({ mode }) {
-    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, players, abilities, currentTeam, setCurrentTeam, modes } = useGameContext();
+    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, players, abilities, currentTeam, setCurrentTeam, modes } = useGameContext();
 
     useEffect(() => { if (!modes.includes(mode)) router.push('/') }, [])
 
@@ -54,7 +54,7 @@ export default function TeamSelection({ mode }) {
                 {details.map(detail => <span key={detail} className='detail-heading capitalize'>{detail}: {hoverPlayer[detail]}</span>)}
             </div>
             <div>
-                {categories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
+                {['basic', 'special', 'unique', 'leader'].map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
                     <span className='capitalize'>{ability}:</span>
                     {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
                 </div>)}

@@ -5,7 +5,7 @@ import { useGameContext } from "../contexts/ContextProvider"
 import { maximum, randomElement } from "../modules/math"
 
 export default function Play({ mode }) {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, modes, enemy, setEnemy } = useGameContext()
+    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, modes, enemy, setEnemy } = useGameContext()
     const [hoverAbility, setHoverAbility] = useState()
 
     function checkResult() {
@@ -118,9 +118,9 @@ export default function Play({ mode }) {
                     {details.map(detail => <span key={detail} className='detail-heading capitalize'>{detail}: {detail == 'health' ? Math.ceil(hoverPlayer[detail]) : hoverPlayer[detail]}</span>)}
                 </div>
                 <div>
-                    {categories.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
+                    {['basic', 'special', 'unique'].map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
                         <span className="capitalize">{ability}:</span>
-                        {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
+                        {Object.keys(hoverPlayer[ability]).map(feature => feature !== 'ability' && feature !== 'type' && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
                     </div>)}
                 </div>
             </div>

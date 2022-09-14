@@ -10,15 +10,15 @@
 }
 
 .detail-container {
-    @apply bg-black text-white fixed flex space-x-8 items-center justify-center px-10 pt-3 pb-0 rounded z-10 min-h-[60vh] max-h-[calc(100vh-6vw-4rem)]
+    @apply bg-black text-white fixed flex space-x-8 items-center justify-center px-10 pt-3 pb-0 rounded z-10 min-h-[60vh] max-h-[calc(100vh-4rem)]
 }
 
 .detail-heading {
-    @apply text-2xs sm:text-xs md:text-sm lg:text-base
+    @apply text-[2.75vh]
 }
 
 .detail-text {
-    @apply text-2xs sm:text-xs md:text-sm
+    @apply text-[2.5vh]
 }
 
 .main-heading {

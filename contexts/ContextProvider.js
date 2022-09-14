@@ -25,7 +25,6 @@ const ContextProvider = props => {
     const preserveGame = ['/play', '/how-to-play']
     const modes = ['computer', 'player']
     const details = ['name', 'health', 'type', 'speed'];
-    const categories = ['basic', 'special', 'unique', 'leader'];
     const indexes = [0, 1, 2, 3, 4]
     const multiAttackers = ['Mother Talzin']
 
@@ -277,7 +276,7 @@ const ContextProvider = props => {
     }
 
     return (
-        <Context.Provider value={{ router, enterFullscreen, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, categories, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes, currentTeam, setCurrentTeam, modes, enemy, setEnemy }}>
+        <Context.Provider value={{ router, enterFullscreen, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes, currentTeam, setCurrentTeam, modes, enemy, setEnemy }}>
             {props.children}
         </Context.Provider>
     )
