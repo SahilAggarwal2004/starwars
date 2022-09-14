@@ -7,9 +7,8 @@ import { Workbox } from 'workbox-window'
 
 function MyApp({ Component, pageProps }) {
 	const [isMobile, setMobile] = useState()
-	const [width, setWidth] = useState(0)
-	const [height, setHeight] = useState(0)
 	const [isFullscreen, setFullscreen] = useState()
+	const [orientation, setOrientation] = useState()
 	const fullscreenElement = useRef()
 
 	useEffect(() => {
@@ -19,17 +18,15 @@ function MyApp({ Component, pageProps }) {
 			wb.register();
 		}
 		setMobile(navigator.userAgentData?.mobile)
-		setWidth(window.outerWidth)
-		setHeight(window.outerHeight)
 		setFullscreen(document.fullscreen)
-		window.addEventListener('resize', () => {
-			setWidth(window.outerWidth)
-			setHeight(window.outerHeight)
-		})
 		document.addEventListener('fullscreenchange', () => setFullscreen(document.fullscreen))
 	}, [])
 
-	function enterFullscreen() { fullscreenElement.current?.requestFullscreen?.() }
+	async function enterFullscreen() {
+		fullscreenElement.current?.requestFullscreen?.()
+		fullscreenElement.current?.webkitRequestFullScreen?.()
+		screen.orientation.lock('landscape').then(() => setOrientation(true)).catch(() => setOrientation(false))
+	}
 
 	return <ContextProvider>
 		<Head>
@@ -91,13 +88,10 @@ function MyApp({ Component, pageProps }) {
 			<link rel="apple-touch-startup-image" href="icons/apple-splash-1136-640.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
 		</Head>
 		<div ref={fullscreenElement} className='font-mono'>
-			{height > width ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div> :
-				!isMobile || isFullscreen ? <Component {...pageProps} /> :
-					<div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
-						<div>Please enter full screen mode</div>
-						<button onClick={enterFullscreen}>Click Here</button>
-					</div>
-			}
+			{!isMobile ? <Component {...pageProps} /> : !isFullscreen ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
+				<div>Please enter full screen mode</div>
+				<button onClick={enterFullscreen}>Click Here</button>
+			</div> : !orientation ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div> : <Component {...pageProps} />}
 		</div>
 	</ContextProvider>
 }
