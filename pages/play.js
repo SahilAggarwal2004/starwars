@@ -106,7 +106,7 @@ export default function Play({ mode }) {
                         <Image src={`/images/${player.name}.jpg`} alt={player.name} width='120' height='120' className='rounded-sm' quality={5} />
                     </div>
                     {!(mode === 'computer' && turnTeam === 2) && selectedPlayer && !isAttacking && <div className="fixed flex x-center bottom-3 space-x-2">
-                        {['basic', 'special', 'unique'].map(ability => teams[turn][ability] && <div key={ability} className={`ability ${teams[turn][ability].cooldown && 'opacity-50'}`} onPointerEnter={() => setHoverAbility(ability)} onPointerLeave={() => setHoverAbility()} onClick={() => !teams[turn][ability].cooldown && handleAttack(ability, i)}>{ability[0]}</div>)}
+                        {['basic', 'special'].map(ability => teams[turn][ability] && <div key={ability} className={`ability detail-heading ${teams[turn][ability].cooldown && 'opacity-50'}`} onPointerEnter={() => setHoverAbility(ability)} onPointerLeave={() => setHoverAbility()} onClick={() => !teams[turn][ability].cooldown && handleAttack(ability, i)}>{ability[0]}</div>)}
                     </div>}
                 </div>
             })}
@@ -126,7 +126,7 @@ export default function Play({ mode }) {
             </div>
         }
         {
-            hoverAbility && !isAttacking && <div className='detail-container center w-[calc(100vw-15rem)]'>
+            hoverAbility && !isAttacking && <div className='bg-black text-white fixed flex flex-col space-y-5 items-center justify-center px-10 rounded z-10 min-h-[50vh] detail-heading center max-w-[calc(100vw-15rem)]'>
                 <span className="capitalize">{hoverAbility}:</span>
                 <div>
                     {Object.keys(teams[turn][hoverAbility]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {teams[turn][hoverAbility][feature]}</div>)}
