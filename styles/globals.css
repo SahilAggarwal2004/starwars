@@ -14,11 +14,11 @@
 }
 
 .detail-heading {
-    @apply text-[3vh] md:text-[2.75vh]
+    @apply text-[3vh]
 }
 
 .detail-text {
-    @apply text-[2.75vh] md:text-[2.5vh]
+    @apply text-[2.75vh]
 }
 
 .main-heading {

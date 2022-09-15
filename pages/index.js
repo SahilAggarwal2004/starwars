@@ -7,7 +7,7 @@ export default function Home() {
 
   const handlePlay = event => {
     router.push(`/team-selection?mode=${event.target.getAttribute('mode')}`)
-    enterFullscreen()
+    navigator.userAgentData.mobile && enterFullscreen()
   }
 
   useEffect(() => { sessionStorage.removeItem('mode') }, [])
