@@ -16,24 +16,18 @@ const withPWA = require('next-pwa')({
     runtimeCaching: [
         {
             urlPattern: /\.(?:eot|otf|ttc|ttf|woff|woff2|font.css)$/i,
-            handler: 'StaleWhileRevalidate',
-            options: {
-                cacheName: 'static-font-assets'
-            }
+            handler: 'CacheFirst',
+            options: { cacheName: 'static-font-assets' }
         },
         {
             urlPattern: /\.(?:jpg|jpeg|gif|png|svg|ico|webp)$/i,
             handler: 'StaleWhileRevalidate',
-            options: {
-                cacheName: 'static-image-assets'
-            }
+            options: { cacheName: 'static-image-assets' }
         },
         {
             urlPattern: /\/_next\/image\?url=.+$/i,
             handler: 'StaleWhileRevalidate',
-            options: {
-                cacheName: 'next-image'
-            }
+            options: { cacheName: 'next-image' }
         },
         {
             urlPattern: /\.(?:mp3|wav|ogg)$/i,
@@ -54,30 +48,22 @@ const withPWA = require('next-pwa')({
         {
             urlPattern: /\.(?:js)$/i,
             handler: 'StaleWhileRevalidate',
-            options: {
-                cacheName: 'static-js-assets'
-            }
+            options: { cacheName: 'static-js-assets' }
         },
         {
             urlPattern: /\.(?:css|less)$/i,
             handler: 'StaleWhileRevalidate',
-            options: {
-                cacheName: 'static-style-assets'
-            }
+            options: { cacheName: 'static-style-assets' }
         },
         {
             urlPattern: /\/_next\/data\/.+\/.+\.json$/i,
             handler: 'StaleWhileRevalidate',
-            options: {
-                cacheName: 'next-data'
-            }
+            options: { cacheName: 'next-data' }
         },
         {
             urlPattern: /\.(?:json|xml|csv)$/i,
             handler: 'NetworkFirst',
-            options: {
-                cacheName: 'static-data-assets'
-            }
+            options: { cacheName: 'static-data-assets' }
         },
         {
             urlPattern: ({ url }) => {
@@ -87,22 +73,16 @@ const withPWA = require('next-pwa')({
                 if (pathname.startsWith('/api/')) return false
                 return true
             },
-            handler: 'NetworkFirst',
-            options: {
-                cacheName: 'others',
-                networkTimeoutSeconds: 10
-            }
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'others' }
         },
         {
             urlPattern: ({ url }) => {
                 const isSameOrigin = self.origin === url.origin
                 return !isSameOrigin
             },
-            handler: 'NetworkFirst',
-            options: {
-                cacheName: 'cross-origin',
-                networkTimeoutSeconds: 10
-            }
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'cross-origin' }
         }
     ]
 })

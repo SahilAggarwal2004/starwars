@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import React, { useCallback, useEffect } from 'react'
 import Particles from 'react-tsparticles'
 import { loadFull } from 'tsparticles'
@@ -55,6 +54,7 @@ export default function Home() {
               area: 800,
             },
             value: 80,
+            max: 160
           },
           opacity: { value: 1 },
           shape: { type: "circle" },
@@ -63,7 +63,10 @@ export default function Home() {
         detectRetina: true
       }}
     />
-    <Image alt='Star Wars' src='/images/bg.webp' layout='fill' quality={100} />
+    <div className='fixed x-center top-1/2 -translate-y-2/3 z-10 font-[starwars] text-yellow-300 text-center text-6xl sm:text-8xl flex flex-col -space-y-3 sm:-space-y-5'>
+      <span>Star</span>
+      <span>Wars</span>
+    </div>
     <div className='fixed bg-black inset-0 -z-10' />
     <div className='fixed bottom-8 x-center space-y-3 w-full text-center px-5'>
       <button mode='computer' className='main-button' onClick={handlePlay}>Play vs Computer</button>
