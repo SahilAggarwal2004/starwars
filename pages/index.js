@@ -30,33 +30,28 @@ export default function Home() {
         background: { color: { value: "#000000" } },
         interactivity: {
           events: {
-            onClick: {
-              enable: true,
-              mode: "push",
-            },
+            onClick: { enable: true, mode: "push" },
             resize: true
           }
         },
         particles: {
           color: { value: "#ffffff" },
-          collisions: { enable: true },
           move: {
             directions: "none",
             enable: true,
             outModes: { default: "bounce" },
-            random: false,
-            speed: 1,
+            speed: 0.5,
             straight: false,
           },
           number: {
-            density: {
-              enable: true,
-              area: 800,
-            },
-            value: 80,
-            max: 160
+            density: { enable: true, area: 800 },
+            value: 100,
+            max: 800
           },
-          opacity: { value: 1 },
+          opacity: {
+            animation: { enable: true, speed: 2, count: -1 },
+            value: { min: 0, max: 1 }
+          },
           shape: { type: "circle" },
           size: { value: { min: 1, max: 3 } }
         },
