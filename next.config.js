@@ -11,7 +11,17 @@ const withPWA = require('next-pwa')({
         { url: '/play?mode=computer', revision },
         { url: '/play?mode=player', revision },
         { url: '/result?mode=computer', revision },
-        { url: '/result?mode=player', revision }
+        { url: '/result?mode=player', revision },
+        { url: '/images/Bastila Shan.webp', revision },
+        { url: '/images/Chewbecca.webp', revision },
+        { url: '/images/Count Dooku.webp', revision },
+        { url: '/images/Darth Revan.webp', revision },
+        { url: '/images/Darth Vader.webp', revision },
+        { url: '/images/Jedi Consular.webp', revision },
+        { url: '/images/Jedi Knight Revan.webp', revision },
+        { url: '/images/Jolee Bindo.webp', revision },
+        { url: '/images/Mother Talzin.webp', revision },
+        { url: '/images/Old Daka.webp', revision }
     ],
     runtimeCaching: [
         {
@@ -21,12 +31,12 @@ const withPWA = require('next-pwa')({
         },
         {
             urlPattern: /\.(?:jpg|jpeg|gif|png|svg|ico|webp)$/i,
-            handler: 'StaleWhileRevalidate',
+            handler: 'CacheFirst',
             options: { cacheName: 'static-image-assets' }
         },
         {
             urlPattern: /\/_next\/image\?url=.+$/i,
-            handler: 'StaleWhileRevalidate',
+            handler: 'CacheFirst',
             options: { cacheName: 'next-image' }
         },
         {
