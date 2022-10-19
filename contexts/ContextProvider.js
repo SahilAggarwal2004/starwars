@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react'
+import { maximumNumber, randomNumber, randomElement } from 'random-stuff-js'
 import players from '../players';
-import { maximum, random, randomElement } from '../modules/math';
 import { stun, assist, block, revive, verify } from '../modules/functions';
 import { animateBullet, multiAttack } from '../modules/animation'
 
@@ -37,7 +37,7 @@ const ContextProvider = props => {
     const abilities = {
         'Bastila Shan': {
             basic: ({ player, allyTeam, tempmeter }) => {
-                const chance = random(1, 2)
+                const chance = randomNumber(1, 2)
                 if (chance == 2) return
                 let randomPlayers = [];
                 allyTeam.forEach((ally, index) => { if (ally.health > 0 && index != player) randomPlayers.push(index) })
@@ -84,14 +84,14 @@ const ContextProvider = props => {
         },
         'Chewbecca': {
             basic: ({ allyTeam }) => {
-                const chance = random(1, 10)
+                const chance = randomNumber(1, 10)
                 chance == 5 && allyTeam.forEach((ally, index) => { if (ally.type == 'Light') allyTeam[index].health *= 2 })
             },
             special: ({ player, allyTeam, tempmeter }) => {
                 allyTeam.forEach((ally, index) => {
                     if (ally.health <= 0) return
                     allyTeam[index].health += allyTeam[player].health * 0.2
-                    tempmeter[turnTeam * 5 - 5 + index] += maximum(tempmeter) * 0.25
+                    tempmeter[turnTeam * 5 - 5 + index] += maximumNumber(tempmeter) * 0.25
                     setTurnmeter(tempmeter)
                 })
             },
@@ -134,7 +134,7 @@ const ContextProvider = props => {
         },
         'Count Dooku': {
             basic: ({ allyTeam, isCountering, turnTeam }) => {
-                const chance = random(1, 4)
+                const chance = randomNumber(1, 4)
                 if (chance !== 2) return
                 let tempTurn = turn;
                 if (isCountering) {
@@ -161,7 +161,7 @@ const ContextProvider = props => {
         },
         'Mother Talzin': {
             basic: ({ enemy, enemyTeam }) => {
-                const chance = random(1, 4)
+                const chance = randomNumber(1, 4)
                 chance == 2 && stun({ enemy, enemyTeam })
             },
             special: ({ player, allyTeam, enemyTeam }) => {
@@ -202,7 +202,7 @@ const ContextProvider = props => {
         if (correction != undefined) tempmeter[correction] = 0
         setTurnmeter(tempmeter)
         sessionStorage.setItem('turnmeter', JSON.stringify(tempmeter))
-        const max = maximum(tempmeter)
+        const max = maximumNumber(tempmeter)
         let indexes = [];
         tempmeter.forEach((value, index) => { if (value == max) indexes.push(index) })
         const index = randomElement(indexes)

@@ -1,4 +1,4 @@
-import { randomElement } from "./math";
+import { randomElement } from 'random-stuff-js';
 
 export const stun = ({ enemy, enemyTeam }) => enemyTeam[enemy].stun = true
 

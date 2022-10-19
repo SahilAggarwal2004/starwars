@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
-import { randomElement } from '../modules/math';
+import { randomElement } from 'random-stuff-js';
 import { useGameContext } from '../contexts/ContextProvider';
 
 export default function TeamSelection({ mode }) {
