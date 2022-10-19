@@ -58,9 +58,7 @@ export default function Play({ mode }) {
         return () => { window.removeEventListener('resize', updatePositions) }
     }, [])
 
-    useEffect(() => {
-        setTimeout(() => updatePositions(), 1);
-    }, [isFullScreen])
+    useEffect(() => { setTimeout(() => updatePositions(), 1) }, [isFullScreen])
 
     useEffect(() => {
         let teamone = JSON.parse(sessionStorage.getItem('team1'))
