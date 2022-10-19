@@ -8,7 +8,7 @@ const Context = createContext();
 export const useGameContext = () => useContext(Context)
 
 const ContextProvider = props => {
-    const { router, enterFullscreen } = props
+    const { router, isFullScreen, enterFullscreen } = props
     const [team1, setTeam1] = useState([])
     const [team2, setTeam2] = useState([])
     const teams = team1.concat(team2)
@@ -276,7 +276,7 @@ const ContextProvider = props => {
     }
 
     return (
-        <Context.Provider value={{ router, enterFullscreen, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes, currentTeam, setCurrentTeam, modes, enemy, setEnemy }}>
+        <Context.Provider value={{ router, isFullScreen, enterFullscreen, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes, currentTeam, setCurrentTeam, modes, enemy, setEnemy }}>
             {props.children}
         </Context.Provider>
     )

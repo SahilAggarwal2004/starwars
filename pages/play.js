@@ -5,7 +5,7 @@ import { useGameContext } from "../contexts/ContextProvider"
 import { maximumNumber, randomElement } from "random-stuff-js"
 
 export default function Play({ mode }) {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, modes, enemy, setEnemy } = useGameContext()
+    const { router, isFullScreen, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, modes, enemy, setEnemy } = useGameContext()
     const [hoverAbility, setHoverAbility] = useState()
 
     function checkResult() {
@@ -54,14 +54,11 @@ export default function Play({ mode }) {
             setTurnTeam(Math.ceil((tempturn + 1) / 5))
         }
         setHoverPlayer()
-        updatePositions()
-        document.addEventListener('fullscreenchange', updatePositions)
         window.addEventListener('resize', updatePositions)
-        return () => {
-            document.removeEventListener('fullscreenchange', updatePositions)
-            window.removeEventListener('resize', updatePositions)
-        }
+        return () => { window.removeEventListener('resize', updatePositions) }
     }, [])
+
+    useEffect(() => { updatePositions() }, [isFullScreen])
 
     useEffect(() => {
         let teamone = JSON.parse(sessionStorage.getItem('team1'))

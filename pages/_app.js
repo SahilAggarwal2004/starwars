@@ -26,7 +26,7 @@ function MyApp({ Component, pageProps }) {
 		screen.orientation.lock('landscape').then(() => setOrientation(true)).catch(() => setOrientation(false))
 	}
 
-	return <ContextProvider router={router} enterFullscreen={enterFullscreen}>
+	return <ContextProvider router={router} isFullscreen={isFullscreen} enterFullscreen={enterFullscreen}>
 		<Head>
 			<meta charSet="utf-8" />
 			<title>Star Wars</title>
