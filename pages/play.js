@@ -54,11 +54,12 @@ export default function Play({ mode }) {
             setTurnTeam(Math.ceil((tempturn + 1) / 5))
         }
         setHoverPlayer()
+        updatePositions()
         window.addEventListener('resize', updatePositions)
         return () => { window.removeEventListener('resize', updatePositions) }
     }, [])
 
-    useEffect(() => { updatePositions() }, [isFullScreen])
+    useEffect(() => { if (isFullScreen) updatePositions() }, [isFullScreen])
 
     useEffect(() => {
         let teamone = JSON.parse(sessionStorage.getItem('team1'))
