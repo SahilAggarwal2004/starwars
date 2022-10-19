@@ -55,7 +55,6 @@ export default function Play({ mode }) {
         }
         setHoverPlayer()
         updatePositions()
-        // setTimeout(() => { try { updatePositions() } catch { } }, 1);
         document.addEventListener('fullscreenchange', updatePositions)
         window.addEventListener('resize', updatePositions)
         return () => {
