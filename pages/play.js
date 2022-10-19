@@ -54,9 +54,17 @@ export default function Play({ mode }) {
             setTurnTeam(Math.ceil((tempturn + 1) / 5))
         }
         setHoverPlayer()
-        setTimeout(() => {
-            try { updatePositions() } catch { window.addEventListener('resize', updatePositions) }
-        }, 1);
+        document.addEventListener('fullscreenchange', updatePositions)
+        window.addEventListener('resize', updatePositions)
+        // setTimeout(() => {
+        //     try { updatePositions() }
+        //     catch {
+        //     }
+        // }, 1);
+        return () => {
+            document.removeEventListener('fullscreenchange', updatePositions)
+            window.removeEventListener('resize', updatePositions)
+        }
     }, [])
 
     useEffect(() => {

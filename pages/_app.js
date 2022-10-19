@@ -11,11 +11,13 @@ function MyApp({ Component, pageProps }) {
 	const [isFullscreen, setFullscreen] = useState()
 	const [orientation, setOrientation] = useState()
 	const fullscreenElement = useRef()
+	const updateFullScreen = () => setFullscreen(document.fullscreen)
 
 	useEffect(() => {
 		setMobile(navigator.userAgentData?.mobile)
 		setFullscreen(document.fullscreen)
-		document.addEventListener('fullscreenchange', () => setFullscreen(document.fullscreen))
+		document.addEventListener('fullscreenchange', updateFullScreen)
+		return () => { document.removeEventListener('fullscreenchange', updateFullScreen) }
 	}, [])
 
 	async function enterFullscreen() {
