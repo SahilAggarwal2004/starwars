@@ -104,7 +104,7 @@ export default function Play({ mode }) {
                 return <div key={i} className={`${player.health <= 0 && 'invisible'}`}>
                     <div className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${selectedPlayer ? 'outline border-2 outline-green-500' : selectedEnemy && turnTeam !== index + 1 ? 'outline border-2 outline-red-500' : 'hover:border-2 hover:outline hover:outline-black'} border-transparent rounded-sm ${player.stun && 'opacity-50'}`} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => selectEnemy(i, index)} onContextMenu={event => event.preventDefault()}>
                         <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5 max-w-full' style={{ width: `${turnmeter[playerIndex] / maximumNumber(turnmeter) * 6}vw` }} />
-                        <img src={`/images/${player.name}.webp`} alt={player.name} width='120' height='120' className='rounded-sm' />
+                        <img src={`/images/${player.name}.webp`} alt={player.name} width='120' className='rounded-sm aspect-square' />
                     </div>
                     {!(mode === 'computer' && turnTeam === 2) && selectedPlayer && !isAttacking && <div className="fixed flex x-center bottom-3 space-x-2">
                         {['basic', 'special'].map(ability => teams[turn][ability] && <div key={ability} className={`ability detail-heading ${teams[turn][ability].cooldown && 'opacity-50'}`} onPointerEnter={() => setHoverAbility(ability)} onPointerLeave={() => setHoverAbility()} onClick={() => !teams[turn][ability].cooldown && handleAttack(ability, i)}>{ability[0]}</div>)}
