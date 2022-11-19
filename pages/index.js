@@ -3,8 +3,8 @@ import Particles from 'react-tsparticles'
 import { loadFull } from 'tsparticles'
 import { useGameContext } from '../contexts/ContextProvider'
 
-export default function Home() {
-  const { router, enterFullscreen } = useGameContext()
+export default function Home({ enterFullscreen }) {
+  const { router } = useGameContext()
 
   const particlesInit = useCallback(async engine => {
     // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets

@@ -8,16 +8,14 @@ const Context = createContext();
 export const useGameContext = () => useContext(Context)
 
 const ContextProvider = props => {
-    const { router, isFullScreen, enterFullscreen } = props
+    const { router } = props
     const [team1, setTeam1] = useState([])
     const [team2, setTeam2] = useState([])
     const teams = team1.concat(team2)
-    const [currentTeam, setCurrentTeam] = useState(1);
     const [initialHealth, setInitialHealth] = useState([])
     const [turnmeter, setTurnmeter] = useState([])
     const [hoverPlayer, setHoverPlayer] = useState()
     const [turn, setTurn] = useState()
-    const [enemy, setEnemy] = useState(0)
     const [turnTeam, setTurnTeam] = useState()
     const [isAttacking, setAttacking] = useState(false)
     const [bullet, setBullet] = useState({ 0: false, 1: false, 2: false, 3: false, 4: false })
@@ -283,7 +281,7 @@ const ContextProvider = props => {
     }
 
     return (
-        <Context.Provider value={{ router, isFullScreen, enterFullscreen, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes, currentTeam, setCurrentTeam, modes, enemy, setEnemy }}>
+        <Context.Provider value={{ router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, setInitialHealth, setHealthSteal, isAttacking, abilities, indexes, modes }}>
             {props.children}
         </Context.Provider>
     )

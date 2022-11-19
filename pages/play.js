@@ -4,8 +4,9 @@ import React, { useEffect, useState } from "react"
 import { useGameContext } from "../contexts/ContextProvider"
 import { maximumNumber, randomElement } from "random-stuff-js"
 
-export default function Play({ mode }) {
-    const { router, isFullScreen, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, modes, enemy, setEnemy } = useGameContext()
+export default function Play({ mode, isFullScreen }) {
+    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, modes } = useGameContext()
+    const [enemy, setEnemy] = useState(0)
     const [hoverAbility, setHoverAbility] = useState()
 
     function checkResult() {

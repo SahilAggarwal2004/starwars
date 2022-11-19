@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { randomElement } from 'random-stuff-js';
 import { useGameContext } from '../contexts/ContextProvider';
 
 export default function TeamSelection({ mode }) {
-    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, players, abilities, currentTeam, setCurrentTeam, modes } = useGameContext();
+    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, players, abilities, modes } = useGameContext();
+    const [currentTeam, setCurrentTeam] = useState(1);
 
     useEffect(() => { if (!modes.includes(mode)) router.push('/') }, [])
 
