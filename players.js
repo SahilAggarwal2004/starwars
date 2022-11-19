@@ -7,7 +7,7 @@ const A = {
         description: 'This attack has a 50% chance to grant a random ally 100% turn meter.'
     },
     special: { damage: randomNumber(125, 150), description: 'Stun the opponent.', cooldown: 1 },
-    leader: { description: 'Dark side allies have +25% of their offense.', type: 'start' }
+    leader: { description: 'Light side allies have +25% of their offense.', type: 'start' }
 }
 const B = {
     name: 'Jolee Bindo', health: randomNumber(350, 500), type: 'Light', speed: randomNumber(10, 15), stun: false, multiplier: 1,

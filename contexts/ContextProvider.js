@@ -49,7 +49,7 @@ const ContextProvider = props => {
             special: stun,
             leader: ({ allyTeam }) => {
                 allyTeam.forEach(({ type }, index) => {
-                    if (type != 'Dark') return
+                    if (type != 'Light') return
                     allyTeam[index].basic.damage *= 1.25
                     allyTeam[index].special.damage *= 1.25
                 })
