@@ -142,7 +142,7 @@ const ContextProvider = props => {
             special: stun,
             unique: ({ player, enemy, allyTeam, enemyTeam, tempmeter, ability }) => {
                 const { result, index } = verify('member', 'Count Dooku', enemyTeam)
-                if (!result || enemyTeam[index].stun) return
+                if (!result || enemyTeam[index].stun || enemyTeam[index].health <= 0) return
                 if (enemy == index || (ability == 'special' && multiAttackers.includes(allyTeam[player].name))) {
                     setTimeout(() => {
                         if (!enemyTeam[index].stun && enemyTeam[index].health > 0) {
@@ -268,6 +268,13 @@ const ContextProvider = props => {
                     if (data) returnUnique = { ...returnUnique, ...data }
                 }))
                 setTimeout(() => {
+                    if (turnTeam == 1) {
+                        setTeam1(allyTeam)
+                        setTeam2(enemyTeam)
+                    } else {
+                        setTeam1(enemyTeam)
+                        setTeam2(allyTeam)
+                    }
                     setAttacking(false)
                     newTurn(tempmeter, player + turnTeam * 5 - 5)
                 }, returnUnique.wait || 0);
