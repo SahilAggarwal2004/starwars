@@ -40,7 +40,7 @@ const ContextProvider = props => {
                 const chance = randomNumber(1, 2)
                 if (chance == 2) return
                 let randomPlayers = [];
-                allyTeam.forEach((ally, index) => { if (ally.health > 0 && index != player) randomPlayers.push(index) })
+                allyTeam.forEach(({ health }, index) => { if (health > 0 && index != player) randomPlayers.push(index) })
                 const randomPlayer = randomElement(randomPlayers);
                 if (randomPlayer == undefined) return
                 tempmeter[turnTeam * 5 - 5 + randomPlayer] = 10000
@@ -48,8 +48,8 @@ const ContextProvider = props => {
             },
             special: stun,
             leader: ({ allyTeam }) => {
-                allyTeam.forEach((ally, index) => {
-                    if (ally.type != 'Dark') return
+                allyTeam.forEach(({ type }, index) => {
+                    if (type != 'Dark') return
                     allyTeam[index].basic.damage *= 1.25
                     allyTeam[index].special.damage *= 1.25
                 })
@@ -57,8 +57,8 @@ const ContextProvider = props => {
         },
         'Jolee Bindo': {
             special: ({ player, enemy, allyTeam, enemyTeam, tempmeter }) => {
-                allyTeam.forEach((ally, index) => {
-                    if (!ally.stun || ally.health <= 0) return
+                allyTeam.forEach(({ stun, health }, index) => {
+                    if (!stun || health <= 0) return
                     allyTeam[index].stun = false
                 });
                 const wait = assist(player, enemy, allyTeam, enemyTeam, tempmeter, turnTeam, setTurnmeter, attack)
@@ -81,11 +81,11 @@ const ContextProvider = props => {
         'Chewbecca': {
             basic: ({ allyTeam }) => {
                 const chance = randomNumber(1, 10)
-                chance == 5 && allyTeam.forEach((ally, index) => { if (ally.type == 'Light') allyTeam[index].health *= 2 })
+                chance == 5 && allyTeam.forEach(({ type }, index) => { if (type == 'Light') allyTeam[index].health *= 2 })
             },
             special: ({ player, allyTeam, tempmeter }) => {
-                allyTeam.forEach((ally, index) => {
-                    if (ally.health <= 0) return
+                allyTeam.forEach(({ health }, index) => {
+                    if (health <= 0) return
                     allyTeam[index].health += allyTeam[player].health * 0.15
                     tempmeter[turnTeam * 5 - 5 + index] += maximumNumber(tempmeter) * 0.25
                     setTurnmeter(tempmeter)
@@ -98,23 +98,23 @@ const ContextProvider = props => {
                 if (enemy == index && enemyTeam[index].health < 100) stealth = true
                 if (stealth) {
                     let randomEnemies = []
-                    enemyTeam.forEach((enemy, i) => { if (enemy.health > 0) randomEnemies.push(i) })
+                    enemyTeam.forEach(({ health }, i) => { if (health > 0) randomEnemies.push(i) })
                     return { enemy: randomElement(randomEnemies) || index };
                 }
-                enemyTeam.forEach(item => { if (item.health < 100) taunt = true })
+                enemyTeam.forEach(({ health }) => { if (health < 100) taunt = true })
                 if (taunt) return { enemy: index }
             }
         },
         'Jedi Knight Revan': {
-            basic: ({ allyTeam }) => allyTeam.forEach((ally, index) => { if (ally.type == 'Light' && ally.health > 0) allyTeam[index].health += 50 }),
+            basic: ({ allyTeam }) => allyTeam.forEach(({ type, health }, index) => { if (type == 'Light' && health > 0) allyTeam[index].health += 50 }),
             special: ({ allyTeam, enemyTeam }) => {
-                allyTeam.forEach((ally, index) => { if (ally.health > 0 && ally.name != 'Jedi Knight Revan' && allyTeam[index].special) allyTeam[index].special.cooldown = 0 })
-                enemyTeam.forEach((enemy, index) => { if (enemy.health > 0 && enemyTeam[index].speed > 1) enemyTeam[index].speed-- })
+                allyTeam.forEach(({ name, type, health, special }, index) => { if (health > 0 && name != 'Jedi Knight Revan' && type == 'Light' && special) allyTeam[index].special.cooldown = 0 })
+                enemyTeam.forEach(({ health, type, speed }, index) => { if (health > 0 && type == 'Dark' && speed > 1) enemyTeam[index].speed-- })
             },
             leader: ({ ability, allyTeam }) => {
                 const { result } = verify('leader', 'Jedi Knight Revan', allyTeam)
-                if (ability == 'basic' && result) allyTeam.forEach((ally, index) => {
-                    if (ally.name == 'Jedi Knight Revan' && allyTeam[index].special?.cooldown > 0) allyTeam[index].special.cooldown--
+                if (ability == 'basic' && result) allyTeam.forEach(({ name }, index) => {
+                    if (name == 'Jedi Knight Revan' && allyTeam[index].special?.cooldown > 0) allyTeam[index].special.cooldown--
                 })
             }
         },
@@ -161,10 +161,10 @@ const ContextProvider = props => {
                 chance == 2 && stun({ enemy, enemyTeam })
             },
             special: ({ player, allyTeam, enemyTeam }) => {
-                allyTeam.forEach((ally, index) => { if (ally.health > 0) allyTeam[index].health += allyTeam[player].health * 0.25 })
-                enemyTeam.forEach((enemy, index) => { if (enemy.health > 0) enemyTeam[index].health -= allyTeam[player].special.damage })
+                allyTeam.forEach(({ health }, index) => { if (health > 0) allyTeam[index].health += allyTeam[player].health * 0.25 })
+                enemyTeam.forEach(({ health }, index) => { if (health > 0) enemyTeam[index].health -= allyTeam[player].special.damage })
             },
-            leader: ({ allyTeam }) => allyTeam.forEach((ally, index) => { if (ally.type == 'Dark') allyTeam[index].health *= 1.40 })
+            leader: ({ allyTeam }) => allyTeam.forEach(({ type }, index) => { if (type == 'Dark') allyTeam[index].health *= 1.40 })
         },
         'Jedi Consular': {
             special: ({ player, enemy, allyTeam, enemyTeam, tempmeter }) => {

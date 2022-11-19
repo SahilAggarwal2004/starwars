@@ -36,7 +36,7 @@ const E = {
 const F = {
     name: 'Jedi Knight Revan', health: randomNumber(350, 500), type: 'Light', speed: randomNumber(10, 15), stun: false, multiplier: 1,
     basic: { damage: randomNumber(60, 100), description: "Light side allies gain 50 health." },
-    special: { damage: randomNumber(125, 150), description: 'Reset the cooldowns of all allies to 0 and decrease speed of all enemies by 1.', cooldown: 2 },
+    special: { damage: randomNumber(125, 150), description: 'Reset the cooldowns of light side allies to 0 and decrease speed of dark side enemies by 1.', cooldown: 2 },
     leader: { description: "Whenever an ally uses a basic ability decrease the cooldown of his special ability by 1.", type: 'in-game' }
 }
 const G = {

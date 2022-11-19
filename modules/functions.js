@@ -7,7 +7,7 @@ export const stun = ({ enemy, enemyTeam }) => enemyTeam[enemy].stun = true
 export const assist = (player, enemy, allyTeam, enemyTeam, tempmeter, turnTeam, setTurnmeter, attack) => {
     if (enemyTeam[enemy].health <= 0) return
     let assistPlayers = [];
-    allyTeam.forEach((ally, index) => { if (!ally.stun && index != player && ally.health > 0) assistPlayers.push(index) })
+    allyTeam.forEach(({ health, stun }, index) => { if (health > 0 && !stun && index != player) assistPlayers.push(index) })
     const assistPlayer = randomElement(assistPlayers);
     if (assistPlayer == undefined) return
     tempmeter[turnTeam * 5 - 5 + player] = 0
@@ -20,7 +20,7 @@ export const block = ({ enemyTeam, enemy }) => delete enemyTeam[enemy].special
 
 export const revive = (allyTeam, health) => {
     let revivePlayers = []
-    allyTeam.forEach((ally, index) => { if (ally.health <= 0) revivePlayers.push(index) })
+    allyTeam.forEach(({ health }, index) => { if (health <= 0) revivePlayers.push(index) })
     const revivePlayer = randomElement(revivePlayers)
     if (revivePlayer == undefined) return
     allyTeam[revivePlayer].health = health
