@@ -21,7 +21,8 @@ const withPWA = require('next-pwa')({
         { url: '/images/Jedi Knight Revan.webp', revision },
         { url: '/images/Jolee Bindo.webp', revision },
         { url: '/images/Mother Talzin.webp', revision },
-        { url: '/images/Old Daka.webp', revision }
+        { url: '/images/Old Daka.webp', revision },
+        { url: '/images/Darth Nihilus.webp', revision }
     ],
     runtimeCaching: [
         {

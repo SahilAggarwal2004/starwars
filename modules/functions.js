@@ -1,5 +1,7 @@
 import { randomElement } from 'random-stuff-js';
 
+export const kill = ({ enemy, enemyTeam }) => enemyTeam[enemy].health = 0
+
 export const stun = ({ enemy, enemyTeam }) => enemyTeam[enemy].stun = true
 
 export const assist = (player, enemy, allyTeam, enemyTeam, tempmeter, turnTeam, setTurnmeter, attack) => {

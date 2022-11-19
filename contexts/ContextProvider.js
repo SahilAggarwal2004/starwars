@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react'
 import { maximumNumber, randomNumber, randomElement } from 'random-stuff-js'
 import players from '../players';
-import { stun, assist, block, revive, verify } from '../modules/functions';
+import { stun, assist, block, revive, verify, kill } from '../modules/functions';
 import { animateBullet, multiAttack } from '../modules/animation'
 
 const Context = createContext();
@@ -57,29 +57,25 @@ const ContextProvider = props => {
         },
         'Jolee Bindo': {
             special: ({ player, enemy, allyTeam, enemyTeam, tempmeter }) => {
-                let isAssisting = true
                 allyTeam.forEach((ally, index) => {
                     if (!ally.stun || ally.health <= 0) return
                     allyTeam[index].stun = false
-                    isAssisting = false
                 });
-                if (isAssisting) {
-                    const wait = assist(player, enemy, allyTeam, enemyTeam, tempmeter, turnTeam, setTurnmeter, attack)
-                    return wait
-                }
+                const wait = assist(player, enemy, allyTeam, enemyTeam, tempmeter, turnTeam, setTurnmeter, attack)
+                return wait
             },
             leader: ({ allyTeam }) => indexes.forEach(index => allyTeam[index].health *= 1.25)
         },
         'Darth Vader': {
             special: block,
-            leader: ({ allyTeam }) => indexes.forEach(index => allyTeam[index].speed += 1)
+            leader: ({ allyTeam }) => indexes.forEach(index => allyTeam[index].speed++)
         },
         'Old Daka': {
-            special: ({ player, allyTeam }) => revive(allyTeam, allyTeam[player].health * 2),
+            special: ({ player, allyTeam }) => revive(allyTeam, allyTeam[player].health * 1.5),
             leader: ({ enemy, enemyTeam, isAssisting }) => {
                 if (isAssisting) return
                 const { result } = verify('leader', 'Old Daka', enemyTeam)
-                if (result) enemyTeam[enemy].health *= 1.2
+                if (result) enemyTeam[enemy].health *= 1.15
             }
         },
         'Chewbecca': {
@@ -90,7 +86,7 @@ const ContextProvider = props => {
             special: ({ player, allyTeam, tempmeter }) => {
                 allyTeam.forEach((ally, index) => {
                     if (ally.health <= 0) return
-                    allyTeam[index].health += allyTeam[player].health * 0.2
+                    allyTeam[index].health += allyTeam[player].health * 0.15
                     tempmeter[turnTeam * 5 - 5 + index] += maximumNumber(tempmeter) * 0.25
                     setTurnmeter(tempmeter)
                 })
@@ -110,27 +106,27 @@ const ContextProvider = props => {
             }
         },
         'Jedi Knight Revan': {
-            basic: ({ allyTeam }) => allyTeam.forEach((ally, index) => { if (ally.type == 'Light' && ally.health > 0) allyTeam[index].health += 100 }),
+            basic: ({ allyTeam }) => allyTeam.forEach((ally, index) => { if (ally.type == 'Light' && ally.health > 0) allyTeam[index].health += 50 }),
             special: ({ allyTeam, enemyTeam }) => {
                 allyTeam.forEach((ally, index) => { if (ally.health > 0 && ally.name != 'Jedi Knight Revan' && allyTeam[index].special) allyTeam[index].special.cooldown = 0 })
-                enemyTeam.forEach((enemy, index) => { if (enemy.health > 0 && enemyTeam[index].speed > 1) enemyTeam[index].speed -= 1 })
+                enemyTeam.forEach((enemy, index) => { if (enemy.health > 0 && enemyTeam[index].speed > 1) enemyTeam[index].speed-- })
             },
             leader: ({ ability, allyTeam }) => {
                 const { result } = verify('leader', 'Jedi Knight Revan', allyTeam)
                 if (ability == 'basic' && result) allyTeam.forEach((ally, index) => {
-                    if (ally.name == 'Jedi Knight Revan' && allyTeam[index].special?.cooldown > 0) allyTeam[index].special.cooldown -= 1
+                    if (ally.name == 'Jedi Knight Revan' && allyTeam[index].special?.cooldown > 0) allyTeam[index].special.cooldown--
                 })
             }
         },
         'Darth Revan': {
             basic: () => {
                 let tempHealthSteal = healthSteal;
-                tempHealthSteal[turnTeam - 1] += 0.1
+                tempHealthSteal[turnTeam - 1] += 0.05
                 sessionStorage.setItem('health-steal', JSON.stringify(tempHealthSteal))
                 setHealthSteal(tempHealthSteal)
             },
             special: block,
-            leader: ({ enemyTeam }) => indexes.forEach(index => enemyTeam[index].speed -= 1)
+            leader: ({ enemyTeam }) => indexes.forEach(index => enemyTeam[index].speed--)
         },
         'Count Dooku': {
             basic: ({ allyTeam, isCountering, turnTeam }) => {
@@ -180,6 +176,10 @@ const ContextProvider = props => {
                 const { result } = verify('leader', 'Jedi Consular', allyTeam)
                 if (ability == 'special' && result) indexes.forEach(index => allyTeam[index].health *= 1.1)
             }
+        },
+        'Darth Nihilus': {
+            basic: ({ player, allyTeam }) => allyTeam[player].special.cooldown--,
+            special: kill
         }
     }
 
