@@ -3,11 +3,14 @@
 import React, { useEffect, useState } from "react"
 import { useGameContext } from "../contexts/ContextProvider"
 import { maximumNumber, randomElement } from "random-stuff-js"
+import effects from "../modules/effects"
 
 export default function Play({ mode, isFullScreen }) {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setInitialHealth, setHealthSteal, isAttacking, indexes, turnTeam, modes } = useGameContext()
+    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setHealthSteal, isAttacking, indexes, turnTeam, modes } = useGameContext()
     const [enemy, setEnemy] = useState(0)
     const [hoverAbility, setHoverAbility] = useState()
+
+    function selectEnemy(enemy, index) { if (index !== turnTeam - 1) setEnemy(enemy) }
 
     function checkResult() {
         let gameover = false, sum1 = 0, sum2 = 0, winner;
@@ -23,12 +26,8 @@ export default function Play({ mode, isFullScreen }) {
         if (ability === 'basic' || ability === 'special') {
             setHoverPlayer()
             setHoverAbility()
-            attack(index, enemy, ability)
+            attack({ player: index, enemy, ability })
         }
-    }
-
-    function selectEnemy(enemy, index) {
-        if (index !== turnTeam - 1) setEnemy(enemy)
     }
 
     function updatePositions() {
@@ -46,7 +45,6 @@ export default function Play({ mode, isFullScreen }) {
         if (!modes.includes(router.query.mode)) router.push('/')
         setTeam1(JSON.parse(sessionStorage.getItem('team1')) || [])
         setTeam2(JSON.parse(sessionStorage.getItem('team2')) || [])
-        setInitialHealth(JSON.parse(sessionStorage.getItem('initial-health')) || [])
         setTurnmeter(JSON.parse(sessionStorage.getItem('turnmeter')) || [])
         setHealthSteal(JSON.parse(sessionStorage.getItem('health-steal')) || [0, 0])
         if (sessionStorage.getItem('turn')) {
@@ -71,7 +69,7 @@ export default function Play({ mode, isFullScreen }) {
             sessionStorage.setItem('winner', winner)
             router.push(`/result?mode=${mode}`)
         }
-    }, [teams])
+    }, [team1, team2])
 
     // Computer mode
     useEffect(() => {
@@ -86,7 +84,7 @@ export default function Play({ mode, isFullScreen }) {
                 let enemies = []
                 team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
                 const enemy = randomElement(enemies)
-                setTimeout(() => attack(turn - 5, enemy, 'special'), 500);
+                setTimeout(() => attack({ player: turn - 5, enemy, ability: 'special' }), 500);
             } else if (team1.length && team1[enemy].health < 0) {
                 let enemies = [];
                 team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
@@ -105,7 +103,10 @@ export default function Play({ mode, isFullScreen }) {
                 return <div key={i} className={`${player.health <= 0 && 'invisible'}`}>
                     <div className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${selectedPlayer ? 'outline border-2 outline-green-500' : selectedEnemy && turnTeam !== index + 1 ? 'outline border-2 outline-red-500' : 'hover:border-2 hover:outline hover:outline-black'} border-transparent rounded-sm ${player.stun && 'opacity-50'}`} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => selectEnemy(i, index)} onContextMenu={event => event.preventDefault()}>
                         <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5 max-w-full' style={{ width: `${turnmeter[playerIndex] / maximumNumber(turnmeter) * 6}vw` }} />
-                        <img src={`/images/${player.name}.webp`} alt={player.name} width='120' className='rounded-sm aspect-square' />
+                        <img src={`/images/players/${player.name}.webp`} alt={player.name} width={120} className='rounded-sm aspect-square' />
+                        <div className="absolute bottom-0 left-0 right-0 flex justify-center space-x-0.5 z-10">
+                            {effects.map(({ effect, condition }) => condition({ player, team1, team2 }) && <img key={effect} alt='' src={`images/effects/${effect}.webp`} width={20} height={20} />)}
+                        </div>
                     </div>
                     {!(mode === 'computer' && turnTeam === 2) && selectedPlayer && !isAttacking && <div className="fixed flex x-center bottom-3 space-x-2">
                         {['basic', 'special'].map(ability => teams[turn][ability] && <div key={ability} className={`ability detail-heading ${teams[turn][ability].cooldown && 'opacity-50'}`} onPointerEnter={() => setHoverAbility(ability)} onPointerLeave={() => setHoverAbility()} onClick={() => !teams[turn][ability].cooldown && handleAttack(ability, i)}>{ability[0]}</div>)}

@@ -18,10 +18,6 @@ export default function Home({ enterFullscreen }) {
     navigator.userAgentData.mobile && enterFullscreen()
   }
 
-  useEffect(() => { sessionStorage.removeItem('mode') }, [])
-
-
-
   return <>
     <Particles
       id="tsparticles"
