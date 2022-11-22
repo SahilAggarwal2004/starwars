@@ -57,7 +57,7 @@ export default function TeamSelection({ router, mode }) {
             <div>
                 {['basic', 'special', 'unique', 'leader'].map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
                     <span className='capitalize'>{ability}:</span>
-                    {features.map(feature => Boolean(hoverPlayer[ability][feature]) && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
+                    {features.map(feature => hoverPlayer[ability][feature] !== undefined && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
                 </div>)}
             </div>
         </div>}

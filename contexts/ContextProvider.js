@@ -271,9 +271,9 @@ const ContextProvider = ({ router, children }) => {
                     if (data) returnUnique = { ...returnUnique, ...data }
                 }))
                 setTimeout(() => {
-                    setAttacking(false)
                     newTurn(player + turnTeam * 5 - 5)
-                    if ((turnTeam == 1 && !isCountering)) {
+                    setAttacking(false)
+                    if (turnTeam == 1 && !isCountering) {
                         setTeam1(allyTeam)
                         setTeam2(enemyTeam)
                     } else {

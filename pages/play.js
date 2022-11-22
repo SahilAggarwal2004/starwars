@@ -121,14 +121,14 @@ export default function Play({ router, mode, isFullScreen }) {
             <div>
                 {['basic', 'special', 'unique'].map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
                     <span className="capitalize">{ability}:</span>
-                    {features.map(feature => Boolean(hoverPlayer[ability][feature]) && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
+                    {features.map(feature => hoverPlayer[ability][feature] !== undefined && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
                 </div>)}
             </div>
         </div>}
         {hoverAbility && !isAttacking && <div className='bg-black text-white fixed flex flex-col space-x-0 space-y-5 items-center justify-center p-10 rounded z-10 detail-heading center max-w-[calc(100vw-15rem)]'>
             <span className="capitalize">{hoverAbility}:</span>
             <div>
-                {features.map(feature => Boolean(teams[turn][hoverAbility][feature]) && <div key={feature} className='detail-text'><span className="capitalize">{feature}</span>: {teams[turn][hoverAbility][feature]}</div>)}
+                {features.map(feature => teams[turn][hoverAbility][feature] !== undefined && <div key={feature} className='detail-text'><span className="capitalize">{feature}</span>: {teams[turn][hoverAbility][feature]}</div>)}
             </div>
         </div>}
         {indexes.map(number => bullet[number] && <span key={number} id={`bullet${number}`} className='fixed block bg-red-500 -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 transition-all ease-linear duration-[1900ms]' />)}
