@@ -5,9 +5,10 @@ import { useGameContext } from "../contexts/ContextProvider"
 import { maximumNumber, randomElement } from "random-stuff-js"
 import effects from "../modules/effects"
 import { getStorage, setStorage } from "../modules/storage"
+import { details, features, indexes, modes } from "../constants"
 
-export default function Play({ mode, isFullScreen }) {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, isAttacking, indexes, turnTeam, modes } = useGameContext()
+export default function Play({ router, mode, isFullScreen }) {
+    const { team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, isAttacking, turnTeam } = useGameContext()
     const [enemy, setEnemy] = useState(0)
     const [hoverAbility, setHoverAbility] = useState()
 
@@ -113,27 +114,23 @@ export default function Play({ mode, isFullScreen }) {
             })}
         </div>)
         }
-        {
-            hoverPlayer && !isAttacking && <div className='detail-container center w-[calc(100vw-15rem)]'>
-                <div className='flex flex-col min-w-max'>
-                    {details.map(detail => <span key={detail} className='detail-heading capitalize'>{detail}: {detail == 'health' ? Math.ceil(hoverPlayer[detail]) : hoverPlayer[detail]}</span>)}
-                </div>
-                <div>
-                    {['basic', 'special', 'unique'].map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
-                        <span className="capitalize">{ability}:</span>
-                        {Object.keys(hoverPlayer[ability]).map(feature => feature !== 'ability' && feature !== 'type' && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
-                    </div>)}
-                </div>
+        {hoverPlayer && !isAttacking && <div className='detail-container center w-[calc(100vw-15rem)]'>
+            <div className='flex flex-col min-w-max'>
+                {details.map(detail => <span key={detail} className='detail-heading capitalize'>{detail}: {detail == 'health' ? Math.ceil(hoverPlayer[detail]) : hoverPlayer[detail]}</span>)}
             </div>
-        }
-        {
-            hoverAbility && !isAttacking && <div className='bg-black text-white fixed flex flex-col space-x-0 space-y-5 items-center justify-center p-10 rounded z-10 detail-heading center max-w-[calc(100vw-15rem)]'>
-                <span className="capitalize">{hoverAbility}:</span>
-                <div>
-                    {Object.keys(teams[turn][hoverAbility]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='detail-text'><span className="capitalize">{feature}</span>: {teams[turn][hoverAbility][feature]}</div>)}
-                </div>
+            <div>
+                {['basic', 'special', 'unique'].map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
+                    <span className="capitalize">{ability}:</span>
+                    {features.map(feature => Boolean(hoverPlayer[ability][feature]) && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
+                </div>)}
             </div>
-        }
+        </div>}
+        {hoverAbility && !isAttacking && <div className='bg-black text-white fixed flex flex-col space-x-0 space-y-5 items-center justify-center p-10 rounded z-10 detail-heading center max-w-[calc(100vw-15rem)]'>
+            <span className="capitalize">{hoverAbility}:</span>
+            <div>
+                {features.map(feature => Boolean(teams[turn][hoverAbility][feature]) && <div key={feature} className='detail-text'><span className="capitalize">{feature}</span>: {teams[turn][hoverAbility][feature]}</div>)}
+            </div>
+        </div>}
         {indexes.map(number => bullet[number] && <span key={number} id={`bullet${number}`} className='fixed block bg-red-500 -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 transition-all ease-linear duration-[1900ms]' />)}
     </>
 }

@@ -12,6 +12,7 @@ function MyApp({ Component, pageProps }) {
 	const [orientation, setOrientation] = useState()
 	const fullscreenElement = useRef()
 	const updateFullScreen = () => setFullscreen(document.fullscreen)
+	pageProps.router = router;
 
 	useEffect(() => {
 		setMobile(navigator.userAgentData?.mobile)

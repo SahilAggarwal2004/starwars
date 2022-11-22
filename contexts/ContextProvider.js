@@ -7,12 +7,12 @@ import { animateBullet, multiAttack } from '../modules/animation'
 import useStorage from '../hooks/useStorage';
 import { hasForesight, hasStealth, hasTaunt } from '../modules/effects';
 import { getStorage, removeStorage, setStorage } from '../modules/storage';
+import { indexes, multiAttackers, preserveGame } from '../constants';
 
 const Context = createContext();
 export const useGameContext = () => useContext(Context)
 
-const ContextProvider = props => {
-    const { router } = props
+const ContextProvider = ({ router, children }) => {
     const [team1, setTeam1] = useStorage('team1', [])
     const [team2, setTeam2] = useStorage('team2', [])
     const teams = team1.concat(team2)
@@ -21,11 +21,6 @@ const ContextProvider = props => {
     const [turnTeam, setTurnTeam] = useState()
     const [isAttacking, setAttacking] = useState(false)
     const [bullet, setBullet] = useState({ 0: false, 1: false, 2: false, 3: false, 4: false })
-    const preserveGame = ['/play', '/how-to-play']
-    const modes = ['computer', 'player']
-    const details = ['name', 'health', 'type', 'speed'];
-    const indexes = [0, 1, 2, 3, 4]
-    const multiAttackers = ['Mother Talzin']
 
     useEffect(() => {
         if (!preserveGame.includes(router.pathname)) resetGame()
@@ -137,9 +132,9 @@ const ContextProvider = props => {
                 revive(allyTeam, getStorage('initial-health')[i])
             },
             special: stun,
-            unique: ({ player, enemy, allyTeam, enemyTeam, damage, ability }) => {
+            unique: ({ player, enemy, allyTeam, enemyTeam, animation, ability }) => {
                 const { result, index } = verify('member', ['Count Dooku'], enemyTeam)
-                if (!result || enemyTeam[index].stun || enemyTeam[index].health <= 0 || !damage || hasStealth(allyTeam[player])) return
+                if (!result || enemyTeam[index].stun || enemyTeam[index].health <= 0 || !animation || hasStealth(allyTeam[player])) return
                 if (enemy == index || (ability == 'special' && multiAttackers.includes(allyTeam[player].name))) {
                     setTimeout(() => {
                         if (!enemyTeam[index].stun && enemyTeam[index].health > 0) {
@@ -209,7 +204,7 @@ const ContextProvider = props => {
         let indexes = [];
         turnmeter.forEach((value, index) => { if (value == max) indexes.push(index) })
         const index = randomElement(indexes)
-        if (teams[index]?.foresight) teams[index].foresight--
+        if (teams[index]?.foresight > 0) teams[index].foresight--
         if (teams[index]?.stun) {
             teams[index].stun = false
             newTurn(index)
@@ -231,6 +226,7 @@ const ContextProvider = props => {
         }
         let teams = [allyTeam, enemyTeam];
         const damage = allyTeam[player][ability].damage || 0;
+        const animation = allyTeam[player][ability].animation;
         setAttacking(true)
 
         if (!allyTeam[player].special) ability = 'basic'
@@ -252,7 +248,7 @@ const ContextProvider = props => {
             setTimeout(() => multiAttack(player, enemyTeam, turnTeam, setBullet, setHoverPlayer, isCountering), 0);
         } else {
             setBullet(bullet => ({ ...bullet, [enemy]: true }))
-            setTimeout(() => damage > 0 && animateBullet(player, enemy, turnTeam, setBullet, setHoverPlayer, isCountering), 0);
+            setTimeout(() => animation && animateBullet(player, enemy, turnTeam, setBullet, setHoverPlayer, isCountering), 0);
         }
         setTimeout(() => {
             if (hasForesight(enemyTeam[enemy])) enemyTeam[enemy].foresight = 0
@@ -271,7 +267,7 @@ const ContextProvider = props => {
                 // After attack unique abilities:
                 teams.forEach(team => team.forEach(item => {
                     if (item.unique?.type != 'after') return
-                    const data = abilities[item.name].unique?.({ player, enemy, allyTeam, enemyTeam, damage: damage > 0, ability })
+                    const data = abilities[item.name].unique?.({ player, enemy, allyTeam, enemyTeam, animation, ability })
                     if (data) returnUnique = { ...returnUnique, ...data }
                 }))
                 setTimeout(() => {
@@ -286,14 +282,12 @@ const ContextProvider = props => {
                     }
                 }, returnUnique.wait || 0);
             }, wait || 100);
-        }, damage > 0 ? 2000 : 100);
+        }, animation ? 2000 : 100);
     }
 
-    return (
-        <Context.Provider value={{ router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, isAttacking, abilities, indexes, modes }}>
-            {props.children}
-        </Context.Provider>
-    )
+    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, isAttacking, abilities }}>
+        {children}
+    </Context.Provider>
 }
 
 export default ContextProvider;

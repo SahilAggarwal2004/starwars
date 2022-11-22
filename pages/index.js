@@ -1,11 +1,8 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback } from 'react'
 import Particles from 'react-tsparticles'
 import { loadFull } from 'tsparticles'
-import { useGameContext } from '../contexts/ContextProvider'
 
-export default function Home({ enterFullscreen }) {
-  const { router } = useGameContext()
-
+export default function Home({ router, enterFullscreen }) {
   const particlesInit = useCallback(async engine => {
     // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
     // this loads the tsparticles package bundle, it's the easiest method for getting everything ready

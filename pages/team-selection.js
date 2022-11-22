@@ -4,9 +4,10 @@ import React, { useEffect, useState } from 'react'
 import { randomElement } from 'random-stuff-js';
 import { useGameContext } from '../contexts/ContextProvider';
 import { setStorage } from '../modules/storage';
+import { details, features, modes } from '../constants';
 
-export default function TeamSelection({ mode }) {
-    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, players, abilities, modes } = useGameContext();
+export default function TeamSelection({ router, mode }) {
+    const { team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, players, abilities } = useGameContext();
     const [currentTeam, setCurrentTeam] = useState(1);
 
     useEffect(() => { if (!modes.includes(mode)) router.push('/') }, [])
@@ -56,7 +57,7 @@ export default function TeamSelection({ mode }) {
             <div>
                 {['basic', 'special', 'unique', 'leader'].map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
                     <span className='capitalize'>{ability}:</span>
-                    {Object.keys(hoverPlayer[ability]).map(feature => feature != 'ability' && feature != 'type' && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
+                    {features.map(feature => Boolean(hoverPlayer[ability][feature]) && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
                 </div>)}
             </div>
         </div>}

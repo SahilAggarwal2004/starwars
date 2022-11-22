@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useGameContext } from '../contexts/ContextProvider'
+import { modes } from '../constants'
 import { getStorage } from '../modules/storage'
 
-export default function Result({ mode }) {
-    const { router, modes } = useGameContext()
+export default function Result({ router, mode }) {
     const [winner, setWinner] = useState()
 
     useEffect(() => {
