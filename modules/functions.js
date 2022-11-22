@@ -33,14 +33,12 @@ export const revive = (allyTeam, health) => {
 
 export const verify = (type, names, allyTeam) => {
     let result = false, index;
-    if (type == 'leader') {
-        if (!names.includes(allyTeam[0].name)) result = true
-    } else {
+    if (type !== 'leader') {
         allyTeam.forEach(({ name }, i) => {
             if (!names.includes(name)) return
             result = true
             index = i
         })
-    }
+    } else if (names.includes(allyTeam[0].name)) result = true
     return { result, index }
 }

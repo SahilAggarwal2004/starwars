@@ -59,7 +59,7 @@ export default function Play({ mode, isFullScreen }) {
     useEffect(() => { setTimeout(() => updatePositions(), 1) }, [isFullScreen])
 
     useEffect(() => {
-        if (!team1.length || !team2.length) router.push('/')
+        if (!getStorage('team1').length || !getStorage('team2').length) router.push('/')
         if (turn < 0) newTurn()
         const { gameover, winner } = checkResult()
         if (gameover) {

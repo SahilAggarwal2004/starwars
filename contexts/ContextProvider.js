@@ -118,7 +118,7 @@ const ContextProvider = props => {
         },
         'Darth Revan': {
             basic: () => {
-                const healthSteal = getStorage('health-steal');
+                const healthSteal = getStorage('health-steal', [0, 0]);
                 healthSteal[turnTeam - 1] += 0.05
                 setStorage('health-steal', healthSteal);
             },
@@ -139,15 +139,15 @@ const ContextProvider = props => {
             special: stun,
             unique: ({ player, enemy, allyTeam, enemyTeam, damage, ability }) => {
                 const { result, index } = verify('member', ['Count Dooku'], enemyTeam)
-                if (!result || enemyTeam[index].stun || enemyTeam[index].health <= 0) return
+                if (!result || enemyTeam[index].stun || enemyTeam[index].health <= 0 || !damage || hasStealth(allyTeam[player])) return
                 if (enemy == index || (ability == 'special' && multiAttackers.includes(allyTeam[player].name))) {
                     setTimeout(() => {
-                        if (!enemyTeam[index].stun && enemyTeam[index].health > 0 && damage) {
+                        if (!enemyTeam[index].stun && enemyTeam[index].health > 0) {
                             enemyTeam[index].health *= 1.05
                             attack({ player: index, enemy: player, isCountering: true })
                         }
                     }, 100);
-                    return { wait: damage && 2100 }
+                    return { wait: 2100 }
                 }
             }
         },
@@ -182,7 +182,11 @@ const ContextProvider = props => {
         },
         'Grand Master Yoda': {
             basic: foresight,
-            special: ({ player, allyTeam }) => foresight({ player, allyTeam, all: true })
+            special: ({ player, allyTeam }) => foresight({ player, allyTeam, all: true }),
+            leader: ({ player, ability, allyTeam }) => {
+                const { result } = verify('leader', ['Grand Master Yoda'], allyTeam)
+                if (result && allyTeam[player].type == 'Light' && ability == 'special') foresight({ player, allyTeam })
+            }
         }
     }
 
@@ -199,19 +203,16 @@ const ContextProvider = props => {
     function newTurn(oldTurn) {
         const turnmeter = getStorage('turnmeter')
         teams.forEach((player, index) => { player.health > 0 ? turnmeter[index] += player.speed : turnmeter[index] = -1 })
-        if (oldTurn != undefined) {
-            if (turnTeam == 1) team1[oldTurn].foresight--
-            else team2[oldTurn - 5].foresight--
-            turnmeter[oldTurn] = 0
-        }
+        if (oldTurn != undefined) turnmeter[oldTurn] = 0
         setStorage('turnmeter', turnmeter)
         const max = maximumNumber(turnmeter)
         let indexes = [];
         turnmeter.forEach((value, index) => { if (value == max) indexes.push(index) })
         const index = randomElement(indexes)
+        if (teams[index]?.foresight) teams[index].foresight--
         if (teams[index]?.stun) {
             teams[index].stun = false
-            newTurn(turnmeter, index)
+            newTurn(index)
         } else {
             setTurn(index)
             setTurnTeam(Math.ceil((index + 1) / 5))
@@ -244,7 +245,7 @@ const ContextProvider = props => {
             const data = abilities[item.name].unique?.({ enemy, enemyTeam })
             if (data) returnUnique = { ...returnUnique, ...data }
         }))
-        enemy = returnUnique.enemy || enemy
+        enemy = returnUnique?.enemy >= 0 ? returnUnique.enemy : enemy
 
         if (ability == 'special' && multiAttackers.includes(allyTeam[player].name)) {
             setBullet({ 0: enemyTeam[0].health > 0, 1: enemyTeam[1].health > 0, 2: enemyTeam[2].health > 0, 3: enemyTeam[3].health > 0, 4: enemyTeam[4].health > 0 })
@@ -260,7 +261,10 @@ const ContextProvider = props => {
             let wait = abilities[allyTeam[player].name][ability]?.({ player, enemy, allyTeam, enemyTeam, isCountering, turnTeam })
 
             // In-game leader abilities:
-            teams.forEach(team => { if (team[0].leader?.type == 'in-game') abilities[team[0].name].leader?.({ enemy, ability, allyTeam, enemyTeam, isAssisting }) })
+            teams.forEach(team => {
+                const { name, leader } = team[0];
+                if (leader?.type == 'in-game') abilities[name].leader?.({ player, enemy, ability, allyTeam, enemyTeam, isAssisting })
+            })
 
             if (isAssisting || isCountering) return
             setTimeout(() => {
@@ -271,6 +275,8 @@ const ContextProvider = props => {
                     if (data) returnUnique = { ...returnUnique, ...data }
                 }))
                 setTimeout(() => {
+                    setAttacking(false)
+                    newTurn(player + turnTeam * 5 - 5)
                     if ((turnTeam == 1 && !isCountering)) {
                         setTeam1(allyTeam)
                         setTeam2(enemyTeam)
@@ -278,11 +284,9 @@ const ContextProvider = props => {
                         setTeam1(enemyTeam)
                         setTeam2(allyTeam)
                     }
-                    setAttacking(false)
-                    newTurn(player + turnTeam * 5 - 5)
                 }, returnUnique.wait || 0);
-            }, wait || 0);
-        }, damage > 0 ? 2000 : 50);
+            }, wait || 100);
+        }, damage > 0 ? 2000 : 100);
     }
 
     return (
