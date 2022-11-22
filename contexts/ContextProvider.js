@@ -66,8 +66,8 @@ const ContextProvider = ({ router, children }) => {
         },
         'Old Daka': {
             special: ({ player, allyTeam }) => revive(allyTeam, allyTeam[player].health * 1.5),
-            leader: ({ enemy, enemyTeam, isAssisting }) => {
-                if (isAssisting) return
+            leader: ({ enemy, enemyTeam, animation, isAssisting }) => {
+                if (isAssisting || !animation) return
                 const { result } = verify('leader', ['Old Daka'], enemyTeam)
                 if (result) enemyTeam[enemy].health *= 1.15
             }
@@ -259,7 +259,7 @@ const ContextProvider = ({ router, children }) => {
             // In-game leader abilities:
             teams.forEach(team => {
                 const { name, leader } = team[0];
-                if (leader?.type == 'in-game') abilities[name].leader?.({ player, enemy, ability, allyTeam, enemyTeam, isAssisting })
+                if (leader?.type == 'in-game') abilities[name].leader?.({ player, enemy, ability, allyTeam, enemyTeam, animation, isAssisting })
             })
 
             if (isAssisting || isCountering) return
