@@ -236,7 +236,7 @@ const ContextProvider = ({ router, children }) => {
         } else if (ability == 'special') players.forEach(item => { if (item.name == allyTeam[player].name) allyTeam[player].special.cooldown = item.special.cooldown })
 
         // Before attack unique abilities:
-        !isAssisting && !isCountering && teams.forEach(team => team.forEach(item => {
+        !isAssisting && teams.forEach(team => team.forEach(item => {
             if (item.unique?.type !== 'before') return
             const data = abilities[item.name].unique?.({ enemy, enemyTeam })
             if (data) returnUnique = { ...returnUnique, ...data }
