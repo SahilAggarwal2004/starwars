@@ -241,7 +241,7 @@ const ContextProvider = ({ router, children }) => {
             const data = abilities[item.name].unique?.({ enemy, enemyTeam })
             if (data) returnUnique = { ...returnUnique, ...data }
         }))
-        enemy = returnUnique?.enemy >= 0 ? returnUnique.enemy : enemy
+        enemy = returnUnique?.enemy !== undefined ? returnUnique.enemy : enemy
 
         if (ability == 'special' && multiAttackers.includes(allyTeam[player].name)) {
             setBullet({ 0: enemyTeam[0].health > 0, 1: enemyTeam[1].health > 0, 2: enemyTeam[2].health > 0, 3: enemyTeam[3].health > 0, 4: enemyTeam[4].health > 0 })
