@@ -146,8 +146,8 @@ const ContextProvider = props => {
                             enemyTeam[index].health *= 1.05
                             attack({ player: index, enemy: player, isCountering: true })
                         }
-                    }, 500);
-                    return { wait: damage && 2500 }
+                    }, 100);
+                    return { wait: damage && 2100 }
                 }
             }
         },
@@ -229,15 +229,14 @@ const ContextProvider = props => {
             enemyTeam = team1;
         }
         let teams = [allyTeam, enemyTeam];
-        const damage = allyTeam[player][ability].damage;
+        const damage = allyTeam[player][ability].damage || 0;
         setAttacking(true)
 
         if (!allyTeam[player].special) ability = 'basic'
         if (allyTeam[player].special?.cooldown && !isAssisting && !isCountering) {
             ability = 'basic'
             allyTeam[player].special.cooldown--
-        }
-        else if (ability == 'special') players.forEach(item => { if (item.name == allyTeam[player].name) allyTeam[player].special.cooldown = item.special.cooldown })
+        } else if (ability == 'special') players.forEach(item => { if (item.name == allyTeam[player].name) allyTeam[player].special.cooldown = item.special.cooldown })
 
         // Before attack unique abilities:
         !isAssisting && !isCountering && teams.forEach(team => team.forEach(item => {
@@ -256,8 +255,8 @@ const ContextProvider = props => {
         }
         setTimeout(() => {
             if (hasForesight(enemyTeam[enemy])) enemyTeam[enemy].foresight = 0
-            else enemyTeam[enemy].health -= (damage || 0) / enemyTeam[enemy].defence
-            if (allyTeam[player].health < getStorage('initial-health')[turn]) allyTeam[player].health += allyTeam[player][ability].damage * getStorage('health-steal', [0, 0])[turnTeam - 1]
+            else enemyTeam[enemy].health -= damage / enemyTeam[enemy].defence
+            if (allyTeam[player].health < getStorage('initial-health')[turn]) allyTeam[player].health += damage * getStorage('health-steal', [0, 0])[turnTeam - 1]
             let wait = abilities[allyTeam[player].name][ability]?.({ player, enemy, allyTeam, enemyTeam, isCountering, turnTeam })
 
             // In-game leader abilities:
@@ -272,7 +271,7 @@ const ContextProvider = props => {
                     if (data) returnUnique = { ...returnUnique, ...data }
                 }))
                 setTimeout(() => {
-                    if (turnTeam == 1) {
+                    if ((turnTeam == 1 && !isCountering)) {
                         setTeam1(allyTeam)
                         setTeam2(enemyTeam)
                     } else {

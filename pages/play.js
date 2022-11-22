@@ -81,7 +81,7 @@ export default function Play({ mode, isFullScreen }) {
                 let enemies = []
                 team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
                 const enemy = randomElement(enemies)
-                setTimeout(() => attack({ player: turn - 5, enemy, ability: 'special' }), 500);
+                setTimeout(() => attack({ player: turn - 5, enemy, ability: 'special' }), 250);
             } else if (team1.length && team1[enemy].health < 0) {
                 let enemies = [];
                 team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })

@@ -7,9 +7,9 @@ export const stun = ({ enemy, enemyTeam }) => enemyTeam[enemy].stun = true
 export const block = ({ enemy, enemyTeam }) => delete enemyTeam[enemy].special
 
 export const foresight = ({ player, allyTeam, turns = 1, all = false }) => {
+    if (all) allyTeam.forEach(({ health }, index) => { if (health > 0) allyTeam[index].foresight = turns })
+    else allyTeam[player].foresight = turns
     allyTeam[player].foresight++
-    if (all) allyTeam.forEach(({ health }, index) => { if (health > 0) allyTeam[index].foresight += turns })
-    else allyTeam[player].foresight += turns
 }
 
 export const assist = (player, enemy, allyTeam, enemyTeam, attack) => {
@@ -18,8 +18,8 @@ export const assist = (player, enemy, allyTeam, enemyTeam, attack) => {
     allyTeam.forEach(({ health, stun }, index) => { if (health > 0 && !stun && index != player) assistPlayers.push(index) })
     const assistPlayer = randomElement(assistPlayers);
     if (assistPlayer == undefined) return
-    setTimeout(() => attack({ player: assistPlayer, enemy, isAssisting: true }), 500);
-    return 2500
+    setTimeout(() => attack({ player: assistPlayer, enemy, isAssisting: true }), 100);
+    return 2100
 }
 
 export const revive = (allyTeam, health) => {
