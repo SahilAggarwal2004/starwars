@@ -70,9 +70,9 @@ const players = [
         special: { description: "Instantly kill the target enemy, this attack can't be evaded.", cooldown: 8 }
     },
     {
-        name: 'Grand Master Yoda', health: randomNumber(350, 500), type: 'Dark', speed: 100 || randomNumber(10, 15), stun: false, foresight: 0, defence: 1,
+        name: 'Grand Master Yoda', health: randomNumber(350, 500), type: 'Dark', speed: randomNumber(10, 15), stun: false, foresight: 0, defence: 1,
         basic: { damage: randomNumber(60, 100), description: 'Gains foresight for 1 turn.' },
-        special: { description: 'Grant foresight to all allies for 1 turn.', cooldown: 0 }
+        special: { description: 'Grant foresight to all allies for 1 turn.', cooldown: 1 }
     }
 ]
 export default players
