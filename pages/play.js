@@ -4,9 +4,10 @@ import React, { useEffect, useState } from "react"
 import { useGameContext } from "../contexts/ContextProvider"
 import { maximumNumber, randomElement } from "random-stuff-js"
 import effects from "../modules/effects"
+import { getStorage, setStorage } from "../modules/storage"
 
 export default function Play({ mode, isFullScreen }) {
-    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, turnmeter, setTurnmeter, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, setHealthSteal, isAttacking, indexes, turnTeam, modes } = useGameContext()
+    const { router, team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, isAttacking, indexes, turnTeam, modes } = useGameContext()
     const [enemy, setEnemy] = useState(0)
     const [hoverAbility, setHoverAbility] = useState()
 
@@ -31,24 +32,22 @@ export default function Play({ mode, isFullScreen }) {
     }
 
     function updatePositions() {
-        let positions = [];
+        const positions = [];
         [1, 2].forEach(team => {
             indexes.forEach(enemy => {
                 let position = document.getElementById(`team${team}`)?.children[enemy + 1]?.getBoundingClientRect()
                 positions.push(position)
             })
         })
-        sessionStorage.setItem('positions', JSON.stringify(positions))
+        setStorage('positions', positions);
     }
 
     useEffect(() => {
         if (!modes.includes(router.query.mode)) router.push('/')
-        setTeam1(JSON.parse(sessionStorage.getItem('team1')) || [])
-        setTeam2(JSON.parse(sessionStorage.getItem('team2')) || [])
-        setTurnmeter(JSON.parse(sessionStorage.getItem('turnmeter')) || [])
-        setHealthSteal(JSON.parse(sessionStorage.getItem('health-steal')) || [0, 0])
-        if (sessionStorage.getItem('turn')) {
-            const tempturn = +sessionStorage.getItem('turn')
+        setTeam1(getStorage('team1', []))
+        setTeam2(getStorage('team2', []))
+        const tempturn = +getStorage('turn', turn)
+        if (tempturn) {
             setTurn(tempturn)
             setTurnTeam(Math.ceil((tempturn + 1) / 5))
         }
@@ -60,13 +59,11 @@ export default function Play({ mode, isFullScreen }) {
     useEffect(() => { setTimeout(() => updatePositions(), 1) }, [isFullScreen])
 
     useEffect(() => {
-        let teamone = JSON.parse(sessionStorage.getItem('team1'))
-        let teamtwo = JSON.parse(sessionStorage.getItem('team2'))
-        if (!teamone?.length || !teamtwo.length) router.push('/')
-        if (turnmeter.length != teams.length) newTurn()
+        if (!getStorage('team1').length || !getStorage('team2').length) router.push('/')
+        if (turn < 0) newTurn()
         const { gameover, winner } = checkResult()
         if (gameover) {
-            sessionStorage.setItem('winner', winner)
+            setStorage('winner', winner)
             router.push(`/result?mode=${mode}`)
         }
     }, [team1, team2])
@@ -100,12 +97,13 @@ export default function Play({ mode, isFullScreen }) {
                 const playerIndex = i + index * 5
                 const selectedPlayer = turn === playerIndex
                 const selectedEnemy = enemy === i
+                const turnmeter = getStorage('turnmeter', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
                 return <div key={i} className={`${player.health <= 0 && 'invisible'}`}>
                     <div className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${selectedPlayer ? 'outline border-2 outline-green-500' : selectedEnemy && turnTeam !== index + 1 ? 'outline border-2 outline-red-500' : 'hover:border-2 hover:outline hover:outline-black'} border-transparent rounded-sm ${player.stun && 'opacity-50'}`} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => selectEnemy(i, index)} onContextMenu={event => event.preventDefault()}>
                         <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5 max-w-full' style={{ width: `${turnmeter[playerIndex] / maximumNumber(turnmeter) * 6}vw` }} />
                         <img src={`/images/players/${player.name}.webp`} alt={player.name} width={120} className='rounded-sm aspect-square' />
                         <div className="absolute bottom-0 left-0 right-0 flex justify-center space-x-0.5 z-10">
-                            {effects.map(({ effect, condition }) => condition({ player, team1, team2 }) && <img key={effect} alt='' src={`images/effects/${effect}.webp`} width={20} height={20} />)}
+                            {effects.map(({ effect, condition }) => condition(player) && <img key={effect} alt='' src={`images/effects/${effect}.webp`} width={20} height={20} />)}
                         </div>
                     </div>
                     {!(mode === 'computer' && turnTeam === 2) && selectedPlayer && !isAttacking && <div className="fixed flex x-center bottom-3 space-x-2">

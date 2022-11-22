@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useGameContext } from '../contexts/ContextProvider'
+import { getStorage } from '../modules/storage'
 
 export default function Result({ mode }) {
     const { router, modes } = useGameContext()
@@ -7,7 +8,7 @@ export default function Result({ mode }) {
 
     useEffect(() => {
         if (!modes.includes(router.query.mode)) router.push('/')
-        const winner = sessionStorage.getItem('winner')
+        const winner = getStorage('winner')
         winner ? setWinner(winner) : router.push('/')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])

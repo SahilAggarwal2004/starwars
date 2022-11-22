@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from 'react'
 import { randomElement } from 'random-stuff-js';
 import { useGameContext } from '../contexts/ContextProvider';
+import { setStorage } from '../modules/storage';
 
 export default function TeamSelection({ mode }) {
-    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, players, abilities, modes, setInitialHealth } = useGameContext();
+    const { router, team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, details, players, abilities, modes } = useGameContext();
     const [currentTeam, setCurrentTeam] = useState(1);
 
     useEffect(() => { if (!modes.includes(mode)) router.push('/') }, [])
@@ -16,7 +17,7 @@ export default function TeamSelection({ mode }) {
             if (team2[0].leader?.type == 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
             setTeam1(team1)
             setTeam2(team2)
-            setInitialHealth(teams.map(player => player.health))
+            setStorage('initial-health', teams.map(player => player.health))
             router.push(`/play?mode=${mode}`)
             return
         }

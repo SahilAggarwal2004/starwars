@@ -1,6 +1,8 @@
+import { getStorage } from "./storage"
+
 export async function animateBullet(player, enemy, turnTeam, setBullet, setHoverPlayer, isCountering) {
     if (isCountering) turnTeam = turnTeam == 1 ? 2 : 1
-    const positions = JSON.parse(sessionStorage.getItem('positions'));
+    const positions = getStorage('positions')
     const { left: playerLeft, right: playerRight, top: playerTop, bottom: playerBottom } = positions[turnTeam * 5 - 5 + player]
     const { left: enemyLeft, right: enemyRight, top: enemyTop, bottom: enemyBottom } = positions[(turnTeam == 1 ? 2 : 1) * 5 - 5 + enemy]
     const bulletRef = document.getElementById(`bullet${enemy}`).style
@@ -18,7 +20,7 @@ export async function animateBullet(player, enemy, turnTeam, setBullet, setHover
 
 export async function multiAttack(player, enemyTeam, turnTeam, setBullet, setHoverPlayer, isCountering) {
     if (isCountering) turnTeam = turnTeam == 1 ? 2 : 1
-    const positions = JSON.parse(sessionStorage.getItem('positions'));
+    const positions = getStorage('positions')
     const { left: playerLeft, top: playerTop } = positions[turnTeam * 5 - 5 + player]
     const enemyLeft = positions[(turnTeam == 1 ? 2 : 1) * 5 - 5].left
     let bulletRef, bulletRef1, bulletRef2, bulletRef3, bulletRef4, enemyTop, enemyTop1, enemyTop2, enemyTop3, enemyTop4

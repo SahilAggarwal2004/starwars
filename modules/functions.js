@@ -12,14 +12,12 @@ export const foresight = ({ player, allyTeam, turns = 1, all = false }) => {
     else allyTeam[player].foresight += turns
 }
 
-export const assist = (player, enemy, allyTeam, enemyTeam, tempmeter, turnTeam, setTurnmeter, attack) => {
+export const assist = (player, enemy, allyTeam, enemyTeam, attack) => {
     if (enemyTeam[enemy].health <= 0) return
     let assistPlayers = [];
     allyTeam.forEach(({ health, stun }, index) => { if (health > 0 && !stun && index != player) assistPlayers.push(index) })
     const assistPlayer = randomElement(assistPlayers);
     if (assistPlayer == undefined) return
-    tempmeter[turnTeam * 5 - 5 + player] = 0
-    setTurnmeter(tempmeter)
     setTimeout(() => attack({ player: assistPlayer, enemy, isAssisting: true }), 500);
     return 2500
 }
