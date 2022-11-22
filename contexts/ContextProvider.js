@@ -141,7 +141,7 @@ const ContextProvider = ({ router, children }) => {
                             enemyTeam[index].health *= 1.05
                             attack({ player: index, enemy: player, isCountering: true })
                         }
-                    }, 100);
+                    }, 50);
                     return { wait: 2100 }
                 }
             }
@@ -280,9 +280,9 @@ const ContextProvider = ({ router, children }) => {
                         setTeam1(enemyTeam)
                         setTeam2(allyTeam)
                     }
-                }, returnUnique.wait || 0);
-            }, wait || 100);
-        }, animation ? 2000 : 100);
+                }, returnUnique.wait || 50);
+            }, wait || 50);
+        }, animation ? 2000 : 50);
     }
 
     return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, players, attack, bullet, isAttacking, abilities }}>

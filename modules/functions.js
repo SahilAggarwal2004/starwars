@@ -18,7 +18,7 @@ export const assist = (player, enemy, allyTeam, enemyTeam, attack) => {
     allyTeam.forEach(({ health, stun }, index) => { if (health > 0 && !stun && index != player) assistPlayers.push(index) })
     const assistPlayer = randomElement(assistPlayers);
     if (assistPlayer == undefined) return
-    setTimeout(() => attack({ player: assistPlayer, enemy, isAssisting: true }), 100);
+    setTimeout(() => attack({ player: assistPlayer, enemy, isAssisting: true }), 50);
     return 2100
 }
 
