@@ -198,13 +198,15 @@ const ContextProvider = ({ router, children }) => {
     function newTurn(oldTurn) {
         const turnmeter = getStorage('turnmeter')
         teams.forEach((player, index) => { player.health > 0 ? turnmeter[index] += player.speed : turnmeter[index] = -1 })
-        if (oldTurn != undefined) turnmeter[oldTurn] = 0
+        if (oldTurn != undefined) {
+            if (teams[oldTurn]?.foresight > 0) teams[oldTurn].foresight--
+            turnmeter[oldTurn] = 0
+        }
         setStorage('turnmeter', turnmeter)
         const max = maximumNumber(turnmeter)
         let indexes = [];
         turnmeter.forEach((value, index) => { if (value == max) indexes.push(index) })
         const index = randomElement(indexes)
-        if (teams[index]?.foresight > 0) teams[index].foresight--
         if (teams[index]?.stun) {
             teams[index].stun = false
             newTurn(index)
@@ -272,7 +274,6 @@ const ContextProvider = ({ router, children }) => {
                 }))
                 setTimeout(() => {
                     newTurn(player + turnTeam * 5 - 5)
-                    setAttacking(false)
                     if (turnTeam == 1 && !isCountering) {
                         setTeam1(allyTeam)
                         setTeam2(enemyTeam)
@@ -280,6 +281,7 @@ const ContextProvider = ({ router, children }) => {
                         setTeam1(enemyTeam)
                         setTeam2(allyTeam)
                     }
+                    setAttacking(false)
                 }, returnUnique.wait || 50);
             }, wait || 50);
         }, animation ? 2000 : 50);
