@@ -67,12 +67,12 @@ export default function Play({ router, mode, isFullScreen }) {
             setStorage('winner', winner)
             router.push(`/result?mode=${mode}`)
         }
-    }, [team1, team2])
+    }, [teams])
 
     // Computer mode
     useEffect(() => {
         if (turnTeam === 1) {
-            if (team2.length && team2[enemy].health < 0) {
+            if (team2.length && team2[enemy].health <= 0) {
                 let enemies = [];
                 team2.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
                 setEnemy(randomElement(enemies))
@@ -82,8 +82,8 @@ export default function Play({ router, mode, isFullScreen }) {
                 let enemies = []
                 team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
                 const enemy = randomElement(enemies)
-                setTimeout(() => attack({ player: turn - 5, enemy, ability: 'special' }), 250);
-            } else if (team1.length && team1[enemy].health < 0) {
+                setTimeout(() => attack({ player: turn - 5, enemy, ability: 'special' }), 500);
+            } else if (team1.length && team1[enemy].health <= 0) {
                 let enemies = [];
                 team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
                 setEnemy(randomElement(enemies))
