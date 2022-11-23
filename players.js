@@ -73,4 +73,5 @@ const players = [
         leader: { description: "Whenever an ally suffers damage from an attack (excluding attacks out of turn), the ally recovers 15% health.", type: 'in-game' }
     }
 ]
+
 export default players

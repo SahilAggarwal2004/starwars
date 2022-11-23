@@ -1,6 +1,6 @@
 import { getStorage } from "./storage"
 
-export async function animateBullet(player, enemy, turnTeam, setBullet, setHoverPlayer, isCountering) {
+async function animateBullet(player, enemy, turnTeam, setBullet, setHoverPlayer, isCountering) {
     if (isCountering) turnTeam = turnTeam == 1 ? 2 : 1
     const positions = getStorage('positions')
     const { left: playerLeft, right: playerRight, top: playerTop, bottom: playerBottom } = positions[turnTeam * 5 - 5 + player]
@@ -18,7 +18,7 @@ export async function animateBullet(player, enemy, turnTeam, setBullet, setHover
     }, 50);
 }
 
-export async function multiAttack(player, enemyTeam, turnTeam, setBullet, setHoverPlayer, isCountering) {
+async function multiAttack(player, enemyTeam, turnTeam, setBullet, setHoverPlayer, isCountering) {
     if (isCountering) turnTeam = turnTeam == 1 ? 2 : 1
     const positions = getStorage('positions')
     const { left: playerLeft, top: playerTop } = positions[turnTeam * 5 - 5 + player]
@@ -81,3 +81,5 @@ export async function multiAttack(player, enemyTeam, turnTeam, setBullet, setHov
         }, 1900)
     }, 50);
 }
+
+export { animateBullet, multiAttack }
