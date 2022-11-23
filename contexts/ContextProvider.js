@@ -227,8 +227,6 @@ const ContextProvider = ({ router, children }) => {
             enemyTeam = team1;
         }
         let teams = [allyTeam, enemyTeam];
-        const damage = allyTeam[player][ability].damage || 0;
-        const animation = allyTeam[player][ability].animation;
         setAttacking(true)
 
         if (!allyTeam[player].special) ability = 'basic'
@@ -236,6 +234,9 @@ const ContextProvider = ({ router, children }) => {
             ability = 'basic'
             allyTeam[player].special.cooldown--
         } else if (ability == 'special') players.forEach(item => { if (item.name == allyTeam[player].name) allyTeam[player].special.cooldown = item.special.cooldown })
+
+        const damage = allyTeam[player][ability].damage || 0;
+        const animation = allyTeam[player][ability].animation;
 
         // Before attack unique abilities:
         !isAssisting && teams.forEach(team => team.forEach(item => {
