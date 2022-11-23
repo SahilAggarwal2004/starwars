@@ -128,7 +128,7 @@ const ContextProvider = ({ router, children }) => {
         },
         'Jedi Consular': {
             special: ({ player, enemy, allyTeam, enemyTeam }) => {
-                allyTeam[player].speed += 2;
+                allyTeam[player].speed += 10;
                 const wait = assist(player, enemy, allyTeam, enemyTeam, attack)
                 return wait
             },

@@ -45,7 +45,7 @@ const players = [
     {
         name: 'Jedi Consular', health: randomNumber(350, 500), type: 'Light', speed: randomNumber(100, 150), stun: false, foresight: 0, defence: 1,
         basic: { damage: randomNumber(75, 120), animation: true },
-        special: { damage: randomNumber(100, 150), description: 'Call another random ally to assist and increase speed of this player by 2.', cooldown: 1, animation: true },
+        special: { damage: randomNumber(100, 150), description: 'Call another random ally to assist and increase speed of this player by 10.', cooldown: 1, animation: true },
         leader: { description: 'Whenever an ally uses a special ability, all allies gain 10% of their current health.', type: 'in-game' }
     },
     {
