@@ -49,29 +49,6 @@ const ContextProvider = ({ router, children }) => {
                 })
             }
         },
-        'Jolee Bindo': {
-            special: ({ player, enemy, allyTeam, enemyTeam }) => {
-                allyTeam.forEach(({ stun, health }, index) => {
-                    if (!stun || health <= 0) return
-                    allyTeam[index].stun = false
-                });
-                const wait = assist(player, enemy, allyTeam, enemyTeam, attack)
-                return wait
-            },
-            leader: ({ allyTeam }) => indexes.forEach(index => allyTeam[index].health *= 1.25)
-        },
-        'Darth Vader': {
-            special: block,
-            leader: ({ allyTeam }) => indexes.forEach(index => allyTeam[index].speed++)
-        },
-        'Old Daka': {
-            special: ({ player, allyTeam }) => revive(allyTeam, allyTeam[player].health * 1.5),
-            leader: ({ enemy, enemyTeam, animation, isAssisting }) => {
-                if (isAssisting || !animation) return
-                const { result } = verify('leader', ['Old Daka'], enemyTeam)
-                if (result) enemyTeam[enemy].health *= 1.15
-            }
-        },
         'Chewbecca': {
             basic: ({ allyTeam }) => {
                 const chance = randomNumber(1, 10)
@@ -97,28 +74,6 @@ const ContextProvider = ({ router, children }) => {
                     return { enemy: randomElement(randomEnemies) || index };
                 }
             }
-        },
-        'Jedi Knight Revan': {
-            basic: ({ allyTeam }) => allyTeam.forEach(({ type, health }, index) => { if (type == 'Light' && health > 0) allyTeam[index].health += 50 }),
-            special: ({ allyTeam, enemyTeam }) => {
-                allyTeam.forEach(({ name, type, health, special }, index) => { if (health > 0 && name != 'Jedi Knight Revan' && type == 'Light' && special) allyTeam[index].special.cooldown = 0 })
-                enemyTeam.forEach(({ health, type, speed }, index) => { if (health > 0 && type == 'Dark' && speed > 1) enemyTeam[index].speed-- })
-            },
-            leader: ({ ability, allyTeam }) => {
-                const { result } = verify('leader', ['Jedi Knight Revan'], allyTeam)
-                if (ability == 'basic' && result) allyTeam.forEach(({ name }, index) => {
-                    if (name == 'Jedi Knight Revan' && allyTeam[index].special?.cooldown > 0) allyTeam[index].special.cooldown--
-                })
-            }
-        },
-        'Darth Revan': {
-            basic: () => {
-                const healthSteal = getStorage('health-steal', [0, 0]);
-                healthSteal[turnTeam - 1] += 0.05
-                setStorage('health-steal', healthSteal);
-            },
-            special: block,
-            leader: ({ enemyTeam }) => indexes.forEach(index => enemyTeam[index].speed--)
         },
         'Count Dooku': {
             basic: ({ allyTeam, isCountering, turnTeam }) => {
@@ -146,6 +101,66 @@ const ContextProvider = ({ router, children }) => {
                 }
             }
         },
+        'Darth Nihilus': {
+            basic: ({ player, allyTeam }) => allyTeam[player].special.cooldown--,
+            special: kill
+        },
+        'Darth Revan': {
+            basic: () => {
+                const healthSteal = getStorage('health-steal', [0, 0]);
+                healthSteal[turnTeam - 1] += 0.05
+                setStorage('health-steal', healthSteal);
+            },
+            special: block,
+            leader: ({ enemyTeam }) => indexes.forEach(index => enemyTeam[index].speed -= 10)
+        },
+        'Darth Vader': {
+            special: block,
+            leader: ({ allyTeam }) => indexes.forEach(index => allyTeam[index].speed += 10)
+        },
+        'Grand Master Yoda': {
+            basic: foresight,
+            special: ({ player, allyTeam }) => foresight({ player, allyTeam, all: true }),
+            leader: ({ player, ability, allyTeam }) => {
+                const { result } = verify('leader', ['Grand Master Yoda'], allyTeam)
+                if (result && allyTeam[player].type == 'Light' && ability == 'special') foresight({ player, allyTeam })
+            }
+        },
+        'Jedi Consular': {
+            special: ({ player, enemy, allyTeam, enemyTeam }) => {
+                allyTeam[player].speed += 2;
+                const wait = assist(player, enemy, allyTeam, enemyTeam, attack)
+                return wait
+            },
+            leader: ({ ability, allyTeam }) => {
+                const { result } = verify('leader', ['Jedi Consular'], allyTeam)
+                if (ability == 'special' && result) indexes.forEach(index => allyTeam[index].health *= 1.1)
+            }
+        },
+        'Jedi Knight Revan': {
+            basic: ({ allyTeam }) => allyTeam.forEach(({ type, health }, index) => { if (type == 'Light' && health > 0) allyTeam[index].health += 50 }),
+            special: ({ allyTeam, enemyTeam }) => {
+                allyTeam.forEach(({ name, type, health, special }, index) => { if (health > 0 && name != 'Jedi Knight Revan' && type == 'Light' && special) allyTeam[index].special.cooldown = 0 })
+                enemyTeam.forEach(({ health, type, speed }, index) => { if (health > 0 && type == 'Dark' && speed > 1) enemyTeam[index].speed-- })
+            },
+            leader: ({ ability, allyTeam }) => {
+                const { result } = verify('leader', ['Jedi Knight Revan'], allyTeam)
+                if (ability == 'basic' && result) allyTeam.forEach(({ name }, index) => {
+                    if (name == 'Jedi Knight Revan' && allyTeam[index].special?.cooldown > 0) allyTeam[index].special.cooldown--
+                })
+            }
+        },
+        'Jolee Bindo': {
+            special: ({ player, enemy, allyTeam, enemyTeam }) => {
+                allyTeam.forEach(({ stun, health }, index) => {
+                    if (!stun || health <= 0) return
+                    allyTeam[index].stun = false
+                });
+                const wait = assist(player, enemy, allyTeam, enemyTeam, attack)
+                return wait
+            },
+            leader: ({ allyTeam }) => indexes.forEach(index => allyTeam[index].health *= 1.25)
+        },
         'Mother Talzin': {
             basic: ({ enemy, enemyTeam }) => {
                 const chance = randomNumber(1, 4)
@@ -160,27 +175,12 @@ const ContextProvider = ({ router, children }) => {
             },
             leader: ({ allyTeam }) => allyTeam.forEach(({ type }, index) => { if (type == 'Dark') allyTeam[index].health *= 1.40 })
         },
-        'Jedi Consular': {
-            special: ({ player, enemy, allyTeam, enemyTeam }) => {
-                allyTeam[player].speed += 2;
-                const wait = assist(player, enemy, allyTeam, enemyTeam, attack)
-                return wait
-            },
-            leader: ({ ability, allyTeam }) => {
-                const { result } = verify('leader', ['Jedi Consular'], allyTeam)
-                if (ability == 'special' && result) indexes.forEach(index => allyTeam[index].health *= 1.1)
-            }
-        },
-        'Darth Nihilus': {
-            basic: ({ player, allyTeam }) => allyTeam[player].special.cooldown--,
-            special: kill
-        },
-        'Grand Master Yoda': {
-            basic: foresight,
-            special: ({ player, allyTeam }) => foresight({ player, allyTeam, all: true }),
-            leader: ({ player, ability, allyTeam }) => {
-                const { result } = verify('leader', ['Grand Master Yoda'], allyTeam)
-                if (result && allyTeam[player].type == 'Light' && ability == 'special') foresight({ player, allyTeam })
+        'Old Daka': {
+            special: ({ player, allyTeam }) => revive(allyTeam, allyTeam[player].health * 1.5),
+            leader: ({ enemy, enemyTeam, animation, isAssisting }) => {
+                if (isAssisting || !animation) return
+                const { result } = verify('leader', ['Old Daka'], enemyTeam)
+                if (result) enemyTeam[enemy].health *= 1.15
             }
         }
     }
