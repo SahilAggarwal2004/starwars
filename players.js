@@ -22,7 +22,7 @@ const players = [
     {
         name: 'Darth Nihilus', health: randomNumber(350, 500), type: 'Dark', speed: randomNumber(100, 150), stun: false, foresight: 0, defence: 1,
         basic: { damage: randomNumber(60, 100), description: 'Decrease cooldown of his special ability by 1.', animation: true },
-        special: { description: "Instantly kill the target enemy, this attack can't be evaded.", cooldown: 8, animation: true }
+        special: { description: "Instantly kill the target enemy, this attack can't be evaded.", cooldown: 6, animation: true }
     },
     {
         name: 'Darth Revan', health: randomNumber(350, 500), type: 'Dark', speed: randomNumber(100, 150), stun: false, foresight: 0, defence: 1,
