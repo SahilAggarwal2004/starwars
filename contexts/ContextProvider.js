@@ -66,7 +66,7 @@ const ContextProvider = ({ router, children }) => {
                 const stealth = enemy == index && hasStealth(enemyTeam[index])
                 if (stealth) {
                     let randomEnemies = []
-                    enemyTeam.forEach(({ health }, i) => { if (health > 0) randomEnemies.push(i) })
+                    enemyTeam.forEach(({ health }, i) => { if (health > 0 && i != index) randomEnemies.push(i) })
                     return { enemy: randomElement(randomEnemies) || index };
                 }
             }
@@ -189,11 +189,11 @@ const ContextProvider = ({ router, children }) => {
 
     function newTurn(oldTurn) {
         const turnmeter = getStorage('turnmeter')
-        teams.forEach((player, index) => { player.health > 0 ? turnmeter[index] += player.speed : turnmeter[index] = -1 })
         if (oldTurn != undefined) {
             if (teams[oldTurn]?.foresight > 0) teams[oldTurn].foresight--
             turnmeter[oldTurn] = 0
         }
+        teams.forEach((player, index) => { player.health > 0 ? turnmeter[index] += player.speed : turnmeter[index] = -1 })
         setStorage('turnmeter', turnmeter)
         const max = maximumNumber(turnmeter)
         let indexes = [];
