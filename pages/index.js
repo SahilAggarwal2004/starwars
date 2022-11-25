@@ -38,8 +38,8 @@ export default function Home({ router, enterFullscreen }) {
           },
           number: {
             density: { enable: true, area: 800 },
-            value: 100,
-            max: 800
+            value: 125,
+            max: 500
           },
           opacity: {
             animation: { enable: true, speed: 2, count: -1 },

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { createContext, useState, useEffect, useContext } from 'react'
-import { maximumNumber, randomNumber, randomElement } from 'random-stuff-js'
+import { maximumNumber, randomElement, probability } from 'random-stuff-js'
 import players from '../players';
 import { stun, assist, block, revive, verify, kill, foresight } from '../modules/functions';
 import { animateBullet, multiAttack } from '../modules/animation'
@@ -30,8 +30,7 @@ const ContextProvider = ({ router, children }) => {
     const abilities = {
         'Bastila Shan': {
             basic: ({ player, allyTeam }) => {
-                const chance = randomNumber(1, 2)
-                if (chance == 2) return
+                if (probability(0.5)) return
                 let randomPlayers = [];
                 allyTeam.forEach(({ health }, index) => { if (health > 0 && index != player) randomPlayers.push(index) })
                 const randomPlayer = randomElement(randomPlayers);
@@ -50,10 +49,7 @@ const ContextProvider = ({ router, children }) => {
             }
         },
         'Chewbecca': {
-            basic: ({ allyTeam }) => {
-                const chance = randomNumber(1, 10)
-                chance == 5 && allyTeam.forEach(({ type }, index) => { if (type == 'Light') allyTeam[index].health *= 2 })
-            },
+            basic: ({ allyTeam }) => probability(0.1) && allyTeam.forEach(({ type }, index) => { if (type == 'Light') allyTeam[index].health *= 2 }),
             special: ({ player, allyTeam }) => {
                 allyTeam.forEach(({ health }, index) => {
                     if (health <= 0) return
@@ -77,8 +73,7 @@ const ContextProvider = ({ router, children }) => {
         },
         'Count Dooku': {
             basic: ({ allyTeam, isCountering, turnTeam }) => {
-                const chance = randomNumber(1, 4)
-                if (chance !== 2) return
+                if (probability(0.75)) return
                 let i = turn;
                 if (isCountering) {
                     const { index } = verify('member', ['Count Dooku'], allyTeam)
@@ -162,10 +157,7 @@ const ContextProvider = ({ router, children }) => {
             leader: ({ allyTeam }) => indexes.forEach(index => allyTeam[index].health *= 1.25)
         },
         'Mother Talzin': {
-            basic: ({ enemy, enemyTeam }) => {
-                const chance = randomNumber(1, 4)
-                chance == 2 && stun({ enemy, enemyTeam })
-            },
+            basic: ({ enemy, enemyTeam }) => probability(0.25) && stun({ enemy, enemyTeam }),
             special: ({ player, allyTeam, enemyTeam }) => {
                 allyTeam.forEach(({ health }, index) => { if (health > 0) allyTeam[index].health += allyTeam[player].health * 0.25 })
                 enemyTeam.forEach(({ health }, index) => {
