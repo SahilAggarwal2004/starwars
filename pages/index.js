@@ -51,7 +51,7 @@ export default function Home({ router, enterFullscreen }) {
         detectRetina: true
       }}
     />
-    <div className='fixed x-center top-1/2 -translate-y-2/3 z-10 font-[starwars] text-yellow-300 text-center text-6xl sm:text-8xl flex flex-col -space-y-3 sm:-space-y-5 select-none'>
+    <div className='fixed x-center top-1/2 -translate-y-2/3 z-10 font-[starwars] text-yellow-300 text-center text-6xl sm:text-8xl flex flex-col -space-y-3 sm:-space-y-5'>
       <span>Star</span>
       <span>Wars</span>
     </div>

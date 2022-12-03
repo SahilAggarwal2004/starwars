@@ -30,7 +30,7 @@
 }
 
 .ability {
-    @apply bg-black text-white px-3 py-1 cursor-pointer capitalize select-none
+    @apply bg-black text-white px-3 py-1 cursor-pointer capitalize
 }
 
 @font-face {
@@ -41,6 +41,7 @@
 @tailwind utilities;
 
 * {
+    user-select: none;
     -webkit-tap-highlight-color: transparent;
 }
 
