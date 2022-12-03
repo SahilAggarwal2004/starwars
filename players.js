@@ -51,7 +51,7 @@ const players = [
     {
         name: 'Jedi Knight Revan', health: randomNumber(350, 500), type: 'Light', speed: randomNumber(100, 150), stun: false, foresight: 0, defence: 1,
         basic: { damage: randomNumber(60, 100), description: "Light side allies gain 50 health.", animation: true },
-        special: { damage: randomNumber(125, 150), description: 'Reset the cooldowns of light side allies to 0 and decrease speed of dark side enemies by 1.', cooldown: 2, animation: true },
+        special: { damage: randomNumber(125, 150), description: 'Reset the cooldowns of light side allies to 0 and decrease speed of dark side enemies by 5.', cooldown: 2, animation: true },
         leader: { description: "Whenever an ally uses a basic ability, decrease the cooldown of his special ability by 1.", type: 'in-game', animation: true }
     },
     {

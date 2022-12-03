@@ -136,7 +136,7 @@ const ContextProvider = ({ router, children }) => {
             basic: ({ allyTeam }) => allyTeam.forEach(({ type, health }, index) => { if (type == 'Light' && health > 0) allyTeam[index].health += 50 }),
             special: ({ allyTeam, enemyTeam }) => {
                 allyTeam.forEach(({ name, type, health, special }, index) => { if (health > 0 && name != 'Jedi Knight Revan' && type == 'Light' && special) allyTeam[index].special.cooldown = 0 })
-                enemyTeam.forEach(({ health, type, speed }, index) => { if (health > 0 && type == 'Dark' && speed > 1) enemyTeam[index].speed-- })
+                enemyTeam.forEach(({ health, type, speed }, index) => { if (health > 0 && type == 'Dark' && speed > 1) enemyTeam[index].speed -= 5 })
             },
             leader: ({ ability, allyTeam }) => {
                 const { result } = verify('leader', ['Jedi Knight Revan'], allyTeam)
