@@ -3,7 +3,7 @@ import { randomNumber } from 'random-stuff-js'
 class Player {
     buffs = { // effect: { count, stack, locked }
         foresight: { count: 0 },
-        offense: { count: 1 },
+        offense: { count: 0 },
         defense: { count: 0 }
     };
     debuffs = {
