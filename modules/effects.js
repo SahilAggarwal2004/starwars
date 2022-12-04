@@ -3,8 +3,12 @@ import { getStorage } from "./storage"
 
 const tauntPlayers = ['Chewbecca']
 
-const hasForesight = player => player.foresight > 0
+const hasStun = player => player?.debuffs.stun > 0
+
+const hasForesight = player => player.buffs.foresight > 0
+
 const hasStealth = player => player.name == 'Chewbecca' && player.health < 100
+
 const hasTaunt = player => {
     const team1 = getStorage('team1')
     const team2 = getStorage('team2')
@@ -19,4 +23,4 @@ const effects = [
 ]
 
 export default effects
-export { hasForesight, hasStealth, hasTaunt }
+export { hasStun, hasForesight, hasStealth, hasTaunt }
