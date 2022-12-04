@@ -1,8 +1,16 @@
 import { randomNumber } from 'random-stuff-js'
 
 class Player {
-    buffs = { foresight: 0 }
-    debuffs = { stun: 0 }
+    buffs = { // effect: { count, stack, locked }
+        foresight: { count: 0 },
+        attack: { count: 0 },
+        defence: { count: 0 }
+    };
+    debuffs = {
+        stun: { count: 0 },
+        attack: { count: 0 },
+        defence: { count: 0 }
+    };
     constructor({ name, health = 1, type, speed = randomNumber(100, 150), defence = 1, basic, special, unique, leader }) {
         this.name = name;
         this.health = randomNumber(350 * health, 500 * health)

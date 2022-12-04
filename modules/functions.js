@@ -2,14 +2,14 @@ import { randomElement } from 'random-stuff-js';
 
 const kill = ({ enemy, enemyTeam }) => enemyTeam[enemy].health = 0
 
-const stun = ({ enemy, enemyTeam, turns = 1 }) => enemyTeam[enemy].debuffs.stun += turns
+const stun = ({ enemy, enemyTeam, turns = 1 }) => enemyTeam[enemy].debuffs.stun.count += turns
 
 const block = ({ enemy, enemyTeam }) => delete enemyTeam[enemy].special
 
 const foresight = ({ player, allyTeam, turns = 1, all = false }) => {
-    if (all) allyTeam.forEach(({ health }, index) => { if (health > 0) allyTeam[index].buffs.foresight += turns })
-    else allyTeam[player].buffs.foresight += turns
-    allyTeam[player].buffs.foresight++
+    if (all) allyTeam.forEach(({ health }, index) => { if (health > 0) allyTeam[index].buffs.foresight.count += turns })
+    else allyTeam[player].buffs.foresight.count += turns
+    allyTeam[player].buffs.foresight.count++
 }
 
 const assist = (player, enemy, allyTeam, enemyTeam, attack) => {
@@ -28,7 +28,7 @@ const revive = (allyTeam, health) => {
     const revivePlayer = randomElement(revivePlayers)
     if (revivePlayer == undefined) return
     allyTeam[revivePlayer].health = health
-    allyTeam[revivePlayer].debuffs.stun = 0
+    allyTeam[revivePlayer].debuffs.stun.count = 0
 }
 
 const verify = (type, names, allyTeam) => {

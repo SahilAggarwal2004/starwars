@@ -149,7 +149,7 @@ const ContextProvider = ({ router, children }) => {
             special: ({ player, enemy, allyTeam, enemyTeam }) => {
                 allyTeam.forEach(({ stun, health }, index) => {
                     if (!stun || health <= 0) return
-                    allyTeam[index].debuffs.stun = 0
+                    allyTeam[index].debuffs.stun.count = 0
                 });
                 const wait = assist(player, enemy, allyTeam, enemyTeam, attack)
                 return wait
@@ -162,7 +162,7 @@ const ContextProvider = ({ router, children }) => {
                 allyTeam.forEach(({ health }, index) => { if (health > 0) allyTeam[index].health += allyTeam[player].health * 0.25 })
                 enemyTeam.forEach(({ health }, index) => {
                     if (health > 0 && !hasForesight(enemyTeam[index])) enemyTeam[index].health -= allyTeam[player].special.damage
-                    else enemyTeam[index].buffs.foresight = 0;
+                    else enemyTeam[index].buffs.foresight.count = 0;
                 })
             },
             leader: ({ allyTeam }) => allyTeam.forEach(({ type }, index) => { if (type == 'Dark') allyTeam[index].health *= 1.40 })
@@ -202,7 +202,7 @@ const ContextProvider = ({ router, children }) => {
         turnmeter.forEach((value, index) => { if (value == max) indexes.push(index) })
         const index = randomElement(indexes)
         if (hasStun(teams[index])) {
-            teams[index].debuffs.stun--
+            teams[index].debuffs.stun.count--
             newTurn(index)
         } else {
             setTurn(index)
@@ -248,7 +248,7 @@ const ContextProvider = ({ router, children }) => {
             setTimeout(() => animation && animateBullet(player, enemy, turnTeam, setBullet, setHoverPlayer, isCountering), 0);
         }
         setTimeout(() => {
-            if (hasForesight(enemyTeam[enemy])) enemyTeam[enemy].buffs.foresight = 0
+            if (hasForesight(enemyTeam[enemy])) enemyTeam[enemy].buffs.foresight.count = 0
             else enemyTeam[enemy].health -= damage / enemyTeam[enemy].defence
             if (allyTeam[player].health < getStorage('initial-health')[turn]) allyTeam[player].health += damage * getStorage('health-steal', [0, 0])[turnTeam - 1]
             let wait = abilities[allyTeam[player].name][ability]?.({ player, enemy, allyTeam, enemyTeam, isCountering, turnTeam })

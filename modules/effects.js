@@ -3,9 +3,17 @@ import { getStorage } from "./storage"
 
 const tauntPlayers = ['Chewbecca']
 
-const hasStun = player => player?.debuffs.stun > 0
+const hasForesight = player => player.buffs.foresight.count > 0
 
-const hasForesight = player => player.buffs.foresight > 0
+const hasAttackUp = player => player.buffs.attack.count > 0
+
+const hasDefenceUp = player => player.buffs.defence.count > 0
+
+const hasStun = player => player?.debuffs.stun.count > 0
+
+const hasAttackDown = player => player.buffs.attack.count > 0
+
+const hasDefenceDown = player => player.buffs.defence.count > 0
 
 const hasStealth = player => player.name == 'Chewbecca' && player.health < 100
 
