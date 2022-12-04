@@ -5,7 +5,7 @@ import players from '../players';
 import { stun, assist, block, revive, verify, kill, foresight } from '../modules/functions';
 import { animateBullet, multiAttack } from '../modules/animation'
 import useStorage from '../hooks/useStorage';
-import { hasAttackDown, hasAttackUp, hasDefenceDown, hasDefenceUp, hasForesight, hasStealth, hasStun, hasTaunt } from '../modules/effects';
+import { hasOffenseDown, hasOffenseUp, hasDefenseDown, hasDefenseUp, hasForesight, hasStealth, hasStun, hasTaunt } from '../modules/effects';
 import { getStorage, removeStorage, setStorage } from '../modules/storage';
 import { indexes, multiAttackers, preserveGame } from '../constants';
 
@@ -43,8 +43,9 @@ const ContextProvider = ({ router, children }) => {
             leader: ({ allyTeam }) => {
                 allyTeam.forEach(({ type }, index) => {
                     if (type != 'Light') return
-                    allyTeam[index].basic.damage *= 1.25
-                    allyTeam[index].special.damage *= 1.25
+                    const data = allyTeam[index];
+                    data.basic.damage *= 1.25
+                    data.special.damage *= 1.25
                 })
             }
         },
@@ -62,9 +63,10 @@ const ContextProvider = ({ router, children }) => {
             },
             unique: ({ enemy, enemyTeam }) => {
                 const { result, index } = verify('member', ['Chewbecca'], enemyTeam)
-                if (!result || enemyTeam[index].health <= 0) return
-                if (hasTaunt(enemyTeam[index])) return { enemy: index }
-                const stealth = enemy == index && hasStealth(enemyTeam[index])
+                const data = enemyTeam[index];
+                if (!result || data.health <= 0) return
+                if (hasTaunt(data)) return { enemy: index }
+                const stealth = enemy == index && hasStealth(data)
                 if (stealth) {
                     let randomEnemies = []
                     enemyTeam.forEach(({ health }, i) => { if (health > 0 && i != index) randomEnemies.push(i) })
@@ -86,11 +88,12 @@ const ContextProvider = ({ router, children }) => {
             unique: ({ player, enemy, allyTeam, enemyTeam, animation, ability }) => {
                 const { result, index } = verify('member', ['Count Dooku'], enemyTeam)
                 const playerData = allyTeam[player];
-                if (!result || hasStun(enemyTeam[index]) || enemyTeam[index].health <= 0 || !animation || hasStealth(playerData)) return
+                const data = enemyTeam[index];
+                if (!result || hasStun(data) || data.health <= 0 || !animation || hasStealth(playerData)) return
                 if (enemy == index || (ability == 'special' && multiAttackers.includes(playerData.name))) {
                     setTimeout(() => {
-                        if (!hasStun(enemyTeam[index]) && enemyTeam[index].health > 0) {
-                            enemyTeam[index].health *= 1.05
+                        if (!hasStun(data) && data.health > 0) {
+                            data.health *= 1.05
                             attack({ player: index, enemy: player, isCountering: true })
                         }
                     }, 50);
@@ -143,7 +146,8 @@ const ContextProvider = ({ router, children }) => {
             leader: ({ ability, allyTeam }) => {
                 const { result } = verify('leader', ['Jedi Knight Revan'], allyTeam)
                 if (ability == 'basic' && result) allyTeam.forEach(({ name }, index) => {
-                    if (name == 'Jedi Knight Revan' && allyTeam[index].special?.cooldown > 0) allyTeam[index].special.cooldown--
+                    const data = allyTeam[index];
+                    if (name == 'Jedi Knight Revan' && data.special?.cooldown > 0) data.special.cooldown--
                 })
             }
         },
@@ -164,9 +168,10 @@ const ContextProvider = ({ router, children }) => {
                 const playerData = structuredClone(allyTeam[player]);
                 allyTeam.forEach(({ health }, index) => { if (health > 0) allyTeam[index].health += playerData.health * 0.25 })
                 enemyTeam.forEach(({ health }, index) => {
-                    if (health > 0 && !hasForesight(enemyTeam[index])) {
-                        enemyTeam[index].health -= playerData.special.damage * (hasAttackUp(playerData) ? 1.25 : 1) * (hasAttackDown(playerData) ? 0.8 : 1) / (hasDefenceUp(enemyTeam[index]) ? 1.25 : 1) / (hasDefenceDown(enemyTeam[index]) ? 0.8 : 1) / enemyTeam[index].defence;
-                    } else enemyTeam[index].buffs.foresight.count = 0;
+                    const data = enemyTeam[index];
+                    if (health > 0 && !hasForesight(data)) {
+                        data.health -= playerData.special.damage * (hasOffenseUp(playerData) ? 1.25 : 1) * (hasOffenseDown(playerData) ? 0.8 : 1) / (hasDefenseUp(data) ? 1.25 : 1) / (hasDefenseDown(data) ? 0.8 : 1) / data.defense;
+                    } else data.buffs.foresight.count = 0;
                 })
             },
             leader: ({ allyTeam }) => allyTeam.forEach(({ type }, index) => { if (type == 'Dark') allyTeam[index].health *= 1.40 })
@@ -195,8 +200,8 @@ const ContextProvider = ({ router, children }) => {
         const turnmeter = getStorage('turnmeter')
         if (oldTurn != undefined) {
             const { buffs, debuffs } = teams[oldTurn] || { buffs: [], debuffs: [] }
-            Object.keys(buffs).forEach(buff => { if (buffs[buff] > 0) teams[oldTurn].buffs[buff]-- })
-            Object.keys(debuffs).forEach(debuff => { if (debuff != 'stun' && debuffs[debuff] > 0) teams[oldTurn].debuffs[debuff]-- })
+            Object.keys(buffs).forEach(buff => { if (buffs[buff].count > 0) teams[oldTurn].buffs[buff].count-- })
+            Object.keys(debuffs).forEach(debuff => { if (debuff != 'stun' && debuffs[debuff].count > 0) teams[oldTurn].debuffs[debuff].count-- })
             turnmeter[oldTurn] = 0
         }
         teams.forEach((player, index) => { player.health > 0 ? turnmeter[index] += player.speed : turnmeter[index] = -1 })
@@ -242,7 +247,7 @@ const ContextProvider = ({ router, children }) => {
         }))
         enemy = returnUnique?.enemy !== undefined ? returnUnique.enemy : enemy
         const enemyData = enemyTeam[enemy];
-        const damage = (playerData[ability].damage || 0) * (hasAttackUp(playerData) ? 1.25 : 1) * (hasAttackDown(playerData) ? 0.8 : 1) / (hasDefenceUp(enemyData) ? 1.25 : 1) / (hasDefenceDown(enemyData) ? 0.8 : 1) / enemyData.defence;
+        const damage = (playerData[ability].damage || 0) * (hasOffenseUp(playerData) ? 1.25 : 1) * (hasOffenseDown(playerData) ? 0.8 : 1) / (hasDefenseUp(enemyData) ? 1.25 : 1) / (hasDefenseDown(enemyData) ? 0.8 : 1) / enemyData.defense;
         const animation = playerData[ability].animation;
 
         if (ability == 'special' && multiAttackers.includes(playerData.name)) {

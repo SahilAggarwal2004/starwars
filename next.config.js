@@ -24,7 +24,11 @@ const withPWA = require('next-pwa')({
         { url: '/images/players/Jolee Bindo.webp', revision },
         { url: '/images/players/Mother Talzin.webp', revision },
         { url: '/images/players/Old Daka.webp', revision },
+        { url: '/images/effects/defense down.webp', revision },
+        { url: '/images/effects/defense up.webp', revision },
         { url: '/images/effects/foresight.webp', revision },
+        { url: '/images/effects/offense down.webp', revision },
+        { url: '/images/effects/offense up.webp', revision },
         { url: '/images/effects/stealth.webp', revision },
         { url: '/images/effects/taunt.webp', revision }
     ],

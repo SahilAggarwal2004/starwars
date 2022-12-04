@@ -3,20 +3,20 @@ import { randomNumber } from 'random-stuff-js'
 class Player {
     buffs = { // effect: { count, stack, locked }
         foresight: { count: 0 },
-        attack: { count: 0 },
-        defence: { count: 0 }
+        offense: { count: 1 },
+        defense: { count: 0 }
     };
     debuffs = {
         stun: { count: 0 },
-        attack: { count: 0 },
-        defence: { count: 0 }
+        offense: { count: 0 },
+        defense: { count: 0 }
     };
-    constructor({ name, health = 1, type, speed = randomNumber(100, 150), defence = 1, basic, special, unique, leader }) {
+    constructor({ name, health = 1, type, speed = randomNumber(100, 150), defense = 1, basic, special, unique, leader }) {
         this.name = name;
         this.health = randomNumber(350 * health, 500 * health)
         this.type = type;
         this.speed = speed;
-        this.defence = defence;
+        this.defense = defense;
         this.basic = basic;
         this.special = special;
         this.unique = unique;
@@ -38,7 +38,7 @@ const players = [
         unique: { description: 'This player has double health. He gains taunt whenever an ally falls below 100 health and gains stealth whenever this player falls below 100 health.', type: 'before' }
     }),
     new Player({
-        name: 'Count Dooku', type: 'Dark', defence: 1.25,
+        name: 'Count Dooku', type: 'Dark', defense: 1.25,
         basic: { damage: randomNumber(60, 100), description: "This attack has a 25% chance to revive a random defeated ally at 100% of his initial health.", animation: true },
         special: { damage: randomNumber(125, 150), description: 'Stun the opponent.', cooldown: 1, animation: true },
         unique: { description: 'This player has 100% counter chance and recovers 5% health whenever this player counters an attack. He takes 20% less damage from any attack.', type: 'after' }

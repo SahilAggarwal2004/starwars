@@ -5,15 +5,15 @@ const tauntPlayers = ['Chewbecca']
 
 const hasForesight = player => player.buffs.foresight.count > 0
 
-const hasAttackUp = player => player.buffs.attack.count > 0
+const hasOffenseUp = player => player.buffs.offense.count > 0
 
-const hasDefenceUp = player => player.buffs.defence.count > 0
+const hasDefenseUp = player => player.buffs.defense.count > 0
 
 const hasStun = player => player?.debuffs.stun.count > 0
 
-const hasAttackDown = player => player.buffs.attack.count > 0
+const hasOffenseDown = player => player.debuffs.offense.count > 0
 
-const hasDefenceDown = player => player.buffs.defence.count > 0
+const hasDefenseDown = player => player.debuffs.defense.count > 0
 
 const hasStealth = player => player.name == 'Chewbecca' && player.health < 100
 
@@ -26,13 +26,13 @@ const hasTaunt = player => {
 
 const effects = [
     { effect: 'foresight', condition: hasForesight },
-    { effect: 'attack up', condition: hasAttackUp },
-    { effect: 'defence up', condition: hasDefenceUp },
-    { effect: 'attack down', condition: hasAttackDown },
-    { effect: 'defence down', condition: hasDefenceDown },
+    { effect: 'offense up', condition: hasOffenseUp },
+    { effect: 'defense up', condition: hasDefenseUp },
+    { effect: 'offense down', condition: hasOffenseDown },
+    { effect: 'defense down', condition: hasDefenseDown },
     { effect: 'stealth', condition: hasStealth },
     { effect: 'taunt', condition: hasTaunt }
 ]
 
 export default effects
-export { hasForesight, hasAttackUp, hasDefenceUp, hasStun, hasAttackDown, hasDefenceDown, hasStealth, hasTaunt }
+export { hasForesight, hasOffenseUp, hasDefenseUp, hasStun, hasOffenseDown, hasDefenseDown, hasStealth, hasTaunt }
