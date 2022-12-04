@@ -26,9 +26,13 @@ const hasTaunt = player => {
 
 const effects = [
     { effect: 'foresight', condition: hasForesight },
+    { effect: 'attack up', condition: hasAttackUp },
+    { effect: 'defence up', condition: hasDefenceUp },
+    { effect: 'attack down', condition: hasAttackDown },
+    { effect: 'defence down', condition: hasDefenceDown },
     { effect: 'stealth', condition: hasStealth },
     { effect: 'taunt', condition: hasTaunt }
 ]
 
 export default effects
-export { hasStun, hasForesight, hasStealth, hasTaunt }
+export { hasForesight, hasAttackUp, hasDefenceUp, hasStun, hasAttackDown, hasDefenceDown, hasStealth, hasTaunt }
