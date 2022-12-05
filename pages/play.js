@@ -71,6 +71,7 @@ export default function Play({ router, mode, isFullScreen }) {
 
     // Computer mode
     useEffect(() => {
+        if (isAttacking) return
         if (turnTeam === 1) {
             if (team2.length && team2[enemy].health <= 0) {
                 let enemies = [];
@@ -89,7 +90,7 @@ export default function Play({ router, mode, isFullScreen }) {
                 setEnemy(randomElement(enemies))
             }
         }
-    }, [turn])
+    }, [isAttacking])
 
     return <>
         {[team1, team2].map((team, index) => <div id={`team${index + 1}`} key={index} className={`fixed top-0 ${index ? 'right-5' : 'left-5'} space-y-4 w-max flex flex-col items-center justify-center h-full`}>
@@ -97,10 +98,9 @@ export default function Play({ router, mode, isFullScreen }) {
             {team.map((player, i) => {
                 const playerIndex = i + index * 5
                 const selectedPlayer = turn === playerIndex
-                const selectedEnemy = enemy === i
                 const turnmeter = getStorage('turnmeter', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
                 return <div key={i} className={`${player.health <= 0 && 'invisible'}`}>
-                    <div className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${selectedPlayer ? 'outline border-2 outline-green-500' : selectedEnemy && turnTeam !== index + 1 ? 'outline border-2 outline-red-500' : 'hover:border-2 hover:outline hover:outline-black'} border-transparent rounded-sm ${hasStun(player) && 'opacity-50'}`} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => selectEnemy(i, index)} onContextMenu={event => event.preventDefault()}>
+                    <div className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${selectedPlayer ? 'outline border-2 outline-green-500' : enemy === i && turnTeam !== index + 1 ? 'outline border-2 outline-red-500' : 'hover:border-2 hover:outline hover:outline-black'} border-transparent rounded-sm ${hasStun(player) && 'opacity-50'}`} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => selectEnemy(i, index)} onContextMenu={event => event.preventDefault()}>
                         <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5 max-w-full' style={{ width: `${turnmeter[playerIndex] / maximumNumber(turnmeter) * 6}vw` }} />
                         <img src={`/images/players/${player.name}.webp`} alt={player.name} width={120} className='rounded-sm aspect-square' />
                         <div className="absolute bottom-0 left-0 right-0 flex justify-center space-x-0.5 z-10">

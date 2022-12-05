@@ -18,7 +18,9 @@ export default function TeamSelection({ router, mode }) {
             if (team2[0].leader?.type == 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
             setTeam1(team1)
             setTeam2(team2)
-            setStorage('initial-health', teams.map(player => player.health))
+            const initialData = {}
+            teams.forEach(({ name, health, special: { cooldown } }) => initialData[name] = { health, cooldown });
+            setStorage('initial-data', initialData)
             router.push(`/play?mode=${mode}`)
             return
         }

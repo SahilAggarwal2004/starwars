@@ -18,8 +18,7 @@ async function animateBullet(player, enemy, turnTeam, setBullet, setHoverPlayer,
     }, 50);
 }
 
-async function multiAttack(player, enemyTeam, turnTeam, setBullet, setHoverPlayer, isCountering) {
-    if (isCountering) turnTeam = turnTeam == 1 ? 2 : 1
+async function multiAttack(player, enemyTeam, turnTeam, setBullet, setHoverPlayer) {
     const positions = getStorage('positions')
     const { left: playerLeft, top: playerTop } = positions[turnTeam * 5 - 5 + player]
     const enemyLeft = positions[(turnTeam == 1 ? 2 : 1) * 5 - 5].left

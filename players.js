@@ -34,7 +34,7 @@ const players = [
     new Player({
         name: 'Chewbecca', health: 2, type: 'Light',
         basic: { damage: randomNumber(60, 100), description: "Light side allies have a 10% chance to double their health.", animation: true },
-        special: { damage: randomNumber(125, 150), description: "Heal all allies by 15% of his current health and all allies gain 25% turn meter.", cooldown: 2, animation: true },
+        special: { damage: randomNumber(125, 150), description: "Heal all allies by 10% of his current health and grant all allies defense up for 1 turn.", cooldown: 2, animation: true },
         unique: { description: 'This player has double health. He gains taunt whenever an ally falls below 100 health and gains stealth whenever this player falls below 100 health.', type: 'before' }
     }),
     new Player({
@@ -56,13 +56,13 @@ const players = [
     }),
     new Player({
         name: 'Darth Vader', type: 'Dark',
-        basic: { damage: randomNumber(75, 120), animation: true },
-        special: { damage: randomNumber(150, 200), description: 'Block special ability of target enemy forever.', cooldown: 2, animation: true },
+        basic: { damage: randomNumber(60, 100), description: 'Inflict offense down on target enemy 1 turn.', animation: true },
+        special: { damage: randomNumber(150, 200), description: 'Inflict defense down on all enemies for 2 turns.', cooldown: 2, animation: true },
         leader: { description: 'All allies have +10 speed.', type: 'start' }
     }),
     new Player({
         name: 'Grand Master Yoda', type: 'Light',
-        basic: { damage: randomNumber(60, 100), description: 'Gains foresight for 1 turn.', animation: true },
+        basic: { damage: randomNumber(60, 100), description: 'Gain foresight for 1 turn.', animation: true },
         special: { description: 'Grant foresight to all allies for 1 turn.', cooldown: 1, animation: false },
         leader: { description: 'Whenever a light side ally uses a special ability, it will gain foresight for 1 turn.', type: 'in-game' }
     }),
@@ -79,15 +79,15 @@ const players = [
         leader: { description: "Whenever an ally uses a basic ability, decrease the cooldown of his special ability by 1.", type: 'in-game', animation: true }
     }),
     new Player({
-        name: 'Jolee Bindo', type: 'Light', speed: randomNumber(100, 150), stun: false, foresight: 0,
-        basic: { damage: randomNumber(75, 120), animation: true },
-        special: { damage: randomNumber(100, 150), description: 'Remove stun effect on all allies and call a random ally to assist.', cooldown: 1, animation: true },
+        name: 'Jolee Bindo', type: 'Light',
+        basic: { damage: randomNumber(60, 100), description: 'Dispell all buffs from target enemy.', animation: true },
+        special: { damage: randomNumber(100, 150), description: 'Dispell debuffs from all allies and grant them offense up for 1 turn.', cooldown: 0, animation: true },
         leader: { description: 'At the start of the game, all allies have +25% of their max health.', type: 'start' }
     }),
     new Player({
         name: 'Mother Talzin', type: 'Dark',
         basic: { damage: randomNumber(60, 100), description: 'This attack has a 25% chance to stun the enemy.', animation: true },
-        special: { damage: randomNumber(25, 60), description: "Heal all allies by 25% of her current health and deal special damage to all enemies and double damage to target enemy.", cooldown: 2, animation: true },
+        special: { damage: randomNumber(25, 60), description: "Heal all allies by 20% of her current health and deal special damage to all enemies and double damage to target enemy.", cooldown: 2, animation: true },
         leader: { description: 'Dark side allies have +40% of their max health.', type: 'start' }
     }),
     new Player({
