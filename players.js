@@ -81,7 +81,7 @@ const players = [
     new Player({
         name: 'Jolee Bindo', type: 'Light',
         basic: { damage: randomNumber(60, 100), description: 'Dispell all buffs from target enemy.', animation: true },
-        special: { damage: randomNumber(100, 150), description: 'Dispell debuffs from all allies and grant them offense up for 1 turn.', cooldown: 0, animation: true },
+        special: { damage: randomNumber(100, 150), description: 'Dispell debuffs from all allies and grant them offense up for 1 turn.', cooldown: 2, animation: true },
         leader: { description: 'At the start of the game, all allies have +25% of their max health.', type: 'start' }
     }),
     new Player({
