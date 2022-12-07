@@ -128,10 +128,15 @@ export default function Play({ router, mode, isFullScreen }) {
                         <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5 max-w-full' style={{ width: `${turnmeter[playerIndex] / maximumNumber(turnmeter) * 6}vw` }} />
                         <img src={`/images/players/${player.name}.webp`} alt={player.name} width={120} className='rounded-sm aspect-square' />
                         <div className="absolute bottom-0 left-0 right-0 flex justify-center space-x-0.5 z-10">
-                            {effects.map(({ effect, condition, stack }) => condition(player) && <div className="relative inline-block">
-                                <img key={effect} alt='' src={`images/effects/${effect}.webp`} width={20} height={20} />
-                                <span className="absolute right-0 -top-1/2 text-white font-semibold text-xs">{stack(player)}</span>
-                            </div>)}
+                            {effects.map(({ effect, condition, stack }) => {
+                                if (condition(player)) {
+                                    const num = stack(player)
+                                    return <div key={effect} className="relative inline-block">
+                                        <img alt='' src={`images/effects/${effect}.webp`} width={20} height={20} />
+                                        <span className="absolute right-0 -top-1/2 text-white font-semibold text-xs">{num > 1 && num}</span>
+                                    </div>
+                                }
+                            })}
                         </div>
                     </div>
                     {!(mode === 'computer' && turnTeam === 2) && selectedPlayer && !isAttacking && <div className="fixed flex x-center bottom-3 space-x-2">

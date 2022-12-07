@@ -164,8 +164,8 @@ const ContextProvider = ({ router, children }) => {
         },
         'Old Daka': {
             special: ({ player, allyTeam }) => revive(allyTeam, allyTeam[player].health * 1.5),
-            leader: ({ enemy, enemyTeam, animation, isAssisting }) => {
-                if (isAssisting || !animation) return
+            leader: ({ enemy, enemyTeam, animation, isAssisting, isCountering }) => {
+                if (isAssisting || isCountering || !animation) return
                 const { result } = verify('leader', 'Old Daka', enemyTeam)
                 if (result) enemyTeam[enemy].health *= 1.15
             }
@@ -238,13 +238,14 @@ const ContextProvider = ({ router, children }) => {
         } else if (ability === 'special') playerData.special.cooldown = getStorage('initial-data')[playerData.name].cooldown
 
         // Before attack unique abilities:
-        !isAssisting && teams.forEach(team => team.forEach(item => {
-            if (item.unique?.type !== 'before') return
-            const data = abilities[item.name].unique?.({ enemy, enemyTeam })
+        !isAssisting && teams.forEach(team => team.forEach(({ name, unique }) => {
+            if (unique?.type !== 'before') return
+            const data = abilities[name].unique?.({ enemy, enemyTeam })
             if (data) returnUnique = { ...returnUnique, ...data }
         }))
         enemy = returnUnique?.enemy || enemy
         const enemyData = enemyTeam[enemy];
+        const foresight = hasEffect('foresight', 'buff', enemyData)
         const damage = (playerData[ability].damage || 0) * damageMultiplier(playerData, enemyData)
         const animation = playerData[ability].animation;
 
@@ -256,23 +257,28 @@ const ContextProvider = ({ router, children }) => {
             setTimeout(() => animation && animateBullet(player, enemy, turnTeam, setBullet, isCountering), 0);
         }
         setTimeout(() => {
-            if (hasEffect('foresight', 'buff', enemyData)) enemyData.buffs.foresight.count = 0
-            else enemyData.health -= damage
-            if (playerData.health < getStorage('initial-data')[playerData.name].health) playerData.health += damage * getStorage('health-steal', [0, 0])[turnTeam - 1]
-            let wait = abilities[playerData.name][ability]?.({ player, enemy, allyTeam, enemyTeam })
+            if (!foresight) {
+                enemyData.health -= damage
+                if (playerData.health < getStorage('initial-data')[playerData.name].health) playerData.health += damage * getStorage('health-steal', [0, 0])[turnTeam - 1]
+                var wait = abilities[playerData.name][ability]?.({ player, enemy, allyTeam, enemyTeam })
+            } else {
+                if (damage) enemyData.buffs.foresight.count = 0
+                wait = playerData[ability]?.foresight ? abilities[playerData.name][ability]?.({ player, enemy, allyTeam, enemyTeam }) : 0
+            }
 
             // In-game leader abilities:
             teams.forEach(team => {
                 const { name, leader } = team[0];
-                if (leader?.type == 'in-game') abilities[name].leader?.({ player, enemy, ability, allyTeam, enemyTeam, animation, isAssisting })
+                if (foresight && !leader?.foresight) return
+                if (leader?.type === 'in-game') abilities[name].leader?.({ player, enemy, ability, allyTeam, enemyTeam, animation, isAssisting, isCountering })
             })
 
             if (isAssisting || isCountering) return
             setTimeout(() => {
                 // After attack unique abilities:
-                teams.forEach(team => team.forEach(item => {
-                    if (item.unique?.type != 'after') return
-                    const data = abilities[item.name].unique?.({ player, enemy, allyTeam, enemyTeam, animation, ability })
+                teams.forEach(team => team.forEach(({ name, unique }) => {
+                    if (unique?.type !== 'after' || (foresight && !unique?.foresight)) return
+                    const data = abilities[name].unique?.({ player, enemy, allyTeam, enemyTeam, animation, ability })
                     if (data) returnUnique = { ...returnUnique, ...data }
                 }))
                 setTimeout(() => {
