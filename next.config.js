@@ -31,7 +31,12 @@ const withPWA = require('next-pwa')({
         { url: '/images/effects/offense down.webp', revision },
         { url: '/images/effects/offense up.webp', revision },
         { url: '/images/effects/stealth.webp', revision },
-        { url: '/images/effects/taunt.webp', revision }
+        { url: '/images/effects/taunt.webp', revision },
+        { url: '/images/effects/buff immunity.webp', revision },
+        { url: '/images/effects/debuff immunity.webp', revision },
+        { url: '/images/effects/stun.webp', revision },
+        { url: '/images/effects/heal over time.webp', revision },
+        { url: '/images/effects/damage over time.webp', revision }
     ],
     runtimeCaching: [
         {

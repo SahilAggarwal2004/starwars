@@ -2,14 +2,20 @@ import { randomNumber } from 'random-stuff-js'
 
 class Player {
     buffs = { // effect: { count, stack, locked }
-        foresight: { count: 0 },
-        offense: { count: 0 },
-        defense: { count: 0 }
+        foresight: { count: 0, stack: 0 },
+        taunt: { count: 0, stack: 0 },
+        stealth: { count: 0, stack: 0 },
+        offense: { count: 0, stack: 0 },
+        defense: { count: 0, stack: 0 },
+        immunity: { count: 0, stack: 0 },
+        health: { count: 0, stack: 0 }
     };
     debuffs = {
-        stun: { count: 0 },
-        offense: { count: 0 },
-        defense: { count: 0 }
+        stun: { count: 0, stack: 0 },
+        offense: { count: 0, stack: 0 },
+        defense: { count: 0, stack: 0 },
+        immunity: { count: 0, stack: 0 },
+        health: { count: 0, stack: 0 }
     };
     constructor({ name, health = 1, type, speed = randomNumber(100, 150), defense = 1, basic, special, unique, leader }) {
         this.name = name;
@@ -28,7 +34,7 @@ const players = [
     new Player({
         name: 'Bastila Shan', type: 'Light',
         basic: { damage: randomNumber(60, 100), description: 'This attack has a 50% chance to grant a random ally 100% turn meter.', animation: true },
-        special: { damage: randomNumber(125, 150), description: 'Stun the opponent.', cooldown: 1, animation: true },
+        special: { damage: randomNumber(100, 150), description: 'Stun the opponent and inflict buff immunity for 1 turn.', cooldown: 1, animation: true },
         leader: { description: 'Light side allies have +25% of their offense.', type: 'start' }
     }),
     new Player({
@@ -40,7 +46,7 @@ const players = [
     new Player({
         name: 'Count Dooku', type: 'Dark', defense: 1.25,
         basic: { damage: randomNumber(60, 100), description: "This attack has a 25% chance to revive a random defeated ally at 100% of his initial health.", animation: true },
-        special: { damage: randomNumber(125, 150), description: 'Stun the opponent.', cooldown: 1, animation: true },
+        special: { description: 'Inflict defense down on target enemy for 2 turns and other enemies for 1 turn', cooldown: 1 },
         unique: { description: 'This player has 100% counter chance and recovers 5% health whenever this player counters an attack. He takes 20% less damage from any attack.', type: 'after' }
     }),
     new Player({
@@ -57,8 +63,9 @@ const players = [
     new Player({
         name: 'Darth Vader', type: 'Dark',
         basic: { damage: randomNumber(60, 100), description: 'Inflict offense down on target enemy 1 turn.', animation: true },
-        special: { damage: randomNumber(150, 200), description: 'Inflict defense down on all enemies for 2 turns.', cooldown: 2, animation: true },
-        leader: { description: 'All allies have +10 speed.', type: 'start' }
+        special: { description: 'Inflict 2 damage over turn effects on all enemies for 1 turn.', cooldown: 1 },
+        leader: { description: 'All allies have +10 speed.', type: 'start' },
+        unique: { description: 'Whenever an enemy attacks Darth Vader, he inflicts damage over turn on that enemy for 1 turn.', type: 'after' },
     }),
     new Player({
         name: 'Grand Master Yoda', type: 'Light',

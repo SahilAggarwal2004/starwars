@@ -5,9 +5,11 @@ import { randomElement } from 'random-stuff-js';
 import { useGameContext } from '../contexts/ContextProvider';
 import { setStorage } from '../modules/storage';
 import { details, features, modes } from '../constants';
+import players from '../players';
 
 export default function TeamSelection({ router, mode }) {
-    const { team1, team2, teams, setTeam1, setTeam2, hoverPlayer, setHoverPlayer, players, abilities } = useGameContext();
+    const { team1, team2, teams, setTeam1, setTeam2, abilities } = useGameContext();
+    const [hoverPlayer, setHoverPlayer] = useState()
     const [currentTeam, setCurrentTeam] = useState(1);
 
     useEffect(() => { if (!modes.includes(mode)) router.push('/') }, [])

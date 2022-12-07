@@ -1,7 +1,7 @@
 import { getStorage } from "./storage"
 
-async function animateBullet(player, enemy, turnTeam, setBullet, setHoverPlayer, isCountering) {
-    if (isCountering) turnTeam = turnTeam == 1 ? 2 : 1
+async function animateBullet(player, enemy, turnTeam, setBullet, isCountering) {
+    if (isCountering) turnTeam = turnTeam === 1 ? 2 : 1
     const positions = getStorage('positions')
     const { left: playerLeft, right: playerRight, top: playerTop, bottom: playerBottom } = positions[turnTeam * 5 - 5 + player]
     const { left: enemyLeft, right: enemyRight, top: enemyTop, bottom: enemyBottom } = positions[(turnTeam == 1 ? 2 : 1) * 5 - 5 + enemy]
@@ -11,14 +11,11 @@ async function animateBullet(player, enemy, turnTeam, setBullet, setHoverPlayer,
     setTimeout(() => {
         bulletRef.left = `${(enemyLeft + enemyRight) / 2}px`;
         bulletRef.top = `${(enemyTop + enemyBottom) / 2}px`;
-        setTimeout(() => {
-            setHoverPlayer()
-            setBullet(bullet => ({ ...bullet, [enemy]: false }))
-        }, 1900)
+        setTimeout(() => setBullet(bullet => ({ ...bullet, [enemy]: false })), 1900)
     }, 50);
 }
 
-async function multiAttack(player, enemyTeam, turnTeam, setBullet, setHoverPlayer) {
+async function multiAttack(player, enemyTeam, turnTeam, setBullet) {
     const positions = getStorage('positions')
     const { left: playerLeft, top: playerTop } = positions[turnTeam * 5 - 5 + player]
     const enemyLeft = positions[(turnTeam == 1 ? 2 : 1) * 5 - 5].left
@@ -74,10 +71,7 @@ async function multiAttack(player, enemyTeam, turnTeam, setBullet, setHoverPlaye
             bulletRef4.left = `calc(${enemyLeft}px + 3vw)`;
             bulletRef4.top = `calc(${enemyTop4}px + 3vw)`;
         }
-        setTimeout(() => {
-            setHoverPlayer()
-            setBullet({ 0: false, 1: false, 2: false, 3: false, 4: false })
-        }, 1900)
+        setTimeout(() => setBullet({ 0: false, 1: false, 2: false, 3: false, 4: false }), 1900)
     }, 50);
 }
 
