@@ -6,35 +6,35 @@ const kill = ({ enemy, enemyTeam }) => enemyTeam[enemy].health = 0
 
 const block = ({ enemy, enemyTeam }) => delete enemyTeam[enemy].special
 
-const apply = ({ effect, type, player, enemy, allyTeam, enemyTeam, turns = 1, stack = 1, all = false }) => {
+const apply = ({ effect, type, player, enemy, allyTeam, enemyTeam, turns = 1, stack = 0, all = false }) => {
     if (type === 'buff') {
         const playerData = allyTeam[player]
-        playerData.buffs[effect].count++
+        const buff = playerData.buffs[effect]
         if (all) for (let i = 0; i < allyTeam.length; i++) {
             const ally = allyTeam[i];
             if (ally.health > 0 && !hasEffect('immunity', 'debuff', ally)) {
-                const effectData = ally.buffs[effect]
-                effectData.count += turns
-                effectData.stack += stack
+                const buff = ally.buffs[effect]
+                if (stack) for (let i = 0; i < stack; i++) buff.push(turns)
+                else buff[0] = (buff[0] || 0) + turns
             }
         } else if (!hasEffect('immunity', 'debuff', playerData)) {
-            const effectData = playerData.buffs[effect]
-            effectData.count += turns
-            effectData.stack += stack
+            if (stack) for (let i = 0; i < stack; i++) buff.push(turns)
+            else buff[0] = (buff[0] || 0) + turns
         }
+        for (let i = 0; i < buff.length; i++) buff[i]++
     } else {
         const enemyData = enemyTeam[enemy]
         if (all) for (let i = 0; i < enemyTeam.length; i++) {
             const enemy = enemyTeam[i];
             if (enemy.health > 0 && !hasEffect('immunity', 'buff', enemy)) {
-                const effectData = enemy.debuffs[effect]
-                effectData.count += turns
-                effectData.stack += stack
+                const debuff = enemy.debuffs[effect]
+                if (stack) for (let i = 0; i < stack; i++) debuff.push(turns)
+                else debuff[0] = (debuff[0] || 0) + turns
             }
         } else if (!hasEffect('immunity', 'buff', enemyData)) {
-            const effectData = enemyData.debuffs[effect]
-            effectData.count += turns
-            effectData.stack += stack
+            const debuff = enemyData.debuffs[effect]
+            if (stack) for (let i = 0; i < stack; i++) debuff.push(turns)
+            else debuff[0] = (debuff[0] || 0) + turns
         }
     }
 }
@@ -43,50 +43,22 @@ const remove = ({ effect, type, player, enemy, allyTeam, enemyTeam, all = false 
     if (type === 'buff') {
         if (!all) {
             const buffs = enemyTeam[enemy].buffs
-            if (effect !== 'all') {
-                const buff = buffs[effect]
-                buff.count = 0
-                buff.stack = 0
-            } else Object.keys(buffs).forEach(i => {
-                const buff = buffs[i]
-                buff.count = 0
-                buff.stack = 0
-            })
+            if (effect !== 'all') buffs[effect] = []
+            else Object.keys(buffs).forEach(i => buffs[i] = [])
         } else for (let i = 0; i < enemyTeam.length; i++) {
             const buffs = enemyTeam[i].buffs
-            if (effect !== 'all') {
-                const buff = buffs[effect]
-                buff.count = 0
-                buff.stack = 0
-            } else Object.keys(buffs).forEach(i => {
-                const buff = buffs[i]
-                buff.count = 0
-                buff.stack = 0
-            })
+            if (effect !== 'all') buffs[effect] = []
+            else Object.keys(buffs).forEach(i => buffs[i] = [])
         }
     } else {
         if (!all) {
             const debuffs = allyTeam[player].debuffs
-            if (effect !== 'all') {
-                const debuff = debuffs[effect];
-                debuff.count = 0;
-                debuff.stack = 0;
-            } else Object.keys(debuffs).forEach(i => {
-                const debuff = debuffs[i];
-                debuff.count = 0;
-                debuff.stack = 0;
-            })
+            if (effect !== 'all') debuffs[effect] = []
+            else Object.keys(debuffs).forEach(i => debuffs[i] = [])
         } else for (let i = 0; i < allyTeam.length; i++) {
             const debuffs = allyTeam[i].debuffs
-            if (effect !== 'all') {
-                const debuff = debuffs[effect];
-                debuff.count = 0;
-                debuff.stack = 0;
-            } else Object.keys(debuffs).forEach(i => {
-                const debuff = debuffs[i];
-                debuff.count = 0;
-                debuff.stack = 0;
-            })
+            if (effect !== 'all') debuffs[effect] = []
+            else Object.keys(debuffs).forEach(i => debuffs[i] = [])
         }
     }
 }
@@ -111,16 +83,8 @@ const revive = (allyTeam, health) => {
     const debuffs = playerData.debuffs;
     playerData.health = health
     playerData.special.cooldown = getStorage('initial-data')[playerData.name].cooldown
-    Object.keys(buffs).forEach(i => {
-        const buff = buffs[i]
-        buff.count = 0
-        buff.stack = 0
-    })
-    Object.keys(debuffs).forEach(i => {
-        const debuff = debuffs[i]
-        debuff.count = 0
-        debuff.stack = 0
-    })
+    Object.keys(buffs).forEach(i => buffs[i] = [])
+    Object.keys(debuffs).forEach(i => debuffs[i] = [])
 }
 
 const verify = (type, names, allyTeam) => {

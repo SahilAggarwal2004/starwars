@@ -1,21 +1,21 @@
 import { randomNumber } from 'random-stuff-js'
 
 class Player {
-    buffs = { // effect: { count, stack, locked }
-        foresight: { count: 0, stack: 0 },
-        taunt: { count: 0, stack: 0 },
-        stealth: { count: 0, stack: 0 },
-        offense: { count: 0, stack: 0 },
-        defense: { count: 0, stack: 0 },
-        immunity: { count: 0, stack: 0 },
-        health: { count: 0, stack: 0 }
+    buffs = {
+        foresight: [],
+        taunt: [],
+        stealth: [],
+        offense: [],
+        defense: [],
+        immunity: [],
+        health: []
     };
     debuffs = {
-        stun: { count: 0, stack: 0 },
-        offense: { count: 0, stack: 0 },
-        defense: { count: 0, stack: 0 },
-        immunity: { count: 0, stack: 0 },
-        health: { count: 0, stack: 0 }
+        stun: [],
+        offense: [],
+        defense: [],
+        immunity: [],
+        health: []
     };
     constructor({ name, health = 1, type, speed = randomNumber(100, 150), defense = 1, basic, special, unique, leader }) {
         this.name = name;

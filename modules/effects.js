@@ -15,24 +15,21 @@ const effectObj = {
 }
 const effectArr = Object.keys(effectObj)
 
-const hasEffect = (effect, type, player) => {
-    type = type + 's';
-    return player?.[type][effect].count > 0
-}
-
 const stackCount = (effect, type, player) => {
     type = type + 's';
-    return player?.[type][effect].stack
+    return player?.[type][effect].length
 }
 
-const hasStealth = player => player.buffs.stealth.count > 0 || (player.name == 'Chewbecca' && player.health < 100)
+const hasEffect = (effect, type, player) => stackCount(effect, type, player) > 0
 
-const hasTaunt = player => {
-    if (player.buffs.taunt.count > 0) return true
+const hasStealth = ({ name, health, buffs, debuffs }) => buffs.stealth.length > 0 || (name === 'Chewbecca' && health < 100 && !debuffs.immunity.length)
+
+const hasTaunt = ({ name, health, buffs, debuffs }) => {
+    if (buffs.taunt.length > 0) return true
+    if (name !== 'Chewbecca' || health <= 100 || debuffs.immunity.length) return false
     const team1 = getStorage('team1')
     const team2 = getStorage('team2')
-    const taunt = verify('member', 'Chewbecca', team1).result ? team1.map(({ health }) => health > 0 && health < 100).includes(true) : verify('member', 'Chewbecca', team2).result ? team2.map(({ health }) => health > 0 && health < 100).includes(true) : false
-    return taunt && player.name === 'Chewbecca' && player.health > 100
+    return verify('member', 'Chewbecca', team1).result ? team1.map(({ health }) => health > 0 && health < 100).includes(true) : verify('member', 'Chewbecca', team2).result ? team2.map(({ health }) => health > 0 && health < 100).includes(true) : false
 }
 
 const effects = [

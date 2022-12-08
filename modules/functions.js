@@ -4,4 +4,6 @@ const damageMultiplier = (player, enemy) => (hasEffect('offense', 'buff', player
 
 const exists = value => value !== undefined && value !== null;
 
-export { damageMultiplier, exists };
+const reduce = arr => arr.filter(e => e !== 0)
+
+export { damageMultiplier, exists, reduce };

@@ -5,11 +5,11 @@ import { useGameContext } from "../contexts/ContextProvider"
 import { maximumNumber, randomElement } from "random-stuff-js"
 import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules/effects"
 import { getStorage, setStorage } from "../modules/storage"
-import { details, features, indexes, modes, stackAbilities } from "../constants"
+import { details, features, indexes, modes } from "../constants"
 import { exists } from "../modules/functions"
 
 export default function Play({ router, mode, isFullScreen }) {
-    const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, isAttacking, turnTeam, n, setN } = useGameContext()
+    const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, isAttacking, turnTeam } = useGameContext()
     const [enemy, setEnemy] = useState(-1)
     const [hoverPlayer, setHoverPlayer] = useState()
     const [hoverAbility, setHoverAbility] = useState()
@@ -62,7 +62,6 @@ export default function Play({ router, mode, isFullScreen }) {
             setTurnTeam(Math.ceil((tempturn + 1) / 5))
         }
         setHoverPlayer()
-        setN(1)
         window.addEventListener('resize', updatePositions)
         return () => { window.removeEventListener('resize', updatePositions) }
     }, [])
@@ -80,23 +79,21 @@ export default function Play({ router, mode, isFullScreen }) {
     }, [teams])
 
     useEffect(() => {
-        if (!n) return
+        if (turn < 0) return
         selectEnemy(enemy)
         const player = teams[turn];
-        if (player) {
-            player.health += 25 * stackCount('health', 'buff', player);
-            player.health -= 25 * stackCount('health', 'debuff', player);
-            if (player.health <= 0) {
-                setTeam1(team1)
-                setTeam2(team2)
-                newTurn()
-            }
+        player.health += 25 * stackCount('health', 'buff', player);
+        player.health -= 25 * stackCount('health', 'debuff', player);
+        if (player.health <= 0) {
+            setTeam1(team1)
+            setTeam2(team2)
+            newTurn()
         }
-    }, [n])
+    }, [turn])
 
     // Computer mode
     useEffect(() => {
-        if (!isAttacking) return
+        if (isAttacking) return
         if (turnTeam === 1) {
             if (team2.length && team2[enemy].health <= 0) {
                 let enemies = [];
@@ -126,7 +123,7 @@ export default function Play({ router, mode, isFullScreen }) {
                 const turnmeter = getStorage('turnmeter', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
                 return <div key={i} className={`${player.health <= 0 && 'invisible'}`}>
                     <div className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${selectedPlayer ? 'outline border-2 outline-green-500' : enemy === i && turnTeam !== index + 1 ? 'outline border-2 outline-red-500' : 'hover:border-2 hover:outline hover:outline-black'} border-transparent rounded-sm ${hasEffect('stealth', 'buff', player) && 'opacity-50'}`} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => selectEnemy(i, index)} onContextMenu={event => event.preventDefault()}>
-                        <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5 max-w-full' style={{ width: `${turnmeter[playerIndex] / maximumNumber(turnmeter) * 6}vw` }} />
+                        <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5' style={{ width: `${turnmeter[playerIndex] / maximumNumber(turnmeter) * 100}%` }} />
                         <img src={`/images/players/${player.name}.webp`} alt={player.name} width={120} className='rounded-sm aspect-square' />
                         <div className="absolute bottom-0 left-0 right-0 flex justify-center space-x-0.5 z-10">
                             {effects.map(({ effect, condition, stack }) => {
@@ -134,7 +131,7 @@ export default function Play({ router, mode, isFullScreen }) {
                                     const num = stack(player)
                                     return <div key={effect} className="relative inline-block">
                                         <img alt='' src={`images/effects/${effect}.webp`} width={20} height={20} />
-                                        {stackAbilities.includes(effect) && <span className="absolute right-0 -top-1/2 text-white font-semibold text-xs">{num > 1 && num}</span>}
+                                        <span className="absolute right-0 -top-1/2 text-white font-semibold text-xs">{num > 1 && num}</span>
                                     </div>
                                 }
                             })}

@@ -4,6 +4,5 @@ const details = ['name', 'health', 'type', 'speed'];
 const features = ['damage', 'description', 'cooldown'];
 const indexes = [0, 1, 2, 3, 4]
 const multiAttackers = ['Mother Talzin']
-const stackAbilities = ['heal over turn', 'damage over turn']
 
-export { preserveGame, modes, details, features, indexes, multiAttackers, stackAbilities }
+export { preserveGame, modes, details, features, indexes, multiAttackers }

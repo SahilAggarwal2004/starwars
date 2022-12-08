@@ -7,7 +7,7 @@ import useStorage from '../hooks/useStorage';
 import { hasEffect, hasStealth, hasTaunt } from '../modules/effects';
 import { getStorage, removeStorage, setStorage } from '../modules/storage';
 import { indexes, multiAttackers, preserveGame } from '../constants';
-import { damageMultiplier } from '../modules/functions';
+import { damageMultiplier, reduce } from '../modules/functions';
 
 const Context = createContext();
 export const useGameContext = () => useContext(Context)
@@ -18,7 +18,6 @@ const ContextProvider = ({ router, children }) => {
     const teams = team1.concat(team2)
     const [turn, setTurn] = useStorage('turn', -1)
     const [turnTeam, setTurnTeam] = useState()
-    const [n, setN] = useState(0)
     const [isAttacking, setAttacking] = useState(false)
     const [bullet, setBullet] = useState({ 0: false, 1: false, 2: false, 3: false, 4: false })
 
@@ -32,7 +31,7 @@ const ContextProvider = ({ router, children }) => {
             basic: ({ player, allyTeam }) => {
                 if (probability(0.5)) return
                 let randomPlayers = [];
-                allyTeam.forEach(({ health }, index) => { if (health > 0 && index != player) randomPlayers.push(index) })
+                allyTeam.forEach(({ health }, i) => { if (health > 0 && i != player) randomPlayers.push(i) })
                 const randomPlayer = randomElement(randomPlayers);
                 if (randomPlayer == undefined) return
                 const turnmeter = getStorage('turnmeter')
@@ -117,7 +116,7 @@ const ContextProvider = ({ router, children }) => {
             unique: ({ player, enemy, allyTeam, enemyTeam, animation, ability }) => {
                 const { result, index } = verify('member', 'Darth Vader', enemyTeam)
                 if (!result || !animation) return
-                if (enemy === index || (ability == 'special' && multiAttackers.includes(allyTeam[player].name))) apply({ effect: 'health', type: 'debuff', enemy: player, enemyTeam: allyTeam })
+                if (enemy === index || (ability == 'special' && multiAttackers.includes(allyTeam[player].name))) apply({ effect: 'health', type: 'debuff', enemy: player, enemyTeam: allyTeam, turns: 2, stack: 1 })
             }
         },
         'Grand Master Yoda': {
@@ -169,7 +168,7 @@ const ContextProvider = ({ router, children }) => {
                 enemyTeam.forEach(({ health }, index) => {
                     const data = enemyTeam[index];
                     if (health > 0 && !hasEffect('foresight', 'buff', data)) data.health -= playerData.special.damage * damageMultiplier(playerData, data);
-                    else data.buffs.foresight.count = 0;
+                    else data.buffs.foresight = [];
                 })
             },
             leader: ({ allyTeam }) => allyTeam.forEach(({ type }, index) => { if (type == 'Dark') allyTeam[index].health *= 1.40 })
@@ -194,6 +193,27 @@ const ContextProvider = ({ router, children }) => {
         removeStorage('positions')
     }
 
+    function getTeams(isCountering = false) {
+        if ((turnTeam == 1 && !isCountering) || (turnTeam == 2 && isCountering)) {
+            var allyTeam = team1;
+            var enemyTeam = team2;
+        } else {
+            allyTeam = team2;
+            enemyTeam = team1;
+        }
+        return [allyTeam, enemyTeam]
+    }
+
+    function setTeams(allyTeam, enemyTeam, isCountering = false) {
+        if (turnTeam == 1 && !isCountering) {
+            setTeam1(allyTeam)
+            setTeam2(enemyTeam)
+        } else {
+            setTeam1(enemyTeam)
+            setTeam2(allyTeam)
+        }
+    }
+
     function newTurn(oldTurn) {
         const turnmeter = getStorage('turnmeter')
         if (oldTurn !== undefined) turnmeter[oldTurn] = 0
@@ -209,37 +229,27 @@ const ContextProvider = ({ router, children }) => {
             const debuffs = teams[oldTurn]?.debuffs || {}
             Object.keys(buffs).forEach(i => {
                 const buff = buffs[i];
-                if (buff.count > 0) {
-                    const count = --buff.count
-                    if (!count) buff.stack = 0
-                }
+                for (let i = 0; i < buff.length; i++) buff[i]--
+                buffs[i] = reduce(buff)
             })
             Object.keys(debuffs).forEach(i => {
                 const debuff = debuffs[i];
-                if (debuff.count > 0) {
-                    const count = --debuff.count
-                    if (!count) debuff.stack = 0
-                }
+                for (let i = 0; i < debuff.length; i++) debuff[i]--
+                debuffs[i] = reduce(debuff)
             })
         }
         if (!stun) {
             setTurn(index)
             setTurnTeam(Math.ceil((index + 1) / 5))
-            setN(n => n + 1)
         } else newTurn(index)
     }
 
     function attack({ player, enemy, ability = 'basic', isAssisting = false, isCountering = false }) {
         if (player < 0 || player > 4 || isAttacking) return
-        let allyTeam, enemyTeam, returnUnique = {};
-        if ((turnTeam == 1 && !isCountering) || (turnTeam == 2 && isCountering)) {
-            allyTeam = team1;
-            enemyTeam = team2;
-        } else {
-            allyTeam = team2;
-            enemyTeam = team1;
-        }
-        let teams = [allyTeam, enemyTeam];
+        let returnUnique = {};
+        const teams = getTeams(isCountering)
+        const allyTeam = teams[0]
+        const enemyTeam = teams[1];
         setAttacking(true)
 
         const playerData = allyTeam[player];
@@ -274,7 +284,7 @@ const ContextProvider = ({ router, children }) => {
                 if (playerData.health < getStorage('initial-data')[playerData.name].health) playerData.health += damage * getStorage('health-steal', [0, 0])[turnTeam - 1]
                 var wait = abilities[playerData.name][ability]?.({ player, enemy, allyTeam, enemyTeam })
             } else {
-                if (damage) enemyData.buffs.foresight.count = 0
+                if (damage) enemyData.buffs.foresight = []
                 wait = playerData[ability]?.foresight ? abilities[playerData.name][ability]?.({ player, enemy, allyTeam, enemyTeam }) : 0
             }
 
@@ -295,20 +305,14 @@ const ContextProvider = ({ router, children }) => {
                 }))
                 setTimeout(() => {
                     newTurn(player + turnTeam * 5 - 5)
-                    if (turnTeam == 1 && !isCountering) {
-                        setTeam1(allyTeam)
-                        setTeam2(enemyTeam)
-                    } else {
-                        setTeam1(enemyTeam)
-                        setTeam2(allyTeam)
-                    }
+                    setTeams(allyTeam, enemyTeam, isCountering)
                     setAttacking(false)
                 }, returnUnique.wait || 50);
             }, wait || 50);
         }, animation ? 2000 : 50);
     }
 
-    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, attack, bullet, isAttacking, abilities, n, setN }}>
+    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, attack, bullet, isAttacking, abilities }}>
         {children}
     </Context.Provider>
 }
