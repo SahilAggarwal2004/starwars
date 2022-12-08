@@ -4,7 +4,7 @@ import { maximumNumber, randomElement, probability } from 'random-stuff-js'
 import { assist, block, revive, verify, kill, apply, remove } from '../modules/abilities';
 import { animateBullet, multiAttack } from '../modules/animation'
 import useStorage from '../hooks/useStorage';
-import { hasEffect, hasStealth } from '../modules/effects';
+import { hasEffect, hasStealth, hasTaunt } from '../modules/effects';
 import { getStorage, removeStorage, setStorage } from '../modules/storage';
 import { indexes, multiAttackers, preserveGame } from '../constants';
 import { damageMultiplier } from '../modules/functions';
@@ -58,6 +58,18 @@ const ContextProvider = ({ router, children }) => {
                 const playerData = structuredClone(allyTeam[player])
                 allyTeam.forEach(({ health }, index) => { if (health > 0) allyTeam[index].health += playerData.health * 0.1 })
                 apply({ effect: 'defense', type: 'buff', player, allyTeam, all: true })
+            },
+            unique: ({ enemy, enemyTeam }) => {
+                const { result, index } = verify('member', 'Chewbecca', enemyTeam)
+                const data = enemyTeam[index];
+                if (!result || data.health <= 0) return
+                if (hasTaunt(data)) return { enemy: index }
+                const stealth = enemy == index && hasStealth(data)
+                if (stealth) {
+                    let randomEnemies = []
+                    enemyTeam.forEach(({ health }, i) => { if (health > 0 && i != index) randomEnemies.push(i) })
+                    return { enemy: randomElement(randomEnemies) || index };
+                }
             }
         },
         'Count Dooku': {
@@ -105,7 +117,7 @@ const ContextProvider = ({ router, children }) => {
             unique: ({ player, enemy, allyTeam, enemyTeam, animation, ability }) => {
                 const { result, index } = verify('member', 'Darth Vader', enemyTeam)
                 if (!result || !animation) return
-                if (enemy === index || (ability == 'special' && multiAttackers.includes(allyTeam[player].name))) apply({ effect: 'health', type: 'debuff', enemy: player, enemyTeam: allyTeam, turns: 2 })
+                if (enemy === index || (ability == 'special' && multiAttackers.includes(allyTeam[player].name))) apply({ effect: 'health', type: 'debuff', enemy: player, enemyTeam: allyTeam })
             }
         },
         'Grand Master Yoda': {

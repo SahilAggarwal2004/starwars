@@ -5,7 +5,8 @@ import { useGameContext } from "../contexts/ContextProvider"
 import { maximumNumber, randomElement } from "random-stuff-js"
 import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules/effects"
 import { getStorage, setStorage } from "../modules/storage"
-import { details, features, indexes, modes } from "../constants"
+import { details, features, indexes, modes, stackAbilities } from "../constants"
+import { exists } from "../modules/functions"
 
 export default function Play({ router, mode, isFullScreen }) {
     const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, isAttacking, turnTeam, n, setN } = useGameContext()
@@ -133,7 +134,7 @@ export default function Play({ router, mode, isFullScreen }) {
                                     const num = stack(player)
                                     return <div key={effect} className="relative inline-block">
                                         <img alt='' src={`images/effects/${effect}.webp`} width={20} height={20} />
-                                        <span className="absolute right-0 -top-1/2 text-white font-semibold text-xs">{num > 1 && num}</span>
+                                        {stackAbilities.includes(effect) && <span className="absolute right-0 -top-1/2 text-white font-semibold text-xs">{num > 1 && num}</span>}
                                     </div>
                                 }
                             })}
@@ -153,7 +154,10 @@ export default function Play({ router, mode, isFullScreen }) {
             <div>
                 {['basic', 'special', 'unique'].map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
                     <span className="capitalize">{ability}:</span>
-                    {features.map(feature => hoverPlayer[ability][feature] !== undefined && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}</div>)}
+                    {features.map(feature => {
+                        const value = hoverPlayer[ability][feature]
+                        return exists(value) && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {value}</div>
+                    })}
                 </div>)}
             </div>
         </div>}
