@@ -38,24 +38,21 @@ const ContextProvider = ({ router, children }) => {
                 turnmeter[turnTeam * 5 - 5 + randomPlayer] = Number.MAX_SAFE_INTEGER
                 setStorage('turnmeter', turnmeter)
             },
-            special: ({ enemy, enemyTeam }) => {
-                apply({ effect: 'stun', type: 'debuff', enemy, enemyTeam })
-                apply({ effect: 'immunity', type: 'debuff', enemy, enemyTeam })
-            },
+            special: ({ enemy, enemyTeam }) => apply({ effect: 'stun', type: 'debuff', enemy, enemyTeam }),
             leader: ({ allyTeam }) => {
-                allyTeam.forEach(({ type }, index) => {
-                    if (type != 'Light') return
-                    const data = allyTeam[index];
+                allyTeam.forEach(({ type }, i) => {
+                    if (type != 'light') return
+                    const data = allyTeam[i];
                     data.basic.damage *= 1.25
                     data.special.damage *= 1.25
                 })
             }
         },
         'Chewbecca': {
-            basic: ({ allyTeam }) => probability(0.1) && allyTeam.forEach(({ type }, index) => { if (type == 'Light') allyTeam[index].health *= 2 }),
+            basic: ({ allyTeam }) => probability(0.1) && allyTeam.forEach(({ type }, i) => { if (type == 'light') allyTeam[i].health *= 2 }),
             special: ({ player, allyTeam }) => {
                 const playerData = structuredClone(allyTeam[player])
-                allyTeam.forEach(({ health }, index) => { if (health > 0) allyTeam[index].health += playerData.health * 0.1 })
+                allyTeam.forEach(({ health }, i) => { if (health > 0) allyTeam[i].health += playerData.health * 0.1 })
                 apply({ effect: 'defense', type: 'buff', player, allyTeam, all: true })
             },
             unique: ({ enemy, enemyTeam }) => {
@@ -73,11 +70,11 @@ const ContextProvider = ({ router, children }) => {
         },
         'Count Dooku': {
             basic: ({ allyTeam }) => {
-                if (probability(0.75)) return
+                if (probability(0.8)) return
                 revive(allyTeam, getStorage('initial-data')['Count Dooku'].health)
             },
             special: ({ enemy, enemyTeam }) => {
-                apply({ effect: 'defense', type: 'debuff', enemy, enemyTeam })
+                apply({ effect: 'immunity', type: 'debuff', enemy, enemyTeam })
                 apply({ effect: 'defense', type: 'debuff', enemyTeam, all: true })
             },
             unique: ({ player, enemy, allyTeam, enemyTeam, animation, ability }) => {
@@ -112,7 +109,7 @@ const ContextProvider = ({ router, children }) => {
         'Darth Vader': {
             basic: ({ enemy, enemyTeam }) => apply({ effect: 'offense', type: 'debuff', enemy, enemyTeam }),
             special: ({ enemyTeam }) => apply({ effect: 'health', type: 'debuff', enemyTeam, stack: 2, all: true }),
-            leader: ({ allyTeam }) => indexes.forEach(index => allyTeam[index].speed += 10),
+            leader: ({ allyTeam }) => allyTeam.forEach(({ type }, i) => { if (type === 'dark') allyTeam[i].speed += 10 }),
             unique: ({ player, enemy, allyTeam, enemyTeam, animation, ability }) => {
                 const { result, index } = verify('member', 'Darth Vader', enemyTeam)
                 if (!result || !animation) return
@@ -124,7 +121,7 @@ const ContextProvider = ({ router, children }) => {
             special: ({ player, allyTeam }) => apply({ effect: 'foresight', type: 'buff', player, allyTeam, all: true }),
             leader: ({ player, ability, allyTeam }) => {
                 const { result } = verify('leader', 'Grand Master Yoda', allyTeam)
-                if (result && allyTeam[player].type == 'Light' && ability == 'special') apply({ effect: 'foresight', type: 'buff', player, allyTeam })
+                if (result && allyTeam[player].type === 'light' && ability == 'special') apply({ effect: 'foresight', type: 'buff', player, allyTeam })
             }
         },
         'Jedi Consular': {
@@ -139,10 +136,12 @@ const ContextProvider = ({ router, children }) => {
             }
         },
         'Jedi Knight Revan': {
-            basic: ({ allyTeam }) => allyTeam.forEach(({ type, health }, index) => { if (type == 'Light' && health > 0) allyTeam[index].health += 50 }),
+            basic: ({ player, allyTeam }) => {
+                apply({ effect: 'health', type: 'buff', player, allyTeam, all: true, stack: 2, side: 'light' })
+            },
             special: ({ allyTeam, enemyTeam }) => {
-                allyTeam.forEach(({ name, type, health, special }, index) => { if (health > 0 && name != 'Jedi Knight Revan' && type == 'Light' && special) allyTeam[index].special.cooldown = 0 })
-                enemyTeam.forEach(({ health, type, speed }, index) => { if (health > 0 && type == 'Dark' && speed > 1) enemyTeam[index].speed -= 5 })
+                allyTeam.forEach(({ name, type, health, special }, index) => { if (health > 0 && name != 'Jedi Knight Revan' && type == 'light' && special) allyTeam[index].special.cooldown = 0 })
+                enemyTeam.forEach(({ health, type, speed }, index) => { if (health > 0 && type == 'dark' && speed > 1) enemyTeam[index].speed -= 5 })
             },
             leader: ({ ability, allyTeam }) => {
                 const { result } = verify('leader', 'Jedi Knight Revan', allyTeam)
@@ -171,7 +170,7 @@ const ContextProvider = ({ router, children }) => {
                     else data.buffs.foresight = [];
                 })
             },
-            leader: ({ allyTeam }) => allyTeam.forEach(({ type }, index) => { if (type == 'Dark') allyTeam[index].health *= 1.40 })
+            leader: ({ allyTeam }) => allyTeam.forEach(({ type }, index) => { if (type == 'dark') allyTeam[index].health *= 1.40 })
         },
         'Old Daka': {
             special: ({ player, allyTeam }) => revive(allyTeam, allyTeam[player].health * 1.5),

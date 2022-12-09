@@ -6,13 +6,13 @@ const kill = ({ enemy, enemyTeam }) => enemyTeam[enemy].health = 0
 
 const block = ({ enemy, enemyTeam }) => delete enemyTeam[enemy].special
 
-const apply = ({ effect, type, player, enemy, allyTeam, enemyTeam, turns = 1, stack = 0, all = false }) => {
+const apply = ({ effect, type, player, enemy, allyTeam, enemyTeam, turns = 1, stack = 0, all = false, side = 'both' }) => {
     if (type === 'buff') {
         const playerData = allyTeam[player]
         const buff = playerData.buffs[effect]
         if (all) for (let i = 0; i < allyTeam.length; i++) {
             const ally = allyTeam[i];
-            if (ally.health > 0 && !hasEffect('immunity', 'debuff', ally)) {
+            if (ally.health > 0 && !hasEffect('immunity', 'debuff', ally) && (side === 'both' || ally.type === side)) {
                 const buff = ally.buffs[effect]
                 if (stack) for (let i = 0; i < stack; i++) buff.push(turns)
                 else buff[0] = (buff[0] || 0) + turns
@@ -26,7 +26,7 @@ const apply = ({ effect, type, player, enemy, allyTeam, enemyTeam, turns = 1, st
         const enemyData = enemyTeam[enemy]
         if (all) for (let i = 0; i < enemyTeam.length; i++) {
             const enemy = enemyTeam[i];
-            if (enemy.health > 0 && !hasEffect('immunity', 'buff', enemy)) {
+            if (enemy.health > 0 && !hasEffect('immunity', 'buff', enemy) && (side === 'both' || enemy.type === side)) {
                 const debuff = enemy.debuffs[effect]
                 if (stack) for (let i = 0; i < stack; i++) debuff.push(turns)
                 else debuff[0] = (debuff[0] || 0) + turns
@@ -39,14 +39,16 @@ const apply = ({ effect, type, player, enemy, allyTeam, enemyTeam, turns = 1, st
     }
 }
 
-const remove = ({ effect, type, player, enemy, allyTeam, enemyTeam, all = false }) => {
+const remove = ({ effect, type, player, enemy, allyTeam, enemyTeam, all = false, side = 'both' }) => {
     if (type === 'buff') {
         if (!all) {
             const buffs = enemyTeam[enemy].buffs
             if (effect !== 'all') buffs[effect] = []
             else Object.keys(buffs).forEach(i => buffs[i] = [])
         } else for (let i = 0; i < enemyTeam.length; i++) {
-            const buffs = enemyTeam[i].buffs
+            const enemy = enemyTeam[i]
+            if (side !== 'both' && enemy.type !== 'side') continue
+            const buffs = enemy.buffs
             if (effect !== 'all') buffs[effect] = []
             else Object.keys(buffs).forEach(i => buffs[i] = [])
         }
@@ -56,7 +58,9 @@ const remove = ({ effect, type, player, enemy, allyTeam, enemyTeam, all = false 
             if (effect !== 'all') debuffs[effect] = []
             else Object.keys(debuffs).forEach(i => debuffs[i] = [])
         } else for (let i = 0; i < allyTeam.length; i++) {
-            const debuffs = allyTeam[i].debuffs
+            const ally = allyTeam[i]
+            if (side !== 'both' && ally.type !== 'side') continue
+            const debuffs = ally.debuffs
             if (effect !== 'all') debuffs[effect] = []
             else Object.keys(debuffs).forEach(i => debuffs[i] = [])
         }
