@@ -121,7 +121,7 @@ const ContextProvider = ({ router, children }) => {
             special: ({ player, allyTeam }) => apply({ effect: 'foresight', type: 'buff', player, allyTeam, all: true }),
             leader: ({ player, ability, allyTeam }) => {
                 const { result } = verify('leader', 'Grand Master Yoda', allyTeam)
-                if (result && allyTeam[player].type === 'light' && ability == 'special') apply({ effect: 'foresight', type: 'buff', player, allyTeam })
+                if (result && allyTeam[player].type === 'light' && ability == 'special') apply({ effect: 'foresight', type: 'buff', player, allyTeam, turns: 2 })
             }
         },
         'Jedi Consular': {

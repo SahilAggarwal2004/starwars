@@ -71,7 +71,7 @@ const players = [
         name: 'Grand Master Yoda', type: 'light',
         basic: { damage: randomNumber(60, 100), description: 'Gain foresight for 1 turn.', animation: true, foresight: true },
         special: { description: 'Grant foresight to all allies for 1 turn.', cooldown: 1, animation: false, foresight: true },
-        leader: { description: 'Whenever a light side ally uses a special ability, it will gain foresight for 1 turn.', type: 'in-game', foresight: true }
+        leader: { description: 'Whenever a light side ally uses a special ability, it will gain foresight for 2 turns.', type: 'in-game', foresight: true }
     }),
     new Player({
         name: 'Jedi Consular', type: 'light',
