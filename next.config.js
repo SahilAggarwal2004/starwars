@@ -72,12 +72,12 @@ const withPWA = require('next-pwa')({
         },
         {
             urlPattern: /\.(?:js)$/i,
-            handler: 'StaleWhileRevalidate',
+            handler: 'CacheFirst',
             options: { cacheName: 'static-js-assets' }
         },
         {
             urlPattern: /\.(?:css|less)$/i,
-            handler: 'StaleWhileRevalidate',
+            handler: 'CacheFirst',
             options: { cacheName: 'static-style-assets' }
         },
         {
@@ -98,7 +98,7 @@ const withPWA = require('next-pwa')({
                 if (pathname.startsWith('/api/')) return false
                 return true
             },
-            handler: 'StaleWhileRevalidate',
+            handler: 'CacheFirst',
             options: { cacheName: 'others' }
         },
         {
