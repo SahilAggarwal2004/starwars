@@ -84,11 +84,11 @@ export default function Play({ router, mode, isFullScreen }) {
         const player = teams[turn];
         player.health += 25 * stackCount('health', 'buff', player);
         player.health -= 25 * stackCount('health', 'debuff', player);
-        if (player.health <= 0) {
+        if (player.health <= 0) setTimeout(() => {
             setTeam1(team1)
             setTeam2(team2)
             newTurn()
-        }
+        }, 500);
     }, [turn])
 
     // Computer mode

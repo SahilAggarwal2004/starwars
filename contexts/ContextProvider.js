@@ -238,6 +238,7 @@ const ContextProvider = ({ router, children }) => {
             })
         }
         if (!stun) {
+            setAttacking(false)
             setTurn(index)
             setTurnTeam(Math.ceil((index + 1) / 5))
         } else newTurn(index)
@@ -248,10 +249,11 @@ const ContextProvider = ({ router, children }) => {
         let returnUnique = {};
         const teams = getTeams(isCountering)
         const allyTeam = teams[0]
-        const enemyTeam = teams[1];
+        const playerData = allyTeam[player];
+        if (playerData.health <= 0) return;
+        const enemyTeam = teams[1]
         setAttacking(true)
 
-        const playerData = allyTeam[player];
         if (!playerData.special) ability = 'basic'
         if (playerData.special?.cooldown && !isAssisting && !isCountering) {
             ability = 'basic'
@@ -305,7 +307,6 @@ const ContextProvider = ({ router, children }) => {
                 setTimeout(() => {
                     newTurn(player + turnTeam * 5 - 5)
                     setTeams(allyTeam, enemyTeam, isCountering)
-                    setAttacking(false)
                 }, returnUnique.wait || 50);
             }, wait || 50);
         }, animation ? 2000 : 50);
