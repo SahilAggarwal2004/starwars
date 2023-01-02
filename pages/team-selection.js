@@ -6,12 +6,13 @@ import { useGameContext } from '../contexts/ContextProvider';
 import { setStorage } from '../modules/storage';
 import { details, features, modes } from '../constants';
 import players from '../players';
-import useStorage from '../hooks/useStorage';
 
 export default function TeamSelection({ router, mode }) {
     const { team1, team2, teams, setTeam1, setTeam2, abilities } = useGameContext();
+    const currentTeam = teams.length % 2 + 1
     const [hoverPlayer, setHoverPlayer] = useState()
-    const [currentTeam, setCurrentTeam] = useStorage('current', 1);
+
+    const addPlayer = player => { if (!team1.includes(player) && !team2.includes(player) && teams.length < 10) currentTeam === 1 ? setTeam1([...team1, player]) : setTeam2([...team2, player]) }
 
     useEffect(() => { if (!modes.includes(mode)) router.push('/') }, [])
 
@@ -29,26 +30,13 @@ export default function TeamSelection({ router, mode }) {
         }
         if (mode === 'player' || currentTeam !== 2) return
         do { var player = randomElement(players) } while (teams.length != 10 && teams.includes(player))
-        selectPlayer(player)
+        addPlayer(player)
     }, [currentTeam])
-
-    function addPlayer(player) {
-        if (teams.length == 10) return
-        if (currentTeam == 1) {
-            setTeam1([...team1, player])
-            setCurrentTeam(2)
-        } else {
-            setTeam2([...team2, player])
-            setCurrentTeam(1)
-        }
-    }
-
-    function selectPlayer(player) { if (!team1.includes(player) && !team2.includes(player)) addPlayer(player) }
 
     return <>
         <span className='main-heading x-center top-32'>Select {(currentTeam == 1 && team1.length) || (currentTeam == 2 && team2.length) ? 'player' : 'leader'} for Team {currentTeam}</span>
         <div className='grid grid-cols-12 fixed x-center bottom-3.5 gap-x-2.5 min-w-max'>
-            {players.map(player => <div className='relative w-[6vw] aspect-square flex justify-center hover:border-2 hover:outline border-transparent rounded-sm' key={player.name} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => selectPlayer(player)} onContextMenu={event => event.preventDefault()}>
+            {players.map(player => <div className='relative w-[6vw] aspect-square flex justify-center hover:border-2 hover:outline border-transparent rounded-sm' key={player.name} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => addPlayer(player)} onContextMenu={event => event.preventDefault()}>
                 <img src={`/images/players/${player.name}.webp`} alt={player.name} width='120' className='rounded-sm aspect-square' />
                 {JSON.stringify(team1).includes(player.name) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-blue-500 z-10'>1</div>}
                 {JSON.stringify(team2).includes(player.name) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10'>{mode === 'computer' ? 'C' : 2}</div>}
