@@ -17,12 +17,12 @@ const effectArr = Object.keys(effectObj)
 
 const stackCount = (effect, type, player) => {
     type = type + 's';
-    return player?.[type][effect].length
+    return +(player?.health > 0) && player?.[type][effect].length
 }
 
 const hasEffect = (effect, type, player) => stackCount(effect, type, player) > 0
 
-const hasStealth = ({ name, health, buffs, debuffs }) => buffs.stealth.length > 0 || (name === 'Chewbecca' && health < 100 && !debuffs.immunity.length)
+const hasStealth = ({ name, health, buffs, debuffs }) => health > 0 && buffs.stealth.length > 0 || (name === 'Chewbecca' && health < 100 && !debuffs.immunity.length)
 
 const hasTaunt = ({ name, health, buffs, debuffs }) => {
     if (buffs.taunt.length > 0) return true

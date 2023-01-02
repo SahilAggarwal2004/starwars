@@ -104,7 +104,7 @@ const ContextProvider = ({ router, children }) => {
                 setStorage('health-steal', healthSteal);
             },
             special: block,
-            leader: ({ enemyTeam }) => indexes.forEach(index => enemyTeam[index].speed -= 10)
+            leader: ({ enemyTeam }) => indexes.forEach(index => enemyTeam[index].speed -= 8)
         },
         'Darth Vader': {
             basic: ({ enemy, enemyTeam }) => apply({ effect: 'offense', type: 'debuff', enemy, enemyTeam }),
@@ -136,9 +136,7 @@ const ContextProvider = ({ router, children }) => {
             }
         },
         'Jedi Knight Revan': {
-            basic: ({ player, allyTeam }) => {
-                apply({ effect: 'health', type: 'buff', player, allyTeam, all: true, stack: 2, side: 'light' })
-            },
+            basic: ({ player, allyTeam }) => apply({ effect: 'health', type: 'buff', player, allyTeam, all: true, stack: 2, side: 'light' }),
             special: ({ allyTeam, enemyTeam }) => {
                 allyTeam.forEach(({ name, type, health, special }, index) => { if (health > 0 && name != 'Jedi Knight Revan' && type == 'light' && special) allyTeam[index].special.cooldown = 0 })
                 enemyTeam.forEach(({ health, type, speed }, index) => { if (health > 0 && type == 'dark' && speed > 1) enemyTeam[index].speed -= 5 })

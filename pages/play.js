@@ -18,7 +18,7 @@ export default function Play({ router, mode, isFullScreen }) {
         const enemyTeam = turnTeam === 1 ? team2 : team1
         const possibleEnemies = []
         enemyTeam.forEach((enemy, i) => { if (hasTaunt(enemy)) possibleEnemies.push(i) })
-        if (!possibleEnemies.length) enemyTeam.forEach((enemy, i) => { if (!hasStealth(enemy)) possibleEnemies.push(i) })
+        if (!possibleEnemies.length) enemyTeam.forEach((enemy, i) => { if (enemy.health > 0 && !hasStealth(enemy)) possibleEnemies.push(i) })
         if (!possibleEnemies.length) enemyTeam.forEach(({ health }, i) => { if (health > 0) possibleEnemies.push(i) })
         if (index === undefined || index !== turnTeam - 1) possibleEnemies.includes(enemy) ? setEnemy(enemy) : setEnemy(possibleEnemies[0])
     }
@@ -53,7 +53,7 @@ export default function Play({ router, mode, isFullScreen }) {
     }
 
     useEffect(() => {
-        if (!modes.includes(router.query.mode)) router.push('/')
+        if (!modes.includes(mode)) router.push('/')
         setTeam1(getStorage('team1', []))
         setTeam2(getStorage('team2', []))
         const tempturn = +getStorage('turn', turn)
@@ -78,22 +78,9 @@ export default function Play({ router, mode, isFullScreen }) {
         }
     }, [teams])
 
-    useEffect(() => {
-        if (turn < 0) return
-        selectEnemy(enemy)
-        const player = teams[turn];
-        player.health += 25 * stackCount('health', 'buff', player);
-        player.health -= 25 * stackCount('health', 'debuff', player);
-        if (player.health <= 0) setTimeout(() => {
-            setTeam1(team1)
-            setTeam2(team2)
-            newTurn()
-        }, 500);
-    }, [turn])
-
     // Computer mode
     useEffect(() => {
-        if (isAttacking) return
+        if (isAttacking || enemy < 0) return
         if (turnTeam === 1) {
             if (team2.length && team2[enemy].health <= 0) {
                 let enemies = [];
@@ -113,6 +100,20 @@ export default function Play({ router, mode, isFullScreen }) {
             } else selectEnemy(enemy);
         }
     }, [isAttacking])
+
+    // Over turn effects
+    useEffect(() => {
+        if (turn < 0 || isAttacking) return
+        selectEnemy(enemy)
+        const player = teams[turn];
+        player.health += 25 * stackCount('health', 'buff', player);
+        player.health -= 25 * stackCount('health', 'debuff', player);
+        if (player.health <= 0) setTimeout(() => {
+            setTeam1(team1)
+            setTeam2(team2)
+            newTurn()
+        }, 500);
+    }, [isAttacking, turn])
 
     return <>
         {[team1, team2].map((team, index) => <div id={`team${index + 1}`} key={index} className={`fixed top-0 ${index ? 'right-5' : 'left-5'} space-y-4 w-max flex flex-col items-center justify-center h-full`}>
