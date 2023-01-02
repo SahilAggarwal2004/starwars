@@ -41,7 +41,7 @@ const players = [
         name: 'Chewbecca', health: 2, type: 'light',
         basic: { damage: randomNumber(60, 100), description: "Light side allies have a 10% chance to double their health.", animation: true, foresight: true },
         special: { damage: randomNumber(125, 150), description: "Heal all allies by 10% of his current health and grant all allies defense up for 1 turn.", cooldown: 2, animation: true, foresight: true },
-        unique: { description: "This player has double health. He gains taunt whenever an ally falls below 100 health and gains stealth whenever this player falls below 100 health, this effect can't be restricted.", type: 'before' }
+        unique: { description: "This player has double health. He gains taunt whenever an ally falls below 100 health and gains stealth whenever this player falls below 100 health", type: 'before' }
     }),
     new Player({
         name: 'Count Dooku', type: 'dark', defense: 1.25,

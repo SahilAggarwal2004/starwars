@@ -21,7 +21,7 @@ const apply = ({ effect, type, player, enemy, allyTeam, enemyTeam, turns = 1, st
             if (stack) for (let i = 0; i < stack; i++) buff.push(turns)
             else buff[0] = (buff[0] || 0) + turns
         }
-        for (let i = buff.length - stack; i < buff.length; i++) buff[i]++
+        for (let i = stack && buff.length - stack; i < buff.length; i++) buff[i]++
     } else {
         const enemyData = enemyTeam[enemy]
         if (all) for (let i = 0; i < enemyTeam.length; i++) {
