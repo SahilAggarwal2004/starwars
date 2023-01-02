@@ -6,11 +6,12 @@ import { useGameContext } from '../contexts/ContextProvider';
 import { setStorage } from '../modules/storage';
 import { details, features, modes } from '../constants';
 import players from '../players';
+import useStorage from '../hooks/useStorage';
 
 export default function TeamSelection({ router, mode }) {
     const { team1, team2, teams, setTeam1, setTeam2, abilities } = useGameContext();
     const [hoverPlayer, setHoverPlayer] = useState()
-    const [currentTeam, setCurrentTeam] = useState(1);
+    const [currentTeam, setCurrentTeam] = useStorage('current', 1);
 
     useEffect(() => { if (!modes.includes(mode)) router.push('/') }, [])
 
@@ -27,8 +28,7 @@ export default function TeamSelection({ router, mode }) {
             return
         }
         if (mode === 'player' || currentTeam !== 2) return
-        let player;
-        do { player = randomElement(players) } while (teams.length != 10 && teams.includes(player))
+        do { var player = randomElement(players) } while (teams.length != 10 && teams.includes(player))
         selectPlayer(player)
     }, [currentTeam])
 
