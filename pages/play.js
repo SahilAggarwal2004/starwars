@@ -9,7 +9,7 @@ import { details, features, indexes, modes } from "../constants"
 import { exists } from "../modules/functions"
 
 export default function Play({ router, mode, isFullScreen }) {
-    const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, bullet, attack, isAttacking, turnTeam } = useGameContext()
+    const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, bullet, attack, isAttacking, turnTeam } = useGameContext()
     const [enemy, setEnemy] = useState(-1)
     const [hoverPlayer, setHoverPlayer] = useState()
     const [hoverAbility, setHoverAbility] = useState()
@@ -56,7 +56,6 @@ export default function Play({ router, mode, isFullScreen }) {
         if (!modes.includes(mode)) router.push('/')
         setTeam1(getStorage('team1', []))
         setTeam2(getStorage('team2', []))
-        setTurn(+getStorage('turn', turn))
         setHoverPlayer()
         window.addEventListener('resize', updatePositions)
         return () => window.removeEventListener('resize', updatePositions)

@@ -65,7 +65,7 @@ const players = [
         basic: { damage: randomNumber(60, 100), description: 'Inflict offense down on target enemy 1 turn.', animation: true, foresight: false },
         special: { description: 'Inflict 2 damage over turn effects on all enemies for 1 turn.', cooldown: 1, animation: false, foresight: true },
         leader: { description: 'All dark side allies have +10 speed.', type: 'start' },
-        unique: { description: 'Whenever an enemy attacks Darth Vader, he inflicts damage over turn on that enemy for 1 turn.', type: 'after', foresight: false }
+        unique: { description: 'Whenever an enemy attacks Darth Vader in his turn, the enemy gains damage over turn for 1 turn.', type: 'after', foresight: false }
     }),
     new Player({
         name: 'Grand Master Yoda', type: 'light',
