@@ -12,7 +12,7 @@ export default function TeamSelection({ router, mode }) {
     const currentTeam = teams.length % 2 + 1
     const [hoverPlayer, setHoverPlayer] = useState()
 
-    const addPlayer = player => { if (!team1.includes(player) && !team2.includes(player) && teams.length < 10) currentTeam === 1 ? setTeam1([...team1, player]) : setTeam2([...team2, player]) }
+    const addPlayer = player => { if (!teams.includes(player) && teams.length < 10) currentTeam === 1 ? setTeam1([...team1, player]) : setTeam2([...team2, player]) }
 
     useEffect(() => { if (!modes.includes(mode)) router.push('/') }, [])
 

@@ -17,7 +17,7 @@ const ContextProvider = ({ router, children }) => {
     const [team2, setTeam2] = useStorage('team2', [])
     const teams = team1.concat(team2)
     const [turn, setTurn] = useStorage('turn', -1)
-    const [turnTeam, setTurnTeam] = useState()
+    const turnTeam = Math.ceil((turn + 1) / 5)
     const [isAttacking, setAttacking] = useState(false)
     const [bullet, setBullet] = useState({ 0: false, 1: false, 2: false, 3: false, 4: false })
 
@@ -238,7 +238,6 @@ const ContextProvider = ({ router, children }) => {
         if (!stun) {
             setAttacking(false)
             setTurn(index)
-            setTurnTeam(Math.ceil((index + 1) / 5))
         } else newTurn(index)
     }
 
@@ -310,7 +309,7 @@ const ContextProvider = ({ router, children }) => {
         }, animation ? 2000 : 50);
     }
 
-    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, setTurnTeam, attack, bullet, isAttacking, abilities }}>
+    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, attack, bullet, isAttacking, abilities }}>
         {children}
     </Context.Provider>
 }

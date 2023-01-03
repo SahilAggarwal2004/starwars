@@ -9,7 +9,7 @@ import { details, features, indexes, modes } from "../constants"
 import { exists } from "../modules/functions"
 
 export default function Play({ router, mode, isFullScreen }) {
-    const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, setTurnTeam, bullet, attack, isAttacking, turnTeam } = useGameContext()
+    const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, bullet, attack, isAttacking, turnTeam } = useGameContext()
     const [enemy, setEnemy] = useState(-1)
     const [hoverPlayer, setHoverPlayer] = useState()
     const [hoverAbility, setHoverAbility] = useState()
@@ -56,14 +56,10 @@ export default function Play({ router, mode, isFullScreen }) {
         if (!modes.includes(mode)) router.push('/')
         setTeam1(getStorage('team1', []))
         setTeam2(getStorage('team2', []))
-        const tempturn = +getStorage('turn', turn)
-        if (tempturn) {
-            setTurn(tempturn)
-            setTurnTeam(Math.ceil((tempturn + 1) / 5))
-        }
+        setTurn(+getStorage('turn', turn))
         setHoverPlayer()
         window.addEventListener('resize', updatePositions)
-        return () => { window.removeEventListener('resize', updatePositions) }
+        return () => window.removeEventListener('resize', updatePositions)
     }, [])
 
     useEffect(() => { setTimeout(() => updatePositions(), 1) }, [isFullScreen])
