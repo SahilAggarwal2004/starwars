@@ -4,7 +4,7 @@ import { maximumNumber, randomElement, probability } from 'random-stuff-js'
 import { assist, block, revive, verify, kill, apply, remove } from '../modules/abilities';
 import { animateBullet, multiAttack } from '../modules/animation'
 import useStorage from '../hooks/useStorage';
-import { hasEffect, hasStealth, hasTaunt } from '../modules/effects';
+import { hasEffect, hasStealth, hasTaunt, stackCount } from '../modules/effects';
 import { getStorage, removeStorage, setStorage } from '../modules/storage';
 import { indexes, multiAttackers, preserveGame } from '../constants';
 import { damageMultiplier, reduce } from '../modules/functions';
@@ -235,10 +235,15 @@ const ContextProvider = ({ router, children }) => {
                 debuffs[i] = reduce(debuff)
             })
         }
-        if (!stun) {
+        if (stun) {
+            const player = teams[index];
+            player.health += 25 * stackCount('health', 'buff', player);
+            player.health -= 25 * stackCount('health', 'debuff', player);
+            newTurn(index)
+        } else {
             setAttacking(false)
             setTurn(index)
-        } else newTurn(index)
+        }
     }
 
     function attack({ player, enemy, ability = 'basic', isAssisting = false, isCountering = false }) {
