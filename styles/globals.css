@@ -22,7 +22,7 @@
 }
 
 .main-heading {
-    @apply md:text-xl lg:text-2xl fixed font-semibold
+    @apply md:text-lg lg:text-xl xl:text-2xl fixed font-semibold
 }
 
 .main-button {
