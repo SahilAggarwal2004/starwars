@@ -14,9 +14,7 @@ export default function Result({ router, mode }) {
 
     return winner && <div className='fixed center text-center space-y-8'>
         <div className='main-heading static'>{mode === 'computer' && winner === 2 ? 'Computer' : `Congratulations! Team ${winner}`} won the game.</div>
-        <Link href='/'>
-            <a className='main-button'>Play Again</a>
-        </Link>
+        <Link href='/'><a className='main-button'>Play Again</a></Link>
     </div>
 }
 

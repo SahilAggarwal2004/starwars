@@ -5,7 +5,7 @@ import { useGameContext } from "../contexts/ContextProvider"
 import { maximumNumber, randomElement } from "random-stuff-js"
 import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules/effects"
 import { getStorage, setStorage } from "../modules/storage"
-import { details, features, indexes, modes } from "../constants"
+import { details, features, gameAbilities, indexes, modes, usableAbilities } from "../constants"
 import { exists } from "../modules/functions"
 
 export default function Play({ router, mode, isFullScreen }) {
@@ -134,7 +134,7 @@ export default function Play({ router, mode, isFullScreen }) {
                         </div>
                     </div>
                     {!(mode === 'computer' && turnTeam === 2) && selectedPlayer && !isAttacking && <div className="fixed flex x-center bottom-3 space-x-2">
-                        {['basic', 'special'].map(ability => teams[turn][ability] && <div key={ability} className={`ability detail-heading ${teams[turn][ability].cooldown && 'opacity-50'}`} onPointerEnter={() => setHoverAbility(ability)} onPointerLeave={() => setHoverAbility()} onClick={() => !teams[turn][ability].cooldown && handleAttack(ability, i)}>{ability[0]}</div>)}
+                        {usableAbilities.map(ability => teams[turn][ability] && <div key={ability} className={`ability detail-heading ${teams[turn][ability].cooldown && 'opacity-50'}`} onPointerEnter={() => setHoverAbility(ability)} onPointerLeave={() => setHoverAbility()} onClick={() => !teams[turn][ability].cooldown && handleAttack(ability, i)}>{ability[0]}</div>)}
                     </div>}
                 </div>
             })}
@@ -145,7 +145,7 @@ export default function Play({ router, mode, isFullScreen }) {
                 {details.map(detail => <span key={detail} className='detail-heading capitalize'>{detail}: {detail == 'health' ? Math.ceil(hoverPlayer[detail]) : hoverPlayer[detail]}</span>)}
             </div>
             <div>
-                {['basic', 'special', 'unique'].map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
+                {gameAbilities.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
                     <span className="capitalize">{ability}:</span>
                     {features.map(feature => {
                         const value = hoverPlayer[ability][feature]

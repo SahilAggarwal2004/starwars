@@ -14,6 +14,7 @@
     "random-stuff-js": "^0.4.0",
     "react": "18.1.0",
     "react-dom": "18.1.0",
+    "react-icons": "^4.7.1",
     "react-tsparticles": "^2.3.3",
     "tsparticles": "^2.3.4"
   },

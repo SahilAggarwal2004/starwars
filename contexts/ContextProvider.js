@@ -220,7 +220,8 @@ const ContextProvider = ({ router, children }) => {
         const indexes = [];
         turnmeter.forEach((value, index) => { if (value == max) indexes.push(index) })
         const index = randomElement(indexes)
-        const stun = hasEffect('stun', 'debuff', teams[index])
+        const player = teams[index];
+        const stun = hasEffect('stun', 'debuff', player)
         if (oldTurn !== undefined) {
             const buffs = teams[oldTurn]?.buffs || {}
             const debuffs = teams[oldTurn]?.debuffs || {}
@@ -236,7 +237,6 @@ const ContextProvider = ({ router, children }) => {
             })
         }
         if (stun) {
-            const player = teams[index];
             player.health += 25 * stackCount('health', 'buff', player);
             player.health -= 25 * stackCount('health', 'debuff', player);
             newTurn(index)
