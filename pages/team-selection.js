@@ -18,7 +18,7 @@ export default function TeamSelection({ router, mode }) {
     useEffect(() => { if (!modes.includes(mode)) router.push('/') }, [])
 
     useEffect(() => {
-        if (team1.length === 5 && team2.length === 5) {
+        if (count === 10) {
             if (team1[0].leader?.type == 'start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
             if (team2[0].leader?.type == 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
             setTeam1(team1)
@@ -50,7 +50,7 @@ export default function TeamSelection({ router, mode }) {
     }
 
     return <>
-        <span className='main-heading center -translate-y-[calc(3vw+0.5rem+50%)]'>Select {count < 2 ? 'leader' : 'player'} for Team {currentTeam}</span>
+        <span className='main-heading center -translate-y-[calc(3vw+0.5rem+50%)]'>Select {count < 2 ? 'leader' : 'player'} for Team {currentTeam} {count}</span>
         <div className='grid grid-cols-12 fixed x-center bottom-4 gap-x-2.5 min-w-max'>
             {players.map(player => <div className='relative w-[6vw] aspect-square flex justify-center hover:border-2 hover:outline border-transparent rounded-sm' key={player.name} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => addPlayer(player)} onContextMenu={event => event.preventDefault()}>
                 <img src={`/images/players/${player.name}.webp`} alt={player.name} width='120' className='rounded-sm aspect-square' />
