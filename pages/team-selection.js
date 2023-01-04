@@ -18,7 +18,7 @@ export default function TeamSelection({ router, mode }) {
     useEffect(() => { if (!modes.includes(mode)) router.push('/') }, [])
 
     useEffect(() => {
-        if (count === 10) {
+        if (team1.length === 5 && team2.length === 5) {
             if (team1[0].leader?.type == 'start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
             if (team2[0].leader?.type == 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
             setTeam1(team1)

@@ -184,7 +184,7 @@ const ContextProvider = ({ router, children }) => {
         setTeam1([])
         setTeam2([])
         setTurn(-1)
-        removeStorage('turnmeter')
+        setStorage('turnmeter', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         removeStorage('initial-data')
         removeStorage('health-steal')
         removeStorage('positions')
