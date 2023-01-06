@@ -18,7 +18,7 @@ const ContextProvider = ({ router, children }) => {
     const teams = team1.concat(team2)
     const [turn, setTurn] = useState(-1)
     const turnTeam = Math.ceil((turn + 1) / 5)
-    const [isAttacking, setAttacking] = useState(false)
+    const [isAttacking, setAttacking] = useState(true)
     const [bullet, setBullet] = useState({ 0: false, 1: false, 2: false, 3: false, 4: false })
 
     useEffect(() => {
@@ -184,6 +184,7 @@ const ContextProvider = ({ router, children }) => {
         setTeam1([])
         setTeam2([])
         setTurn(-1)
+        setAttacking(true)
         setStorage('turnmeter', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         removeStorage('initial-data')
         removeStorage('health-steal')

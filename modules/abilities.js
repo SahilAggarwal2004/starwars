@@ -86,7 +86,7 @@ const revive = (allyTeam, health) => {
     const buffs = playerData.buffs;
     const debuffs = playerData.debuffs;
     playerData.health = health
-    playerData.special.cooldown = getStorage('initial-data')[playerData.name].cooldown
+    if (playerData.special) playerData.special.cooldown = getStorage('initial-data')[playerData.name].cooldown
     Object.keys(buffs).forEach(i => buffs[i] = [])
     Object.keys(debuffs).forEach(i => debuffs[i] = [])
 }

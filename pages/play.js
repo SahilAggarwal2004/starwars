@@ -10,7 +10,7 @@ import { exists } from "../modules/functions"
 
 export default function Play({ router, mode, isFullScreen }) {
     const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, bullet, attack, isAttacking, turnTeam } = useGameContext()
-    const [enemy, setEnemy] = useState(-1)
+    const [enemy, setEnemy] = useState(0)
     const [hoverPlayer, setHoverPlayer] = useState()
     const [hoverAbility, setHoverAbility] = useState()
 
