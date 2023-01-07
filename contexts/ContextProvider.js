@@ -19,7 +19,7 @@ const ContextProvider = ({ router, children }) => {
     const [turn, setTurn] = useState(-1)
     const turnTeam = Math.ceil((turn + 1) / 5)
     const [isAttacking, setAttacking] = useState(true)
-    const [bullet, setBullet] = useState({ 0: false, 1: false, 2: false, 3: false, 4: false })
+    const [bullet, setBullet] = useState([])
 
     useEffect(() => {
         if (!preserveGame.includes(router.pathname)) resetGame()
@@ -278,10 +278,10 @@ const ContextProvider = ({ router, children }) => {
         const animation = playerData[ability].animation;
 
         if (ability == 'special' && multiAttackers.includes(playerData.name)) {
-            setBullet({ 0: enemyTeam[0].health > 0, 1: enemyTeam[1].health > 0, 2: enemyTeam[2].health > 0, 3: enemyTeam[3].health > 0, 4: enemyTeam[4].health > 0 })
+            setBullet(indexes.map(i => enemyTeam[i].health > 0))
             setTimeout(() => multiAttack(player, enemyTeam, turnTeam, setBullet), 0);
         } else {
-            setBullet(bullet => ({ ...bullet, [enemy]: true }))
+            setBullet([true])
             setTimeout(() => animation && animateBullet(player, enemy, turnTeam, setBullet, isCountering), 0);
         }
         setTimeout(() => {

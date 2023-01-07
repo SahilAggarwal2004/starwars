@@ -5,13 +5,13 @@ async function animateBullet(player, enemy, turnTeam, setBullet, isCountering) {
     const positions = getStorage('positions')
     const { left: playerLeft, right: playerRight, top: playerTop, bottom: playerBottom } = positions[turnTeam * 5 - 5 + player]
     const { left: enemyLeft, right: enemyRight, top: enemyTop, bottom: enemyBottom } = positions[(turnTeam == 1 ? 2 : 1) * 5 - 5 + enemy]
-    const bulletRef = document.getElementById(`bullet${enemy}`).style
+    const bulletRef = document.getElementById('bullet0').style
     bulletRef.left = `${(playerLeft + playerRight) / 2}px`;
     bulletRef.top = `${(playerTop + playerBottom) / 2}px`;
     setTimeout(() => {
         bulletRef.left = `${(enemyLeft + enemyRight) / 2}px`;
         bulletRef.top = `${(enemyTop + enemyBottom) / 2}px`;
-        setTimeout(() => setBullet(bullet => ({ ...bullet, [enemy]: false })), 1900)
+        setTimeout(() => setBullet([]), 1900)
     }, 50);
 }
 
@@ -71,7 +71,7 @@ async function multiAttack(player, enemyTeam, turnTeam, setBullet) {
             bulletRef4.left = `calc(${enemyLeft}px + 3vw)`;
             bulletRef4.top = `calc(${enemyTop4}px + 3vw)`;
         }
-        setTimeout(() => setBullet({ 0: false, 1: false, 2: false, 3: false, 4: false }), 1900)
+        setTimeout(() => setBullet([]), 1900)
     }, 50);
 }
 
