@@ -94,7 +94,7 @@ const ContextProvider = ({ router, children }) => {
             }
         },
         'Darth Nihilus': {
-            basic: ({ player, allyTeam }) => allyTeam[player].special.cooldown--,
+            basic: ({ player, allyTeam }) => allyTeam[player].special?.cooldown--,
             special: kill
         },
         'Darth Revan': {
@@ -138,7 +138,7 @@ const ContextProvider = ({ router, children }) => {
         'Jedi Knight Revan': {
             basic: ({ player, allyTeam }) => apply({ effect: 'health', type: 'buff', player, allyTeam, all: true, stack: 2, side: 'light' }),
             special: ({ allyTeam, enemyTeam }) => {
-                allyTeam.forEach(({ name, type, health, special }, index) => { if (health > 0 && name != 'Jedi Knight Revan' && type == 'light' && special) allyTeam[index].special.cooldown = 0 })
+                allyTeam.forEach(({ name, type, health }, index) => { if (health > 0 && name !== 'Jedi Knight Revan' && type === 'light') allyTeam[index].special?.cooldown = 0 })
                 enemyTeam.forEach(({ health, type, speed }, index) => { if (health > 0 && type == 'dark' && speed > 1) enemyTeam[index].speed -= 5 })
             },
             leader: ({ ability, allyTeam }) => {
