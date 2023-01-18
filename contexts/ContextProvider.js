@@ -94,7 +94,7 @@ const ContextProvider = ({ router, children }) => {
             }
         },
         'Darth Nihilus': {
-            basic: ({ player, allyTeam }) => allyTeam[player].special?.cooldown--,
+            basic: ({ player, allyTeam }) => allyTeam[player].special?.cooldown && allyTeam[player].special.cooldown--,
             special: kill
         },
         'Darth Revan': {
