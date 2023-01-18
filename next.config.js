@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 
-const revision = `${Date.now()}`
+const revision = crypto.randomUUID()
 
 const withPWA = require('next-pwa')({
     dest: 'public',
