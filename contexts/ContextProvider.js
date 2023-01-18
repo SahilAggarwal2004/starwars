@@ -143,9 +143,9 @@ const ContextProvider = ({ router, children }) => {
             },
             leader: ({ ability, allyTeam }) => {
                 const { result } = verify('leader', 'Jedi Knight Revan', allyTeam)
-                if (ability == 'basic' && result) allyTeam.forEach(({ name }, index) => {
+                if (ability === 'basic' && result) allyTeam.forEach(({ name }, index) => {
                     const data = allyTeam[index];
-                    if (name == 'Jedi Knight Revan' && data.special?.cooldown > 0) data.special.cooldown--
+                    if (name === 'Jedi Knight Revan' && data.special?.cooldown) data.special.cooldown--
                 })
             }
         },
