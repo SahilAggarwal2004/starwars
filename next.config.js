@@ -112,6 +112,8 @@ const withPWA = require('next-pwa')({
     ]
 })
 
-const nextConfig = {}
+const nextConfig = {
+    experimental: { nextScriptWorkers: true }
+}
 
 module.exports = withPWA(nextConfig)
