@@ -1,12 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useGameContext } from "../contexts/ContextProvider"
 import { maximumNumber, randomElement } from "random-stuff-js"
 import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules/effects"
 import { getStorage, setStorage } from "../modules/storage"
 import { details, features, gameAbilities, indexes, modes, usableAbilities } from "../constants"
 import { exists } from "../modules/functions"
+import Head from "next/head"
 
 export default function Play({ router, mode, isFullScreen }) {
     const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, bullet, attack, isAttacking, turnTeam } = useGameContext()
@@ -111,6 +112,7 @@ export default function Play({ router, mode, isFullScreen }) {
     }, [isAttacking, turn])
 
     return <>
+        <Head><title>Play vs {mode}</title></Head>
         {[team1, team2].map((team, index) => <div id={`team${index + 1}`} key={index} className={`fixed top-0 ${index ? 'right-5' : 'left-5'} space-y-4 w-max flex flex-col items-center justify-center h-full`}>
             <span className='detail-heading font-semibold text-center'>{mode === 'computer' && index ? 'Computer' : `Team ${index + 1}`}</span>
             {team.map((player, i) => {

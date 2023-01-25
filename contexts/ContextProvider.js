@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { createContext, useState, useEffect, useContext } from 'react'
+import { createContext, useState, useEffect, useContext } from 'react'
 import { maximumNumber, randomElement, probability } from 'random-stuff-js'
 import { assist, block, revive, verify, kill, apply, remove } from '../modules/abilities';
 import { animateBullet, multiAttack } from '../modules/animation'

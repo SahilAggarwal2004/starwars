@@ -1,6 +1,6 @@
 // eslint-disable react-hooks/exhaustive-deps
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { modes } from '../constants'
 import { getStorage } from '../modules/storage'
 

@@ -1,12 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { randomElement } from 'random-stuff-js';
 import { FaRandom, FaUndoAlt } from 'react-icons/fa'
 import { useGameContext } from '../contexts/ContextProvider';
 import { setStorage } from '../modules/storage';
 import { allAbilities, details, features, modes } from '../constants';
 import players from '../players';
+import Head from 'next/head';
 
 export default function TeamSelection({ router, mode }) {
     const { team1, team2, teams, setTeam1, setTeam2, abilities } = useGameContext();
@@ -50,6 +51,7 @@ export default function TeamSelection({ router, mode }) {
     }
 
     return <>
+        <Head><title>Play vs {mode}</title></Head>
         <span className='main-heading center -translate-y-[calc(3vw+0.5rem+50%)]'>Select {count < 2 ? 'leader' : 'player'} for Team {currentTeam}</span>
         <div className='grid grid-cols-12 fixed x-center bottom-4 gap-x-2.5 min-w-max'>
             {players.map(player => <div className='relative w-[6vw] aspect-square flex justify-center hover:border-2 hover:outline border-transparent rounded-sm' key={player.name} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => addPlayer(player)} onContextMenu={event => event.preventDefault()}>
@@ -75,4 +77,4 @@ export default function TeamSelection({ router, mode }) {
     </>
 }
 
-export const getServerSideProps = context => { return { props: { mode: context.query.mode } } }
+export const getServerSideProps = context => { return { props: { mode: context.query.mode || '' } } }

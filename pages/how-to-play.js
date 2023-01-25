@@ -1,7 +1,8 @@
-import React from 'react'
+import Head from 'next/head'
 
 export default function HowToPlay() {
-  return (
+  return <>
+    <Head><title>How to play</title></Head>
     <div>HowToPlay</div>
-  )
+  </>
 }

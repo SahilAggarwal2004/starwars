@@ -1,0 +1,4 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Disallow:
+Sitemap: https://starwarsgame.vercel.app/sitemap.xml
