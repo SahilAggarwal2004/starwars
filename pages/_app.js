@@ -30,7 +30,7 @@ function MyApp({ Component, pageProps }) {
 	if (router.pathname === '/') pageProps.enterFullscreen = enterFullscreen
 	if (router.pathname === '/play') pageProps.isFullscreen = isFullscreen
 
-	return <ContextProvider router={router}>
+	return <>
 		<Head>
 			<meta charSet="utf-8" />
 			<title>Star Wars</title>
@@ -89,13 +89,25 @@ function MyApp({ Component, pageProps }) {
 			<link rel="apple-touch-startup-image" href="icons/apple-splash-640-1136.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
 			<link rel="apple-touch-startup-image" href="icons/apple-splash-1136-640.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
 		</Head>
-		<div ref={fullscreenElement} className='font-mono'>
-			{!isMobile || router.pathname === '/' ? <Component {...pageProps} /> : !isFullscreen ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
-				<div>Please enter full screen mode</div>
-				<button onClick={enterFullscreen}>Click Here</button>
-			</div> : !orientation ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div> : <Component {...pageProps} />}
-		</div>
-	</ContextProvider>
+
+		{/* Google tag (gtag.js) */}
+		<Script async src="https://www.googletagmanager.com/gtag/js?id=G-ED6RPYHXQN" strategy='worker' />
+		<Script id='google-analytics' strategy='worker'>
+			{`window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-ED6RPYHXQN');`}
+		</Script>
+
+		<ContextProvider router={router}>
+			<div ref={fullscreenElement} className='font-mono'>
+				{!isMobile || router.pathname === '/' ? <Component {...pageProps} /> : !isFullscreen ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
+					<div>Please enter full screen mode</div>
+					<button onClick={enterFullscreen}>Click Here</button>
+				</div> : !orientation ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div> : <Component {...pageProps} />}
+			</div>
+		</ContextProvider>
+	</>
 }
 
 export default MyApp
