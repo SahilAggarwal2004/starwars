@@ -1,9 +1,19 @@
-const setStorage = (key, value) => sessionStorage.setItem(key, JSON.stringify(value))
-const getStorage = (key, fallbackValue) => {
-    const value = JSON.parse(sessionStorage.getItem(key))
-    if (!value) setStorage(key, fallbackValue)
-    return value || fallbackValue
-}
-const removeStorage = (key) => sessionStorage.removeItem(key)
+export const setStorage = (key, value) => sessionStorage.setItem(key, JSON.stringify(value))
 
-export { setStorage, getStorage, removeStorage }
+export const removeStorage = (key) => sessionStorage.removeItem(key)
+
+export const getStorage = (key, fallbackValue) => {
+    let value = sessionStorage.getItem(key)
+    try {
+        value = JSON.parse(value)
+    } catch {
+        if (fallbackValue) {
+            value = fallbackValue
+            setStorage(key, value)
+        } else {
+            value = null
+            removeStorage(key)
+        }
+    }
+    return value
+}
