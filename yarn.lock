@@ -3212,10 +3212,10 @@ quick-lru@^5.1.1:
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-5.1.1.tgz#366493e6b3e42a3a6885e2e99d18f80fb7a8c932"
   integrity sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==
 
-random-stuff-js@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/random-stuff-js/-/random-stuff-js-0.4.0.tgz#d4a29848e382ae4c997f833d04b6ba95f0805252"
-  integrity sha512-Dh/WprIw0OX+bVwme3PjPgHh3bKr+TQCYnH5x08FhRweDAQMHp5DpeJbim3LKxQJZgRWbbOGfCryhrB6QAvA5Q==
+random-stuff-js@^0.5.4:
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/random-stuff-js/-/random-stuff-js-0.5.4.tgz#bb8edd6d8817aceae86dfbd0de7935fc9b50f67e"
+  integrity sha512-7rRU+OGXsKn9x2J4yTgvLDiZ5Lim2H2aHW7j4HONDTqCV2iU6WZkZ90XGi5Yt+Q1NsvTt2SGgeA9ZcP3t93uSA==
 
 randombytes@^2.1.0:
   version "2.1.0"
