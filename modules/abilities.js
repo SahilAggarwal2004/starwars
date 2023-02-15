@@ -70,7 +70,7 @@ const remove = ({ effect, type, player, enemy, allyTeam, enemyTeam, all = false,
 const assist = (player, enemy, allyTeam, enemyTeam, attack) => {
     if (enemyTeam[enemy].health <= 0) return
     let assistPlayers = [];
-    allyTeam.forEach(({ health, stun }, i) => { if (health > 0 && !stun && i != player) assistPlayers.push(i) })
+    allyTeam.forEach((ally, i) => { if (ally.health > 0 && !hasEffect('stun', 'debuff', ally) && i != player) assistPlayers.push(i) })
     const assistPlayer = randomElement(assistPlayers);
     if (assistPlayer == undefined) return
     setTimeout(() => attack({ player: assistPlayer, enemy, isAssisting: true }), 50);
