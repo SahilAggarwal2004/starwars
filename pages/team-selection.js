@@ -6,26 +6,29 @@ import { FaRandom, FaUndoAlt } from 'react-icons/fa'
 import { useGameContext } from '../contexts/ContextProvider';
 import { setStorage } from '../modules/storage';
 import { allAbilities, details, features, modes } from '../constants';
-import players from '../players';
+import { getPlayers } from '../players';
 import Head from 'next/head';
 
 export default function TeamSelection({ router, mode }) {
     const { team1, team2, teams, setTeam1, setTeam2, abilities } = useGameContext();
     const count = teams.length
     const currentTeam = count % 2 + 1
+    const [players, setPlayers] = useState([])
     const [hoverPlayer, setHoverPlayer] = useState()
     const addPlayer = player => { if (!teams.includes(player) && count < 10) currentTeam === 1 ? setTeam1([...team1, player]) : setTeam2([...team2, player]) }
 
-    useEffect(() => { modes.includes(mode) ? window.history.forward() : router.push('/') }, [])
+    useEffect(() => { modes.includes(mode) ? setPlayers(getPlayers()) : router.push('/') }, [])
 
     useEffect(() => {
-        if (count === 10) {
+        if (players.length && count === 10) {
             if (team1[0].leader?.type == 'start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
             if (team2[0].leader?.type == 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
             setTeam1(team1)
             setTeam2(team2)
-            const initialData = {}
-            teams.forEach(({ name, health, special: { cooldown } }) => initialData[name] = { health, cooldown });
+            const initialData = teams.reduce((obj, { name, health, special: { cooldown } }) => {
+                obj[name] = { health, cooldown }
+                return obj
+            }, {});
             setStorage('initial-data', initialData)
             router.push(`/play?mode=${mode}`)
             return

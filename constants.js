@@ -1,4 +1,4 @@
-export const preserveGame = ['/play', '/how-to-play', '/team-selection']
+export const preserveGame = ['/play', '/how-to-play']
 export const modes = ['computer', 'player']
 export const details = ['name', 'health', 'type', 'speed']
 export const features = ['damage', 'description', 'cooldown']

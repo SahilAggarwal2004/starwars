@@ -30,7 +30,7 @@ class Player {
     }
 }
 
-const players = [
+export const getPlayers = () => [
     new Player({
         name: 'Bastila Shan', type: 'light',
         basic: { damage: randomNumber(60, 100), description: 'This attack has a 50% chance to grant a random ally 100% turn meter.', animation: true, foresight: false },
@@ -104,5 +104,3 @@ const players = [
         leader: { description: "Whenever an ally suffers damage from an attack (excluding attacks out of turn), the ally recovers 15% health.", type: 'in-game', foresight: false }
     })
 ]
-
-export default players
