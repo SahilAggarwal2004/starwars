@@ -12,7 +12,7 @@ export default function Home({ router, enterFullscreen }) {
 
   const handlePlay = event => {
     router.push(`/team-selection?mode=${event.target.getAttribute('mode')}`)
-    navigator.userAgentData.mobile && enterFullscreen()
+    if (navigator.userAgentData?.mobile) enterFullscreen()
   }
 
   return <>

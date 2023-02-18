@@ -67,7 +67,7 @@ export default function Play({ router, mode, isFullScreen }) {
         setTeam2(getStorage('team2', []))
         setHoverPlayer()
         window.addEventListener('resize', updatePositions)
-        window.addEventListener('popstate', confirmBack);
+        if (!navigator.userAgentData?.mobile) window.addEventListener('popstate', confirmBack);
         return () => {
             window.removeEventListener('resize', updatePositions)
             window.removeEventListener('popstate', confirmBack);
