@@ -11,7 +11,7 @@ import { exists } from "../modules/functions"
 
 function confirmBack() {
     if (confirm('Your current game progress will be lost!')) {
-        window.removeEventListener('popstate', confirmBack);
+        window.removeEventListener('popstate', confirmBack)
         window.history.back()
     } else window.history.pushState(null, document.title, location.href) // preventing back for next click
 }
@@ -62,15 +62,17 @@ export default function Play({ router, mode, isFullScreen }) {
 
     useEffect(() => {
         if (!modes.includes(mode)) router.push('/')
-        window.history.pushState(null, document.title, location.href); // preventing back initially
         setTeam1(getStorage('team1', []))
         setTeam2(getStorage('team2', []))
         setHoverPlayer()
         window.addEventListener('resize', updatePositions)
-        if (!navigator.userAgentData?.mobile) window.addEventListener('popstate', confirmBack);
+        if (!navigator.userAgentData?.mobile) {
+            window.history.pushState(null, document.title, location.href) // preventing back initially
+            window.addEventListener('popstate', confirmBack)
+        }
         return () => {
             window.removeEventListener('resize', updatePositions)
-            window.removeEventListener('popstate', confirmBack);
+            window.removeEventListener('popstate', confirmBack)
         };
     }, [])
 
