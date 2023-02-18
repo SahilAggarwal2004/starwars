@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
+import Head from "next/head"
 import { useEffect, useState } from "react"
 import { useGameContext } from "../contexts/ContextProvider"
 import { maximumNumber, randomElement } from "random-stuff-js"
@@ -7,7 +8,13 @@ import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules
 import { getStorage, setStorage } from "../modules/storage"
 import { details, features, gameAbilities, indexes, modes, usableAbilities } from "../constants"
 import { exists } from "../modules/functions"
-import Head from "next/head"
+
+function confirmBack() {
+    if (confirm('Your current game progress will be lost!')) {
+        window.removeEventListener('popstate', confirmBack);
+        window.history.back()
+    } else window.history.pushState(null, document.title, location.href) // preventing back for next click
+}
 
 export default function Play({ router, mode, isFullScreen }) {
     const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, bullet, attack, isAttacking, turnTeam } = useGameContext()
@@ -55,11 +62,16 @@ export default function Play({ router, mode, isFullScreen }) {
 
     useEffect(() => {
         if (!modes.includes(mode)) router.push('/')
+        window.history.pushState(null, document.title, location.href); // preventing back initially
         setTeam1(getStorage('team1', []))
         setTeam2(getStorage('team2', []))
         setHoverPlayer()
         window.addEventListener('resize', updatePositions)
-        return () => window.removeEventListener('resize', updatePositions)
+        window.addEventListener('popstate', confirmBack);
+        return () => {
+            window.removeEventListener('resize', updatePositions)
+            window.removeEventListener('popstate', confirmBack);
+        };
     }, [])
 
     useEffect(() => { setTimeout(() => updatePositions(), 1) }, [isFullScreen])
@@ -99,9 +111,9 @@ export default function Play({ router, mode, isFullScreen }) {
 
     // Over turn effects
     useEffect(() => {
-        if (turn < 0 || isAttacking) return
+        const player = teams[turn]
+        if (!player || isAttacking) return
         selectEnemy(enemy)
-        const player = teams[turn];
         player.health += 25 * stackCount('health', 'buff', player);
         player.health -= 25 * stackCount('health', 'debuff', player);
         if (player.health <= 0) setTimeout(() => {
