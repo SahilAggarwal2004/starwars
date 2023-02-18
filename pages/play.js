@@ -13,7 +13,7 @@ function confirmBack() {
     if (confirm('Your current game progress will be lost!')) {
         window.removeEventListener('popstate', confirmBack)
         window.history.back()
-    } else window.history.pushState(null, document.title, location.href) // preventing back for next click
+    } else window.history.pushState(null, document.title, window.location.href) // preventing back for next click
 }
 
 export default function Play({ router, mode, isFullScreen }) {
@@ -67,7 +67,7 @@ export default function Play({ router, mode, isFullScreen }) {
         setHoverPlayer()
         window.addEventListener('resize', updatePositions)
         if (!navigator.userAgentData?.mobile) {
-            window.history.pushState(null, document.title, location.href) // preventing back initially
+            window.history.pushState(null, document.title, window.location.href) // preventing back initially
             window.addEventListener('popstate', confirmBack)
         }
         return () => {
