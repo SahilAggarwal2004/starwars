@@ -11,6 +11,7 @@ export default function Result({ router, mode }) {
         if (!modes.includes(mode)) router.push('/')
         const winner = getStorage('winner')
         winner ? setWinner(winner) : router.push('/')
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return winner && <div className='fixed center text-center space-y-8'>
