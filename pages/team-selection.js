@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react'
 import { randomElement } from 'random-stuff-js';
 import { FaRandom, FaUndoAlt } from 'react-icons/fa'
 import { useGameContext } from '../contexts/ContextProvider';
-import { useSocket } from '../contexts/SocketProvider';
 import { allAbilities, details, features, modes } from '../constants';
 import { getPlayers } from '../players';
 import Loader from '../components/Loader';
