@@ -55,11 +55,11 @@ const ContextProvider = ({ router, children }) => {
                 setTeam(1)
                 setOpponent(name)
             })
-            newSocket.on('left', name => {
+            newSocket.on('left', ({ name, result, team }) => {
                 toast.error(`${name} left the lobby.`)
                 setOpponent('')
-                if (router.pathname === '/play') {
-                    setStorage('winner', myTeam)
+                if (result) {
+                    setStorage('winner', team)
                     router.push('/result')
                 } else router.push('/waiting-lobby')
             })
