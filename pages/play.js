@@ -18,10 +18,9 @@ function confirmBack() {
 }
 
 export default function Play({ router, isFullScreen }) {
-    const { team1, team2, setTeam1, setTeam2, newTurn, teams, mode, turn, setTurn, bullet, attack, isAttacking, turnTeam, turnmeter, healthSteal, setHealthSteal, setInitialData, setTurnmeter, socket } = useGameContext()
+    const { team1, team2, setTeam1, setTeam2, newTurn, teams, mode, turn, setTurn, bullet, attack, isAttacking, turnTeam, turnmeter, healthSteal, setHealthSteal, setInitialData, setTurnmeter, socket, name, opponent, myTeam, setTeam } = useGameContext()
     const online = mode === 'online'
     const [loading, setLoading] = useState(online)
-    const [myTeam, setTeam] = useState(0)
     const [enemy, setEnemy] = useState(0)
     const [hoverPlayer, setHoverPlayer] = useState()
     const [hoverAbility, setHoverAbility] = useState()
@@ -145,7 +144,10 @@ export default function Play({ router, isFullScreen }) {
         <Head><title>{modes[mode]} | Star Wars</title></Head>
         {loading ? <Loader /> : <>
             {[team1, team2].map((team, index) => <div id={`team${index + 1}`} key={index} className={`fixed top-0 ${index ? 'right-5' : 'left-5'} space-y-4 w-max flex flex-col items-center justify-center h-full`}>
-                <span className='detail-heading font-semibold text-center'>{mode === 'computer' && index ? 'Computer' : `Team ${index + 1}`}</span>
+                <span className='detail-heading font-semibold text-center'>
+                    {online ? myTeam === index + 1 ? name : opponent :
+                        mode === 'computer' && index ? 'Computer' : `Team ${index + 1}`}
+                </span>
                 {team.map((player, i) => {
                     const playerIndex = i + index * 5
                     const selectedPlayer = turn === playerIndex

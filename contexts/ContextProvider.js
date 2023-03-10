@@ -19,6 +19,7 @@ export const useGameContext = () => useContext(Context)
 const ContextProvider = ({ router, children }) => {
     const [team1, setTeam1] = useStorage('team1', [])
     const [team2, setTeam2] = useStorage('team2', [])
+    const [myTeam, setTeam] = useState(0)
     const [turnmeter, setTurnmeter] = useStorage('turnmeter', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
     const [healthSteal, setHealthSteal] = useStorage('health-steal', [0, 0])
     const [initialData, setInitialData] = useStorage('initial-data', [])
@@ -388,7 +389,7 @@ const ContextProvider = ({ router, children }) => {
         }, animation ? 2000 : 50);
     }
 
-    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, mode, setMode, turn, setTurn, turnTeam, attack, bullet, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, socket, name, setName, room, setRoom, pass, setPass, opponent, setOpponent, connection, setConnection, resetConnection }}>
+    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, mode, setMode, turn, setTurn, turnTeam, attack, bullet, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, socket, name, setName, room, setRoom, pass, setPass, opponent, setOpponent, connection, setConnection, resetConnection, myTeam, setTeam }}>
         {children}
     </Context.Provider>
 }
