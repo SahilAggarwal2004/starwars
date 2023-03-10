@@ -7,7 +7,7 @@ import { assist, block, revive, verify, kill, apply, remove } from '../modules/a
 import { animateBullet, multiAttack } from '../modules/animation'
 import useStorage from '../hooks/useStorage';
 import { hasEffect, hasStealth, hasTaunt, stackCount } from '../modules/effects';
-import { getStorage, removeStorage } from '../modules/storage';
+import { getStorage, removeStorage, setStorage } from '../modules/storage';
 import { indexes, multiAttackers, onlineConnected, persistConnection, preserveGame } from '../constants';
 import { damageMultiplier, reduce } from '../modules/functions';
 
@@ -52,12 +52,16 @@ const ContextProvider = ({ router, children }) => {
             newSocket.on('error', error => toast.error(error))
             newSocket.on('new-user', name => {
                 toast.success(`${name} joined the room!`)
+                setTeam(1)
                 setOpponent(name)
             })
             newSocket.on('left', name => {
                 toast.error(`${name} left the lobby.`)
                 setOpponent('')
-                router.push('/waiting-lobby')
+                if (router.pathname === '/play') {
+                    setStorage('winner', myTeam)
+                    router.push('/result')
+                } else router.push('/waiting-lobby')
             })
             newSocket.on('selected-player', ({ teamone, teamtwo }) => {
                 if (teamone) setTeam1(teamone)

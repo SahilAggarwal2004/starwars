@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { useGameContext } from '../contexts/ContextProvider';
 
 export default function Room({ router }) {
-    const { socket, name, setName, room, setRoom, pass, setPass, setOpponent, setConnection } = useGameContext()
+    const { socket, name, setName, room, setRoom, pass, setPass, setOpponent, setConnection, setTeam } = useGameContext()
     const roomRef = useRef();
     const passRef = useRef();
     const nameRef = useRef();
@@ -20,7 +20,10 @@ export default function Room({ router }) {
             setRoom(room)
             setPass(pass)
             setConnection(true)
-            if (opponent) setOpponent(opponent)
+            if (opponent) {
+                setTeam(2)
+                setOpponent(opponent)
+            }
             router.push('/waiting-lobby')
         })
     }
