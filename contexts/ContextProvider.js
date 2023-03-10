@@ -41,8 +41,8 @@ const ContextProvider = ({ router, children }) => {
         if (!mode) router.push('/')
         if (!preserveGame.includes(router.pathname)) resetGame()
         if (router.pathname !== '/result') removeStorage('winner')
-        if (!online || !persistConnection.includes(router.pathname)) return resetConnection('/')
-        if (connection === false && onlineConnected.includes(router.pathname)) router.push('/room')
+        if (online && !persistConnection.includes(router.pathname)) return resetConnection('/')
+        if (online && connection === false && onlineConnected.includes(router.pathname)) router.push('/room')
     }, [router.pathname])
 
     useEffect(() => {
