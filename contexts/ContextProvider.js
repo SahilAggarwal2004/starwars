@@ -1,13 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useState, useEffect, useContext } from 'react'
 import { maximumNumber, randomElement, probability } from 'random-stuff-js'
+import { io } from 'socket.io-client';
+import { toast } from 'react-toastify';
 import { assist, block, revive, verify, kill, apply, remove } from '../modules/abilities';
 import { animateBullet, multiAttack } from '../modules/animation'
 import useStorage from '../hooks/useStorage';
 import { hasEffect, hasStealth, hasTaunt, stackCount } from '../modules/effects';
-import { getStorage, removeStorage, setStorage } from '../modules/storage';
-import { indexes, multiAttackers, preserveGame } from '../constants';
+import { getStorage, removeStorage } from '../modules/storage';
+import { indexes, multiAttackers, onlineConnected, persistConnection, preserveGame } from '../constants';
 import { damageMultiplier, reduce } from '../modules/functions';
+
+const server = process.env.NODE_ENV === 'production' ? 'https://starwarsgame.onrender.com' : 'http://localhost:5000'
 
 const Context = createContext();
 export const useGameContext = () => useContext(Context)
@@ -15,16 +19,77 @@ export const useGameContext = () => useContext(Context)
 const ContextProvider = ({ router, children }) => {
     const [team1, setTeam1] = useStorage('team1', [])
     const [team2, setTeam2] = useStorage('team2', [])
+    const [turnmeter, setTurnmeter] = useStorage('turnmeter', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    const [healthSteal, setHealthSteal] = useStorage('health-steal', [0, 0])
+    const [initialData, setInitialData] = useStorage('initial-data', [])
     const teams = team1.concat(team2)
+    const [mode, setMode] = useStorage('mode', '', true)
     const [turn, setTurn] = useState(-1)
-    const turnTeam = Math.ceil((turn + 1) / 5)
     const [isAttacking, setAttacking] = useState(true)
     const [bullet, setBullet] = useState([])
+    const [socket, setSocket] = useState()
+    const [connection, setConnection] = useStorage('connection', false, true)
+    const [name, setName] = useStorage('name', '', true)
+    const [room, setRoom] = useStorage('room', '', true)
+    const [pass, setPass] = useStorage('pass', '', true)
+    const [opponent, setOpponent] = useStorage('opponent', '', true)
+    const turnTeam = Math.ceil((turn + 1) / 5)
+    const online = mode === 'online'
 
     useEffect(() => {
+        if (!mode) router.push('/')
         if (!preserveGame.includes(router.pathname)) resetGame()
         if (router.pathname !== '/result') removeStorage('winner')
+        if (!online || !persistConnection.includes(router.pathname)) return resetConnection('/')
+        if (connection === false && onlineConnected.includes(router.pathname)) router.push('/room')
     }, [router.pathname])
+
+    useEffect(() => {
+        if (!online) return
+        const newSocket = io(server, { query: { userId: getStorage('userId', Date.now()) } })
+        newSocket.on('connect', () => {
+            newSocket.on('error', error => toast.error(error))
+            newSocket.on('new-user', name => {
+                toast.success(`${name} joined the room!`)
+                setOpponent(name)
+            })
+            newSocket.on('left', name => {
+                toast.error(`${name} left the lobby.`)
+                setOpponent('')
+                router.push('/waiting-lobby')
+            })
+            newSocket.on('selected-player', ({ teamone, teamtwo }) => {
+                if (teamone) setTeam1(teamone)
+                if (teamtwo) setTeam2(teamtwo)
+            })
+            newSocket.on('sync-data', ({ team1, team2, turn, turnmeter, healthSteal }) => {
+                setTeam1(team1)
+                setTeam2(team2)
+                setTurn(turn)
+                setTurnmeter(turnmeter)
+                setHealthSteal(healthSteal)
+            })
+            newSocket.on('rejoin', ({ opponent }) => {
+                setConnection(true)
+                setOpponent(opponent)
+                router.push('/play')
+            })
+            newSocket.on('animation', ({ multi, player, enemy, turnTeam, isCountering, enemyTeam }) => {
+                if (multi) {
+                    setBullet(indexes.map(i => enemyTeam[i].health > 0))
+                    setTimeout(() => multiAttack(player, enemyTeam, turnTeam, setBullet), 0);
+                } else {
+                    setBullet([true])
+                    setTimeout(() => animateBullet(player, enemy, turnTeam, setBullet, isCountering), 0);
+                }
+            })
+        })
+        setSocket(newSocket)
+        return () => {
+            resetConnection()
+            newSocket.disconnect()
+        }
+    }, [online])
 
     const abilities = {
         'Bastila Shan': {
@@ -34,9 +99,8 @@ const ContextProvider = ({ router, children }) => {
                 allyTeam.forEach(({ health }, i) => { if (health > 0 && i != player) randomPlayers.push(i) })
                 const randomPlayer = randomElement(randomPlayers);
                 if (randomPlayer == undefined) return
-                const turnmeter = getStorage('turnmeter')
                 turnmeter[turnTeam * 5 - 5 + randomPlayer] = Number.MAX_SAFE_INTEGER
-                setStorage('turnmeter', turnmeter)
+                setTurnmeter(turnmeter)
             },
             special: ({ enemy, enemyTeam }) => apply({ effect: 'stun', type: 'debuff', enemy, enemyTeam }),
             leader: ({ allyTeam }) => {
@@ -59,7 +123,7 @@ const ContextProvider = ({ router, children }) => {
                 const { result, index } = verify('member', 'Chewbecca', enemyTeam)
                 const data = enemyTeam[index];
                 if (!result || data.health <= 0) return
-                if (hasTaunt(data)) return { enemy: index }
+                if (hasTaunt(data, team1, team2)) return { enemy: index }
                 const stealth = enemy == index && hasStealth(data)
                 if (stealth) {
                     let randomEnemies = []
@@ -71,7 +135,7 @@ const ContextProvider = ({ router, children }) => {
         'Count Dooku': {
             basic: ({ allyTeam }) => {
                 if (probability(0.8)) return
-                revive(allyTeam, getStorage('initial-data')['Count Dooku'].health)
+                revive(allyTeam, initialData['Count Dooku'].health, initialData)
             },
             special: ({ enemy, enemyTeam }) => {
                 apply({ effect: 'immunity', type: 'debuff', enemy, enemyTeam })
@@ -99,9 +163,8 @@ const ContextProvider = ({ router, children }) => {
         },
         'Darth Revan': {
             basic: () => {
-                const healthSteal = getStorage('health-steal', [0, 0]);
                 healthSteal[turnTeam - 1] += 0.05
-                setStorage('health-steal', healthSteal);
+                setHealthSteal(healthSteal)
             },
             special: block,
             leader: ({ enemyTeam }) => indexes.forEach(index => enemyTeam[index].speed -= 8)
@@ -171,7 +234,7 @@ const ContextProvider = ({ router, children }) => {
             leader: ({ allyTeam }) => allyTeam.forEach(({ type }, index) => { if (type == 'dark') allyTeam[index].health *= 1.40 })
         },
         'Old Daka': {
-            special: ({ player, allyTeam }) => revive(allyTeam, allyTeam[player].health * 1.5),
+            special: ({ player, allyTeam }) => revive(allyTeam, allyTeam[player].health * 1.5, initialData),
             leader: ({ enemy, enemyTeam, animation, isAssisting, isCountering }) => {
                 if (isAssisting || isCountering || !animation) return
                 const { result } = verify('leader', 'Old Daka', enemyTeam)
@@ -180,14 +243,21 @@ const ContextProvider = ({ router, children }) => {
         }
     }
 
+    function resetConnection(dest) {
+        socket?.emit('leave-room')
+        setConnection(false)
+        setOpponent('')
+        if (dest) router.push(dest)
+    }
+
     function resetGame() {
         setTeam1([])
         setTeam2([])
         setTurn(-1)
         setAttacking(true)
-        setStorage('turnmeter', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-        removeStorage('initial-data')
-        removeStorage('health-steal')
+        setTurnmeter([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        setHealthSteal([0, 0])
+        setInitialData([])
         removeStorage('positions')
     }
 
@@ -213,10 +283,9 @@ const ContextProvider = ({ router, children }) => {
     }
 
     function newTurn(oldTurn) {
-        const turnmeter = getStorage('turnmeter')
         if (oldTurn !== undefined) turnmeter[oldTurn] = 0
         teams.forEach((player, index) => { player.health > 0 ? turnmeter[index] += player.speed : turnmeter[index] = -1 })
-        setStorage('turnmeter', turnmeter)
+        setTurnmeter(turnmeter)
         const max = maximumNumber(turnmeter)
         const indexes = [];
         turnmeter.forEach((value, index) => { if (value == max) indexes.push(index) })
@@ -263,7 +332,7 @@ const ContextProvider = ({ router, children }) => {
         if (playerData.special?.cooldown && !isAssisting && !isCountering) {
             ability = 'basic'
             playerData.special.cooldown--
-        } else if (ability === 'special') playerData.special.cooldown = getStorage('initial-data')[playerData.name].cooldown
+        } else if (ability === 'special') playerData.special.cooldown = initialData[playerData.name].cooldown
 
         // Before attack unique abilities:
         !isAssisting && teams.forEach(team => team.forEach(({ name, unique }) => {
@@ -277,17 +346,19 @@ const ContextProvider = ({ router, children }) => {
         const damage = (playerData[ability].damage || 0) * damageMultiplier(playerData, enemyData)
         const animation = playerData[ability].animation;
 
-        if (ability == 'special' && multiAttackers.includes(playerData.name)) {
+        const multi = ability == 'special' && multiAttackers.includes(playerData.name)
+        if (multi) {
             setBullet(indexes.map(i => enemyTeam[i].health > 0))
             setTimeout(() => multiAttack(player, enemyTeam, turnTeam, setBullet), 0);
         } else {
             setBullet([true])
             setTimeout(() => animation && animateBullet(player, enemy, turnTeam, setBullet, isCountering), 0);
         }
+        if (online && animation) socket.emit('animation', { multi, player, enemy, turnTeam, isCountering, enemyTeam: multi && enemyTeam })
         setTimeout(() => {
             if (!foresight) {
                 enemyData.health -= damage
-                if (playerData.health < getStorage('initial-data')[playerData.name].health) playerData.health += damage * getStorage('health-steal', [0, 0])[turnTeam - 1]
+                if (playerData.health < initialData[playerData.name].health) playerData.health += damage * healthSteal[turnTeam - 1]
                 var wait = abilities[playerData.name][ability]?.({ player, enemy, allyTeam, enemyTeam })
             } else {
                 if (damage) enemyData.buffs.foresight = []
@@ -317,7 +388,7 @@ const ContextProvider = ({ router, children }) => {
         }, animation ? 2000 : 50);
     }
 
-    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, turnTeam, attack, bullet, isAttacking, abilities }}>
+    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, mode, setMode, turn, setTurn, turnTeam, attack, bullet, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, socket, name, setName, room, setRoom, pass, setPass, opponent, setOpponent, connection, setConnection, resetConnection }}>
         {children}
     </Context.Provider>
 }

@@ -1,6 +1,5 @@
 import { randomElement } from 'random-stuff-js';
 import { hasEffect } from './effects';
-import { getStorage } from './storage';
 
 const kill = ({ enemy, enemyTeam }) => enemyTeam[enemy].health = 0
 
@@ -77,7 +76,7 @@ const assist = (player, enemy, allyTeam, enemyTeam, attack) => {
     return 2100
 }
 
-const revive = (allyTeam, health) => {
+const revive = (allyTeam, health, initialData) => {
     let revivePlayers = []
     allyTeam.forEach(({ health }, i) => { if (health <= 0) revivePlayers.push(i) })
     const revivePlayer = randomElement(revivePlayers)
@@ -86,7 +85,7 @@ const revive = (allyTeam, health) => {
     const buffs = playerData.buffs;
     const debuffs = playerData.debuffs;
     playerData.health = health
-    if (playerData.special) playerData.special.cooldown = getStorage('initial-data')[playerData.name].cooldown
+    if (playerData.special) playerData.special.cooldown = initialData[playerData.name].cooldown
     Object.keys(buffs).forEach(i => buffs[i] = [])
     Object.keys(debuffs).forEach(i => debuffs[i] = [])
 }

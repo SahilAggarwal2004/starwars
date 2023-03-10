@@ -1,14 +1,14 @@
 // eslint-disable react-hooks/exhaustive-deps
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { modes } from '../constants'
+import { useGameContext } from '../contexts/ContextProvider'
 import { getStorage } from '../modules/storage'
 
-export default function Result({ router, mode }) {
+export default function Result({ router }) {
+    const { mode } = useGameContext()
     const [winner, setWinner] = useState()
 
     useEffect(() => {
-        if (!modes.includes(mode)) router.push('/')
         const winner = getStorage('winner')
         winner ? setWinner(winner) : router.push('/')
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -19,5 +19,3 @@ export default function Result({ router, mode }) {
         <Link href='/'><a className='main-button'>Play Again</a></Link>
     </div>
 }
-
-export const getServerSideProps = context => { return { props: { mode: context.query.mode } } }

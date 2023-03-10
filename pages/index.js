@@ -1,8 +1,12 @@
-import { useCallback } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useCallback, useEffect } from 'react'
 import Particles from 'react-tsparticles'
 import { loadFull } from 'tsparticles'
+import { modes } from '../constants';
+import { useGameContext } from '../contexts/ContextProvider';
 
 export default function Home({ router, enterFullscreen }) {
+  const { setMode } = useGameContext()
   const particlesInit = useCallback(async engine => {
     // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
     // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
@@ -10,8 +14,12 @@ export default function Home({ router, enterFullscreen }) {
     await loadFull(engine);
   }, []);
 
-  const handlePlay = event => {
-    router.push(`/team-selection?mode=${event.target.getAttribute('mode')}`)
+  useEffect(() => { setMode() }, [])
+
+  function handlePlay(event) {
+    const mode = event.target.getAttribute('mode')
+    setMode(mode)
+    router.push(mode === 'online' ? '/room' : '/team-selection')
     if (navigator.userAgentData?.mobile) enterFullscreen()
   }
 
@@ -57,8 +65,7 @@ export default function Home({ router, enterFullscreen }) {
     </div>
     <div className='fixed bg-black inset-0 -z-10' />
     <div className='fixed bottom-8 x-center space-y-3 w-full text-center px-5'>
-      <button mode='computer' className='main-button' onClick={handlePlay}>Play vs Computer</button>
-      <button mode='player' className='main-button' onClick={handlePlay}>Play vs Player</button>
+      {Object.keys(modes).map(mode => <button key={mode} mode={mode} className='main-button' onClick={handlePlay}>{modes[mode]}</button>)}
     </div>
   </>
 }

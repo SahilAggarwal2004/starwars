@@ -1,13 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import '../styles/globals.css'
+import 'react-toastify/dist/ReactToastify.css';
 import Head from 'next/head'
-import ContextProvider from '../contexts/ContextProvider'
+import Script from 'next/script'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
-import Script from 'next/script'
+import { ToastContainer } from 'react-toastify'
+import ContextProvider from '../contexts/ContextProvider'
+import Loader from '../components/Loader';
 
 function MyApp({ Component, pageProps }) {
 	const router = useRouter();
+	const [loading, setLoading] = useState(true)
 	const [isMobile, setMobile] = useState()
 	const [isFullscreen, setFullscreen] = useState()
 	const [orientation, setOrientation] = useState()
@@ -16,6 +20,7 @@ function MyApp({ Component, pageProps }) {
 	pageProps.router = router;
 
 	useEffect(() => {
+		setLoading(false)
 		setMobile(navigator.userAgentData?.mobile)
 		setFullscreen(document.fullscreen)
 		document.addEventListener('fullscreenchange', updateFullScreen)
@@ -100,14 +105,15 @@ function MyApp({ Component, pageProps }) {
             gtag('config', 'G-ED6RPYHXQN');`}
 		</Script>
 
-		<ContextProvider router={router}>
+		{loading ? <Loader /> : <ContextProvider router={router}>
 			<div ref={fullscreenElement} className='font-mono'>
+				<ToastContainer pauseOnFocusLoss={false} />
 				{!isMobile || router.pathname === '/' ? <Component {...pageProps} /> : !isFullscreen ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
 					<div>Please enter full screen mode</div>
 					<button onClick={enterFullscreen}>Click Here</button>
 				</div> : !orientation ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div> : <Component {...pageProps} />}
 			</div>
-		</ContextProvider>
+		</ContextProvider>}
 	</>
 }
 

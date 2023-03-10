@@ -1,5 +1,5 @@
 export const preserveGame = ['/play', '/how-to-play']
-export const modes = ['computer', 'player']
+export const modes = { computer: 'Play vs Computer', offline: 'Play vs Player', online: 'Play Online' }
 export const details = ['name', 'health', 'type', 'speed']
 export const features = ['damage', 'description', 'cooldown']
 export const indexes = [0, 1, 2, 3, 4]
@@ -7,3 +7,5 @@ export const multiAttackers = ['Mother Talzin']
 export const usableAbilities = ['basic', 'special']
 export const gameAbilities = usableAbilities.concat('unique')
 export const allAbilities = gameAbilities.concat('leader')
+export const onlineConnected = ['/waiting-lobby', '/team-selection', '/play']
+export const persistConnection = ['/room', ...onlineConnected]

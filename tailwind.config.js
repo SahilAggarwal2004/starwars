@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      animation: {
+        'spin-fast': 'spin 0.6s ease infinite'
+      },
       fontSize: {
         '2xs': ['0.5rem', { lineHeight: '0.75rem' }]
       },

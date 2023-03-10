@@ -1,18 +1,15 @@
 /** @type {import('next').NextConfig} */
 
-const revision = `${Date.now()}`
+const revision = Date.now()
 
 const withPWA = require('next-pwa')({
     dest: 'public',
     disable: process.env.NODE_ENV === 'development',
     additionalManifestEntries: [
+        { url: '/team-selection', revision },
+        { url: '/play', revision },
+        { url: '/result', revision },
         { url: '/how-to-play', revision },
-        { url: '/team-selection?mode=computer', revision },
-        { url: '/team-selection?mode=player', revision },
-        { url: '/play?mode=computer', revision },
-        { url: '/play?mode=player', revision },
-        { url: '/result?mode=computer', revision },
-        { url: '/result?mode=player', revision },
         { url: '/images/players/Bastila Shan.webp', revision },
         { url: '/images/players/Chewbecca.webp', revision },
         { url: '/images/players/Count Dooku.webp', revision },
