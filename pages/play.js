@@ -143,37 +143,36 @@ export default function Play({ router, isFullScreen }) {
     return <>
         <Head><title>{modes[mode]} | Star Wars</title></Head>
         {loading ? <Loader /> : <>
-            {[team1, team2].map((team, index) => <div id={`team${index + 1}`} key={index} className={`fixed top-0 ${index ? 'right-5' : 'left-5'} space-y-4 w-max flex flex-col items-center justify-center h-full`}>
-                <span className='detail-heading font-semibold text-center'>
-                    {online ? myTeam === index + 1 ? name : opponent :
-                        mode === 'computer' && index ? 'Computer' : `Team ${index + 1}`}
-                </span>
-                {team.map((player, i) => {
-                    const playerIndex = i + index * 5
-                    const selectedPlayer = turn === playerIndex
-                    return <div key={i} className={`${player.health <= 0 && 'invisible'}`}>
-                        <div className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${selectedPlayer ? 'outline border-2 outline-green-500' : enemy === i && turnTeam !== index + 1 ? 'outline border-2 outline-red-500' : 'hover:border-2 hover:outline hover:outline-black'} border-transparent rounded-sm ${hasEffect('stealth', 'buff', player) && 'opacity-50'}`} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => selectEnemy(i, index)} onContextMenu={event => event.preventDefault()}>
-                            <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5' style={{ width: `${turnmeter[playerIndex] / maximumNumber(turnmeter) * 100}%` }} />
-                            <img src={`/images/players/${player.name}.webp`} alt={player.name} width={120} className='rounded-sm aspect-square' />
-                            <div className="absolute bottom-0 left-0 right-0 flex justify-center space-x-0.5 z-10">
-                                {effects.map(({ effect, condition, stack }) => {
-                                    if (condition(player, team1, team2)) {
-                                        const num = stack(player)
-                                        return <div key={effect} className="relative inline-block">
-                                            <img alt='' src={`images/effects/${effect}.webp`} width={20} height={20} />
-                                            <span className="absolute right-0 -top-1/2 text-white font-semibold text-xs">{num > 1 && num}</span>
-                                        </div>
-                                    }
-                                })}
+            {[team1, team2].map((team, index) => {
+                const displayName = online ? (myTeam === index + 1 ? name : opponent) : mode === 'computer' && index ? 'Computer' : `Team ${index + 1}`
+                return <div id={`team${index + 1}`} key={index} className={`fixed top-0 max-w-[5.75rem] overflow-hidden ${index ? 'right-5' : 'left-5'} space-y-4 w-max flex flex-col items-center justify-center h-full`}>
+                    <span className='detail-heading font-semibold mx-auto whitespace-nowrap' title={displayName}>{displayName}</span>
+                    {team.map((player, i) => {
+                        const playerIndex = i + index * 5
+                        const selectedPlayer = turn === playerIndex
+                        return <div key={i} className={`${player.health <= 0 && 'invisible'}`}>
+                            <div className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${selectedPlayer ? 'outline border-2 outline-green-500' : enemy === i && turnTeam !== index + 1 ? 'outline border-2 outline-red-500' : 'hover:border-2 hover:outline hover:outline-black'} border-transparent rounded-sm ${hasEffect('stealth', 'buff', player) && 'opacity-50'}`} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => selectEnemy(i, index)} onContextMenu={event => event.preventDefault()}>
+                                <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5' style={{ width: `${turnmeter[playerIndex] / maximumNumber(turnmeter) * 100}%` }} />
+                                <img src={`/images/players/${player.name}.webp`} alt={player.name} width={120} className='rounded-sm aspect-square' />
+                                <div className="absolute bottom-0 left-0 right-0 flex justify-center space-x-0.5 z-10">
+                                    {effects.map(({ effect, condition, stack }) => {
+                                        if (condition(player, team1, team2)) {
+                                            const num = stack(player)
+                                            return <div key={effect} className="relative inline-block">
+                                                <img alt='' src={`images/effects/${effect}.webp`} width={20} height={20} />
+                                                <span className="absolute right-0 -top-1/2 text-white font-semibold text-xs">{num > 1 && num}</span>
+                                            </div>
+                                        }
+                                    })}
+                                </div>
                             </div>
+                            {(mode !== 'computer' || turnTeam !== 2) && (!online || myTeam === turnTeam) && selectedPlayer && !isAttacking && <div className="fixed flex x-center bottom-3 space-x-2">
+                                {usableAbilities.map(ability => teams[turn][ability] && <div key={ability} className={`ability detail-heading ${teams[turn][ability].cooldown && 'opacity-50'}`} onPointerEnter={() => setHoverAbility(ability)} onPointerLeave={() => setHoverAbility()} onClick={() => !teams[turn][ability].cooldown && handleAttack(ability, i)}>{ability[0]}</div>)}
+                            </div>}
                         </div>
-                        {(mode !== 'computer' || turnTeam !== 2) && (!online || myTeam === turnTeam) && selectedPlayer && !isAttacking && <div className="fixed flex x-center bottom-3 space-x-2">
-                            {usableAbilities.map(ability => teams[turn][ability] && <div key={ability} className={`ability detail-heading ${teams[turn][ability].cooldown && 'opacity-50'}`} onPointerEnter={() => setHoverAbility(ability)} onPointerLeave={() => setHoverAbility()} onClick={() => !teams[turn][ability].cooldown && handleAttack(ability, i)}>{ability[0]}</div>)}
-                        </div>}
-                    </div>
-                })}
-            </div>)
-            }
+                    })}
+                </div>
+            })}
             {hoverPlayer && !isAttacking && <div className='detail-container center w-[calc(100vw-15rem)]'>
                 <div className='flex flex-col min-w-max'>
                     {details.map(detail => <span key={detail} className='detail-heading capitalize'>{detail}: {detail == 'health' ? Math.ceil(hoverPlayer[detail]) : hoverPlayer[detail]}</span>)}

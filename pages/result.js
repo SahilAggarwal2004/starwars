@@ -16,8 +16,7 @@ export default function Result({ router }) {
 
     return winner && <div className='fixed center text-center space-y-8'>
         <div className='main-heading static'>
-            {mode === 'online' ? winner === myTeam ? 'Congratulations! You won' : 'Uh oh! You lost' :
-                mode === 'computer' && winner === 2 ? 'Computer won' : `Congratulations! Team ${winner} won`} the game.
+            {mode === 'online' ? (winner === myTeam ? 'Congratulations! You won' : 'Uh oh! You lost') : mode === 'computer' && winner === 2 ? 'Computer won' : `Congratulations! Team ${winner} won`} the game.
         </div>
         <Link href='/'><a className='main-button'>Play Again</a></Link>
     </div>
