@@ -28,7 +28,7 @@ export default function Room({ router }) {
         })
     }
 
-    return <form className='flex flex-col items-center h-screen justify-center space-y-10' onSubmit={event => event.preventDefault()}>
+    return <form className='flex flex-col items-center h-full justify-center space-y-10' onSubmit={event => event.preventDefault()}>
         <div className='flex flex-col space-y-1'>
             <input className='text-center border px-2 py-0.5 rounded-t' type='text' ref={nameRef} placeholder='Enter your name' defaultValue={name} />
             <input className='text-center border px-2 py-0.5' type='text' ref={roomRef} placeholder='Enter room id' autoComplete='new-password' defaultValue={room} />
