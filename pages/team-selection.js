@@ -4,13 +4,14 @@ import Head from 'next/head';
 import { useEffect, useState } from 'react'
 import { randomElement } from 'random-stuff-js';
 import { FaRandom, FaUndoAlt } from 'react-icons/fa'
+import { ImExit } from 'react-icons/im'
 import { useGameContext } from '../contexts/ContextProvider';
 import { allAbilities, details, features, modes } from '../constants';
 import { getPlayers } from '../players';
 import Loader from '../components/Loader';
 
 export default function TeamSelection({ router }) {
-    const { team1, team2, teams, setTeam1, setTeam2, abilities, mode, setInitialData, socket, myTeam } = useGameContext();
+    const { team1, team2, teams, setTeam1, setTeam2, abilities, mode, setInitialData, socket, myTeam, resetConnection } = useGameContext();
     const count = teams.length
     const currentTeam = count % 2 + 1
     const online = mode === 'online'
@@ -96,9 +97,9 @@ export default function TeamSelection({ router }) {
                     </div>)}
                 </div>
             </div>}
-            {!online && <div className='fixed top-8 right-10 scale-125 cursor-pointer'>
-                {count ? <FaUndoAlt onClick={reset} title="Reset" /> : <FaRandom onClick={shuffle} title="Shuffle" />}
-            </div>}
+            <div className='fixed top-8 right-10 scale-125 cursor-pointer'>
+                {online ? <ImExit onClick={() => resetConnection('/room')} title="Exit" /> : count ? <FaUndoAlt onClick={reset} title="Reset" /> : <FaRandom onClick={shuffle} title="Shuffle" />}
+            </div>
         </>}
     </>
 }

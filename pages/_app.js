@@ -29,9 +29,11 @@ function MyApp({ Component, pageProps }) {
 	}, [])
 
 	async function enterFullscreen() {
-		fullscreenElement.current?.requestFullscreen?.()
-		fullscreenElement.current?.webkitRequestFullScreen?.()
-		screen.orientation.lock('landscape').then(() => setOrientation(true)).catch(() => setOrientation(false))
+		setTimeout(() => {
+			fullscreenElement.current?.requestFullscreen?.()
+			fullscreenElement.current?.webkitRequestFullScreen?.()
+			screen.orientation.lock('landscape').then(() => setOrientation(true)).catch(() => setOrientation(false))
+		}, 1);
 	}
 
 	if (router.pathname === '/play') pageProps.isFullscreen = isFullscreen
@@ -107,7 +109,7 @@ function MyApp({ Component, pageProps }) {
 
 		{loading ? <Loader /> : <ContextProvider router={router} enterFullscreen={enterFullscreen}>
 			<div ref={fullscreenElement} className='font-mono'>
-				<ToastContainer pauseOnFocusLoss={false} />
+				<ToastContainer pauseOnFocusLoss={false} position='top-left' />
 				{!isMobile || notFullscreen.includes(router.pathname) ? <Component {...pageProps} /> : !isFullscreen ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
 					<div>Please enter full screen mode</div>
 					<button onClick={enterFullscreen}>Click Here</button>

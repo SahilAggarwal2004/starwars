@@ -254,9 +254,9 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
     function handlePlay(event) {
         const mode = event?.target.getAttribute('mode')
         if (mode) setMode(mode)
-        const isOnline = online || mode === 'online'
-        router.push(isOnline && router.pathname === '/' ? '/room' : '/team-selection')
-        if (navigator.userAgentData?.mobile && !(isOnline && router.pathname === '/')) enterFullscreen()
+        const sendToRoom = router.pathname === '/' && (online || mode === 'online')
+        router.push(sendToRoom ? '/room' : '/team-selection')
+        if (navigator.userAgentData?.mobile && !sendToRoom) enterFullscreen()
     }
 
     function resetConnection(dest) {
