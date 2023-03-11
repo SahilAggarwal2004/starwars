@@ -55,8 +55,8 @@ export default function TeamSelection({ router }) {
     function selectPlayer(player) {
         if (online) {
             if (currentTeam !== myTeam) return
-            socket.emit('select-player', player)
             addPlayer(player)
+            socket.emit('select-player', player)
         } else addPlayer(player)
     }
 
