@@ -41,7 +41,7 @@ function MyApp({ Component, pageProps }) {
 			<meta charSet="utf-8" />
 			<title>Star Wars - PvP strategy game</title>
 			<link rel="icon" href="/favicon.ico" />
-			<meta name="viewport" content="width=device-width, initial-scale=1" />
+			<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
 			<meta name="theme-color" content="#ffffff" />
 			<meta name="keywords"
 				content="star, wars, game, platform, starwars, offline, play, computer, player, pvp, nextjs, free, fast, independent, web app, pwa" />
