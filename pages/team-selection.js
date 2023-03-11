@@ -17,9 +17,7 @@ export default function TeamSelection({ router }) {
     const [loading, setLoading] = useState(online)
     const [players, setPlayers] = useState([])
     const [hoverPlayer, setHoverPlayer] = useState()
-
     const addPlayer = player => { if (!teams.includes(player) && count < 10) currentTeam === 1 ? setTeam1([...team1, player]) : setTeam2([...team2, player]) }
-    const selectPlayer = player => online ? currentTeam === myTeam && socket.emit('select-player', player, () => addPlayer(player)) : addPlayer(player)
 
     useEffect(() => {
         if (players.length) return
@@ -52,6 +50,14 @@ export default function TeamSelection({ router }) {
             addPlayer(player)
         }
     }, [count])
+
+    function selectPlayer(player) {
+        if (online) {
+            if (currentTeam !== myTeam) return
+            socket.emit('select-player', player)
+            addPlayer(player)
+        } else addPlayer(player)
+    }
 
     function reset() {
         setTeam1([])

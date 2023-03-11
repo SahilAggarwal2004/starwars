@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 import { ToastContainer } from 'react-toastify'
 import ContextProvider from '../contexts/ContextProvider'
 import Loader from '../components/Loader';
+import { notFullscreen } from '../constants';
 
 function MyApp({ Component, pageProps }) {
 	const router = useRouter();
@@ -33,7 +34,6 @@ function MyApp({ Component, pageProps }) {
 		screen.orientation.lock('landscape').then(() => setOrientation(true)).catch(() => setOrientation(false))
 	}
 
-	if (router.pathname === '/') pageProps.enterFullscreen = enterFullscreen
 	if (router.pathname === '/play') pageProps.isFullscreen = isFullscreen
 
 	return <>
@@ -105,10 +105,10 @@ function MyApp({ Component, pageProps }) {
             gtag('config', 'G-ED6RPYHXQN');`}
 		</Script>
 
-		{loading ? <Loader /> : <ContextProvider router={router}>
+		{loading ? <Loader /> : <ContextProvider router={router} enterFullscreen={enterFullscreen}>
 			<div ref={fullscreenElement} className='font-mono'>
 				<ToastContainer pauseOnFocusLoss={false} />
-				{!isMobile || router.pathname === '/' ? <Component {...pageProps} /> : !isFullscreen ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
+				{!isMobile || notFullscreen.includes(router.pathname) ? <Component {...pageProps} /> : !isFullscreen ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
 					<div>Please enter full screen mode</div>
 					<button onClick={enterFullscreen}>Click Here</button>
 				</div> : !orientation ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div> : <Component {...pageProps} />}

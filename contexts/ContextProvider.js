@@ -16,7 +16,7 @@ const server = process.env.NODE_ENV === 'production' ? 'https://starwarsgame.onr
 const Context = createContext();
 export const useGameContext = () => useContext(Context)
 
-const ContextProvider = ({ router, children }) => {
+const ContextProvider = ({ router, children, enterFullscreen }) => {
     const [team1, setTeam1] = useStorage('team1', [])
     const [team2, setTeam2] = useStorage('team2', [])
     const [myTeam, setTeam] = useState(0)
@@ -55,17 +55,17 @@ const ContextProvider = ({ router, children }) => {
                 setTeam(1)
                 setOpponent(name)
             })
-            newSocket.on('left', ({ name, result, team }) => {
+            newSocket.on('left', ({ name, started, team }) => {
                 toast.error(`${name} left the lobby.`)
                 setOpponent('')
-                if (result) {
+                if (started) {
                     setStorage('winner', team)
                     router.push('/result')
                 } else router.push('/waiting-lobby')
             })
-            newSocket.on('selected-player', ({ teamone, teamtwo }) => {
-                if (teamone) setTeam1(teamone)
-                if (teamtwo) setTeam2(teamtwo)
+            newSocket.on('selected-player', (team1, team2) => {
+                if (team1) setTeam1(team1)
+                if (team2) setTeam2(team2)
             })
             newSocket.on('sync-data', ({ team1, team2, turn, turnmeter, healthSteal }) => {
                 setTeam1(team1)
@@ -74,10 +74,13 @@ const ContextProvider = ({ router, children }) => {
                 setTurnmeter(turnmeter)
                 setHealthSteal(healthSteal)
             })
-            newSocket.on('rejoin', ({ opponent }) => {
+            newSocket.on('rejoin', (opponent, team) => {
                 setConnection(true)
                 setOpponent(opponent)
-                router.push('/play')
+                if (team) {
+                    setTeam(team)
+                    router.push('/team-selection')
+                } else router.push('/play')
             })
             newSocket.on('animation', ({ multi, player, enemy, turnTeam, isCountering, enemyTeam }) => {
                 if (multi) {
@@ -248,6 +251,14 @@ const ContextProvider = ({ router, children }) => {
         }
     }
 
+    function handlePlay(event) {
+        const mode = event?.target.getAttribute('mode')
+        if (mode) setMode(mode)
+        const isOnline = online || mode === 'online'
+        router.push(isOnline && router.pathname === '/' ? '/room' : '/team-selection')
+        if (navigator.userAgentData?.mobile && !(isOnline && router.pathname === '/')) enterFullscreen()
+    }
+
     function resetConnection(dest) {
         socket?.emit('leave-room')
         setConnection(false)
@@ -393,7 +404,7 @@ const ContextProvider = ({ router, children }) => {
         }, animation ? 2000 : 50);
     }
 
-    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, mode, setMode, turn, setTurn, turnTeam, attack, bullet, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, socket, name, setName, room, setRoom, pass, setPass, opponent, setOpponent, connection, setConnection, resetConnection, myTeam, setTeam }}>
+    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, mode, setMode, turn, setTurn, turnTeam, attack, bullet, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, socket, name, setName, room, setRoom, pass, setPass, opponent, setOpponent, connection, setConnection, resetConnection, myTeam, setTeam, handlePlay }}>
         {children}
     </Context.Provider>
 }

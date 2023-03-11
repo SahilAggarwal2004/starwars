@@ -9,3 +9,4 @@ export const gameAbilities = usableAbilities.concat('unique')
 export const allAbilities = gameAbilities.concat('leader')
 export const onlineConnected = ['/waiting-lobby', '/team-selection', '/play']
 export const persistConnection = ['/room', '/result', ...onlineConnected]
+export const notFullscreen = ['/', '/room', '/waiting-lobby']
