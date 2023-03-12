@@ -7,7 +7,7 @@ import { maximumNumber, randomElement } from "random-stuff-js"
 import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules/effects"
 import { setStorage } from "../modules/storage"
 import { details, features, gameAbilities, indexes, modes, usableAbilities } from "../constants"
-import { exists } from "../modules/functions"
+import { exists, findPlayer, merge } from "../modules/functions"
 import Loader from "../components/Loader"
 
 function confirmBack() {
@@ -18,11 +18,12 @@ function confirmBack() {
 }
 
 export default function Play({ router, isFullScreen }) {
-    const { team1, team2, setTeam1, setTeam2, newTurn, teams, mode, turn, setTurn, bullet, attack, isAttacking, turnTeam, turnmeter, healthSteal, setHealthSteal, setInitialData, setTurnmeter, socket, name, opponent, myTeam, setTeam } = useGameContext()
+    const { team1, team2, setTeam1, setTeam2, newTurn, teams, mode, turn, setTurn, bullet, attack, isAttacking, turnTeam, turnmeter, healthSteal, setHealthSteal, setInitialData, setTurnmeter, socket, name, opponent, myTeam, setTeam, players } = useGameContext()
     const online = mode === 'online'
     const [loading, setLoading] = useState(online)
     const [enemy, setEnemy] = useState(0)
     const [hoverPlayer, setHoverPlayer] = useState()
+    const player = hoverPlayer && merge(hoverPlayer, findPlayer(players, hoverPlayer.name))
     const [hoverAbility, setHoverAbility] = useState()
 
     useEffect(() => {
@@ -173,15 +174,15 @@ export default function Play({ router, isFullScreen }) {
                     })}
                 </div>
             })}
-            {hoverPlayer && !isAttacking && <div className='detail-container center w-[calc(100vw-15rem)]'>
+            {player && !isAttacking && <div className='detail-container center w-[calc(100vw-15rem)]'>
                 <div className='flex flex-col min-w-max'>
-                    {details.map(detail => <span key={detail} className='detail-heading capitalize'>{detail}: {detail == 'health' ? Math.ceil(hoverPlayer[detail]) : hoverPlayer[detail]}</span>)}
+                    {details.map(detail => <span key={detail} className='detail-heading capitalize'>{detail}: {detail == 'health' ? Math.ceil(player[detail]) : player[detail]}</span>)}
                 </div>
                 <div>
-                    {gameAbilities.map(ability => hoverPlayer[ability] && <div key={ability} className='mb-3 detail-heading'>
+                    {gameAbilities.map(ability => player[ability] && <div key={ability} className='mb-3 detail-heading'>
                         <span className="capitalize">{ability}:</span>
                         {features.map(feature => {
-                            const value = hoverPlayer[ability][feature]
+                            const value = player[ability][feature]
                             return exists(value) && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {value}</div>
                         })}
                     </div>)}
