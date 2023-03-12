@@ -7,36 +7,33 @@ import { FaRandom, FaUndoAlt } from 'react-icons/fa'
 import { ImExit } from 'react-icons/im'
 import { useGameContext } from '../contexts/ContextProvider';
 import { allAbilities, details, features, modes } from '../constants';
-import { getPlayers } from '../players';
 import Loader from '../components/Loader';
 
 export default function TeamSelection({ router }) {
-    const { team1, team2, teams, setTeam1, setTeam2, abilities, mode, setInitialData, socket, myTeam, resetConnection } = useGameContext();
+    const { team1, team2, teams, setTeam1, setTeam2, abilities, mode, setInitialData, socket, myTeam, resetConnection, players, setPlayers } = useGameContext();
     const count = teams.length
     const currentTeam = count % 2 + 1
     const online = mode === 'online'
     const [loading, setLoading] = useState(online)
-    const [players, setPlayers] = useState([])
     const [hoverPlayer, setHoverPlayer] = useState()
-    const addPlayer = player => { if (!teams.includes(player) && count < 10) currentTeam === 1 ? setTeam1([...team1, player]) : setTeam2([...team2, player]) }
 
     useEffect(() => {
-        if (players.length) return
-        if (!online) setPlayers(getPlayers())
-        else socket?.emit("get-players", (players, team1, team2) => {
+        if (online) socket?.emit("get-players", (players, team1, team2) => {
             setPlayers(players)
             setTeam1(team1)
             setTeam2(team2)
             setLoading(false)
         })
-    }, [mode, socket])
+    }, [])
 
     useEffect(() => {
         if (players.length && count === 10) {
-            if (team1[0].leader?.type === 'start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
-            if (team2[0].leader?.type === 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
-            if (online) socket.emit('initiate-game', { team1, team2 }, () => router.push('/play'))
-            else {
+            if (online) {
+                if (myTeam === 1) socket.emit('initiate-game', () => router.push('/play'))
+                else router.push('/play')
+            } else {
+                if (team1[0].leader?.type === 'start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
+                if (team2[0].leader?.type === 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
                 setTeam1(team1)
                 setTeam2(team2)
                 const initialData = teams.reduce((obj, { name, health, special: { cooldown } }) => {
@@ -52,11 +49,17 @@ export default function TeamSelection({ router }) {
         }
     }, [count])
 
+    function addPlayer(player) {
+        if (!teams.includes(player) && count < 10) {
+            currentTeam === 1 ? setTeam1([...team1, player]) : setTeam2([...team2, player])
+            return true
+        }
+    }
+
     function selectPlayer(player) {
         if (online) {
             if (currentTeam !== myTeam) return
-            addPlayer(player)
-            socket.emit('select-player', player)
+            if (addPlayer(player)) socket.emit('select-player', player.name)
         } else addPlayer(player)
     }
 

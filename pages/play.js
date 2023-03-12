@@ -66,7 +66,7 @@ export default function Play({ router, isFullScreen }) {
 
     // Computer mode
     useEffect(() => {
-        if (isAttacking || enemy < 0) return
+        if (loading || isAttacking || enemy < 0) return
         if (turnTeam === 1) {
             if (team2.length && team2[enemy].health <= 0) {
                 let enemies = [];
@@ -90,7 +90,7 @@ export default function Play({ router, isFullScreen }) {
     // Over turn effects
     useEffect(() => {
         const player = teams[turn]
-        if (!player || isAttacking) return
+        if (loading || !player || isAttacking) return
         selectEnemy(enemy)
         player.health += 25 * stackCount('health', 'buff', player);
         player.health -= 25 * stackCount('health', 'debuff', player);
@@ -145,7 +145,7 @@ export default function Play({ router, isFullScreen }) {
         {loading ? <Loader /> : <>
             {[team1, team2].map((team, index) => {
                 const displayName = online ? (myTeam === index + 1 ? name : opponent) : mode === 'computer' && index ? 'Computer' : `Team ${index + 1}`
-                return <div id={`team${index + 1}`} key={index} className={`fixed top-0 max-w-[5.75rem] overflow-hidden ${index ? 'right-5' : 'left-5'} space-y-4 w-max flex flex-col items-center justify-center h-full`}>
+                return <div id={`team${index + 1}`} key={index} className={`fixed top-0 px-1 max-w-[5.75rem] overflow-hidden ${index ? 'right-4' : 'left-4'} space-y-4 flex flex-col items-center justify-center h-full`}>
                     <span className='detail-heading font-semibold mx-auto whitespace-nowrap' title={displayName}>{displayName}</span>
                     {team.map((player, i) => {
                         const playerIndex = i + index * 5

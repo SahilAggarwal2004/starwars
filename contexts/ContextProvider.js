@@ -10,6 +10,7 @@ import { hasEffect, hasStealth, hasTaunt, stackCount } from '../modules/effects'
 import { getStorage, removeStorage, setStorage } from '../modules/storage';
 import { indexes, multiAttackers, onlineConnected, persistConnection, preserveGame } from '../constants';
 import { damageMultiplier, reduce } from '../modules/functions';
+import { getPlayers } from '../players';
 
 const server = process.env.NODE_ENV === 'production' ? 'https://starwarsgame.onrender.com' : 'http://localhost:5000'
 
@@ -17,6 +18,7 @@ const Context = createContext();
 export const useGameContext = () => useContext(Context)
 
 const ContextProvider = ({ router, children, enterFullscreen }) => {
+    const [players, setPlayers] = useStorage('players', getPlayers())
     const [team1, setTeam1] = useStorage('team1', [])
     const [team2, setTeam2] = useStorage('team2', [])
     const [myTeam, setTeam] = useState(0)
@@ -262,11 +264,13 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
     function resetConnection(dest) {
         socket?.emit('leave-room')
         setConnection(false)
+        setTeam(0)
         setOpponent('')
         if (dest) router.push(dest)
     }
 
     function resetGame() {
+        setPlayers(getPlayers())
         setTeam1([])
         setTeam2([])
         setTurn(-1)
@@ -404,7 +408,7 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
         }, animation ? 2000 : 50);
     }
 
-    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, mode, setMode, turn, setTurn, turnTeam, attack, bullet, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, socket, name, setName, room, setRoom, pass, setPass, opponent, setOpponent, connection, setConnection, resetConnection, myTeam, setTeam, handlePlay }}>
+    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, mode, setMode, turn, setTurn, turnTeam, attack, bullet, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, socket, name, setName, room, setRoom, pass, setPass, opponent, setOpponent, connection, setConnection, resetConnection, myTeam, setTeam, handlePlay, players, setPlayers }}>
         {children}
     </Context.Provider>
 }
