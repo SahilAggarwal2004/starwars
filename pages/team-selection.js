@@ -28,10 +28,8 @@ export default function TeamSelection({ router }) {
 
     useEffect(() => {
         if (players.length && count === 10) {
-            if (online) {
-                if (myTeam === 1) socket.emit('initiate-game', () => router.push('/play'))
-                else router.push('/play')
-            } else {
+            if (online) myTeam === 1 && socket.emit('initiate-game', () => router.push('/play'))
+            else {
                 if (team1[0].leader?.type === 'start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
                 if (team2[0].leader?.type === 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
                 setTeam1(team1)

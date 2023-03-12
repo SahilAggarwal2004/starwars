@@ -69,6 +69,7 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
                 if (team1) setTeam1(team1)
                 if (team2) setTeam2(team2)
             })
+            newSocket.on('ready', () => router.push('/play'))
             newSocket.on('sync-data', ({ team1, team2, turn, turnmeter, healthSteal }) => {
                 setTeam1(team1)
                 setTeam2(team2)
