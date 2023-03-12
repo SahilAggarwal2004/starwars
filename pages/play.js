@@ -23,8 +23,9 @@ export default function Play({ router, isFullScreen }) {
     const [loading, setLoading] = useState(online)
     const [enemy, setEnemy] = useState(0)
     const [hoverPlayer, setHoverPlayer] = useState()
-    const player = hoverPlayer && merge(hoverPlayer, findPlayer(players, hoverPlayer.name))
     const [hoverAbility, setHoverAbility] = useState()
+    const player = hoverPlayer && merge(hoverPlayer, findPlayer(players, hoverPlayer.name))
+    const ability = hoverAbility && { ...findPlayer(players, teams[turn].name)[hoverAbility], ...teams[turn][hoverAbility] }
 
     useEffect(() => {
         setHoverPlayer()
@@ -191,7 +192,7 @@ export default function Play({ router, isFullScreen }) {
             {hoverAbility && !isAttacking && <div className='bg-black text-white fixed flex flex-col space-x-0 space-y-5 items-center justify-center p-10 rounded z-10 detail-heading center max-w-[calc(100vw-15rem)]'>
                 <span className="capitalize">{hoverAbility}:</span>
                 <div>
-                    {features.map(feature => teams[turn][hoverAbility][feature] !== undefined && <div key={feature} className='detail-text'><span className="capitalize">{feature}</span>: {teams[turn][hoverAbility][feature]}</div>)}
+                    {features.map(feature => ability[feature] !== undefined && <div key={feature} className='detail-text'><span className="capitalize">{feature}</span>: {ability[feature]}</div>)}
                 </div>
             </div>}
             {indexes.map(number => bullet[number] && <span key={number} id={`bullet${number}`} className='fixed block bg-red-500 -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 transition-all ease-linear duration-[1900ms]' />)}
