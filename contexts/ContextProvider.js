@@ -330,6 +330,7 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
         if (stun) {
             player.health += 25 * stackCount('health', 'buff', player);
             player.health -= 25 * stackCount('health', 'debuff', player);
+            if (player.special?.cooldown) player.special.cooldown--
             setTeam1(team1)
             setTeam2(team2)
             newTurn(index)
