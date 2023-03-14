@@ -3,9 +3,9 @@ import { useEffect } from 'react'
 import { useGameContext } from '../contexts/ContextProvider'
 
 export default function Waiting() {
-    const { opponent, resetConnection, handlePlay } = useGameContext()
+    const { myTeam, resetConnection, handlePlay } = useGameContext()
 
-    useEffect(() => { if (opponent) handlePlay() }, [opponent])
+    useEffect(() => { if (myTeam) handlePlay() }, [myTeam])
 
     return <div className='fixed center text-center space-y-5'>
         <div className='text-xl'>Waiting for the opponent to join...</div>

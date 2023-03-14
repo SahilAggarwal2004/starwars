@@ -26,17 +26,12 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
     const [healthSteal, setHealthSteal] = useStorage('health-steal', [0, 0])
     const [initialData, setInitialData] = useStorage('initial-data', [])
     const teams = team1.concat(team2)
-    const [mode, setMode] = useStorage('mode', '', true)
     const [turn, setTurn] = useState(-1)
     const [isAttacking, setAttacking] = useState(true)
     const [bullet, setBullet] = useState([])
     const [socket, setSocket] = useState()
-    const [connection, setConnection] = useStorage('connection', false, true)
-    const [name, setName] = useStorage('name', '', true)
-    const [room, setRoom] = useStorage('room', '', true)
-    const [pass, setPass] = useStorage('pass', '', true)
-    const [opponent, setOpponent] = useStorage('opponent', '', true)
     const turnTeam = Math.ceil((turn + 1) / 5)
+    const mode = getStorage('mode', '', true)
     const online = mode === 'online'
 
     useEffect(() => {
@@ -44,7 +39,7 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
         if (!preserveGame.includes(router.pathname)) resetGame()
         if (router.pathname !== '/result') removeStorage('winner')
         if (online && !persistConnection.includes(router.pathname)) return resetConnection('/')
-        if (online && connection === false && onlineConnected.includes(router.pathname)) router.push('/room')
+        if (online && !getStorage('connection') && onlineConnected.includes(router.pathname)) router.push('/room')
     }, [router.pathname])
 
     useEffect(() => {
@@ -52,14 +47,14 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
         const newSocket = io(server, { query: { userId: getStorage('userId', Date.now()) } })
         newSocket.on('connect', () => {
             newSocket.on('error', error => toast.error(error))
-            newSocket.on('new-user', name => {
-                toast.success(`${name} joined the room!`)
+            newSocket.on('new-user', opponent => {
+                toast.success(`${opponent} joined the room!`)
                 setTeam(1)
-                setOpponent(name)
+                setStorage('opponent', opponent)
             })
             newSocket.on('left', ({ name, started, team }) => {
                 toast.error(`${name} left the lobby.`)
-                setOpponent('')
+                removeStorage('opponent')
                 if (started) {
                     setStorage('winner', team)
                     router.push('/result')
@@ -78,8 +73,8 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
                 setHealthSteal(healthSteal)
             })
             newSocket.on('rejoin', (opponent, team) => {
-                setConnection(true)
-                setOpponent(opponent)
+                setStorage('connection', true)
+                setStorage('opponent', opponent)
                 if (team) {
                     setTeam(team)
                     router.push('/team-selection')
@@ -256,7 +251,7 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
 
     function handlePlay(event) {
         const mode = event?.target.getAttribute('mode')
-        if (mode) setMode(mode)
+        if (mode) setStorage('mode', mode, true)
         const sendToRoom = router.pathname === '/' && (online || mode === 'online')
         router.push(sendToRoom ? '/room' : '/team-selection')
         if (navigator.userAgentData?.mobile && !sendToRoom) enterFullscreen()
@@ -264,9 +259,9 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
 
     function resetConnection(dest) {
         socket?.emit('leave-room')
-        setConnection(false)
         setTeam(0)
-        setOpponent('')
+        setStorage('connection', false)
+        removeStorage('opponent')
         if (dest) router.push(dest)
     }
 
@@ -410,7 +405,7 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
         }, animation ? 2000 : 50);
     }
 
-    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, mode, setMode, turn, setTurn, turnTeam, attack, bullet, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, socket, name, setName, room, setRoom, pass, setPass, opponent, setOpponent, connection, setConnection, resetConnection, myTeam, setTeam, handlePlay, players, setPlayers }}>
+    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, attack, bullet, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, socket, resetConnection, myTeam, setTeam, handlePlay, players, setPlayers }}>
         {children}
     </Context.Provider>
 }

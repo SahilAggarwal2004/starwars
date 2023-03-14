@@ -8,14 +8,16 @@ import { ImExit } from 'react-icons/im'
 import { useGameContext } from '../contexts/ContextProvider';
 import { allAbilities, details, features, modes } from '../constants';
 import Loader from '../components/Loader';
+import { getStorage } from '../modules/storage';
 
 export default function TeamSelection({ router }) {
-    const { team1, team2, teams, setTeam1, setTeam2, abilities, mode, setInitialData, socket, myTeam, resetConnection, players, setPlayers } = useGameContext();
-    const count = teams.length
-    const currentTeam = count % 2 + 1
+    const { team1, team2, teams, setTeam1, setTeam2, abilities, setInitialData, socket, myTeam, resetConnection, players, setPlayers } = useGameContext();
+    const mode = getStorage('mode', '', true)
     const online = mode === 'online'
     const [loading, setLoading] = useState(online)
     const [hoverPlayer, setHoverPlayer] = useState()
+    const count = teams.length
+    const currentTeam = count % 2 + 1
 
     useEffect(() => {
         if (online) socket?.emit("get-players", (players, team1, team2) => {

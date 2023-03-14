@@ -4,9 +4,10 @@ import Particles from 'react-tsparticles'
 import { loadFull } from 'tsparticles'
 import { modes } from '../constants';
 import { useGameContext } from '../contexts/ContextProvider';
+import { removeStorage } from '../modules/storage';
 
 export default function Home() {
-  const { setMode, handlePlay } = useGameContext()
+  const { handlePlay } = useGameContext()
   const particlesInit = useCallback(async engine => {
     // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
     // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
@@ -14,7 +15,7 @@ export default function Home() {
     await loadFull(engine);
   }, []);
 
-  useEffect(() => { setMode() }, [])
+  useEffect(() => { removeStorage('mode', true) }, [])
 
   return <>
     <Particles

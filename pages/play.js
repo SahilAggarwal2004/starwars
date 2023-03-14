@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { useGameContext } from "../contexts/ContextProvider"
 import { maximumNumber, randomElement } from "random-stuff-js"
 import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules/effects"
-import { setStorage } from "../modules/storage"
+import { getStorage, setStorage } from "../modules/storage"
 import { details, features, gameAbilities, indexes, modes, usableAbilities } from "../constants"
 import { exists, findPlayer, merge } from "../modules/functions"
 import Loader from "../components/Loader"
@@ -18,7 +18,8 @@ function confirmBack() {
 }
 
 export default function Play({ router, isFullScreen }) {
-    const { team1, team2, setTeam1, setTeam2, newTurn, teams, mode, turn, setTurn, bullet, attack, isAttacking, turnTeam, turnmeter, healthSteal, setHealthSteal, setInitialData, setTurnmeter, socket, name, opponent, myTeam, setTeam, players } = useGameContext()
+    const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, bullet, attack, isAttacking, turnTeam, turnmeter, healthSteal, setHealthSteal, setInitialData, setTurnmeter, socket, myTeam, setTeam, players } = useGameContext()
+    const mode = getStorage('mode', '', true)
     const online = mode === 'online'
     const [loading, setLoading] = useState(online)
     const [enemy, setEnemy] = useState(0)
@@ -29,6 +30,17 @@ export default function Play({ router, isFullScreen }) {
 
     useEffect(() => {
         setHoverPlayer()
+        if (online) socket?.emit('get-data', ({ team, team1, team2, turn, initialData, turnmeter, healthSteal }) => {
+            setTeam(team)
+            setTeam1(team1)
+            setTeam2(team2)
+            setTurn(turn)
+            setInitialData(initialData)
+            setTurnmeter(turnmeter)
+            setHealthSteal(healthSteal)
+            setLoading(false)
+            setTimeout(updatePositions, 1)
+        })
         window.addEventListener('resize', updatePositions)
         if (!navigator.userAgentData?.mobile) {
             window.history.pushState(null, document.title, window.location.href) // preventing back initially
@@ -41,20 +53,6 @@ export default function Play({ router, isFullScreen }) {
     }, [])
 
     useEffect(() => { setTimeout(updatePositions, 1) }, [isFullScreen])
-
-    useEffect(() => {
-        if (online && socket) socket.emit('get-data', ({ team, team1, team2, turn, initialData, turnmeter, healthSteal }) => {
-            setTeam(team)
-            setTeam1(team1)
-            setTeam2(team2)
-            setTurn(turn)
-            setInitialData(initialData)
-            setTurnmeter(turnmeter)
-            setHealthSteal(healthSteal)
-            setLoading(false)
-            setTimeout(updatePositions, 1)
-        })
-    }, [mode, socket])
 
     useEffect(() => {
         if (!loading && teams.length < 6) router.push('/')
@@ -107,7 +105,8 @@ export default function Play({ router, isFullScreen }) {
     function selectEnemy(enemy, index) {
         const enemyTeam = turnTeam === 1 ? team2 : team1
         const possibleEnemies = []
-        enemyTeam.forEach((enemy, i) => { if (hasTaunt(enemy, team1, team2)) possibleEnemies.push(i) })
+        console.log(enemyTeam)
+        enemyTeam.forEach((enemy, i) => { console.log(enemy); if (hasTaunt(enemy, team1, team2)) possibleEnemies.push(i) })
         if (!possibleEnemies.length) enemyTeam.forEach((enemy, i) => { if (enemy.health > 0 && !hasStealth(enemy)) possibleEnemies.push(i) })
         if (!possibleEnemies.length) enemyTeam.forEach(({ health }, i) => { if (health > 0) possibleEnemies.push(i) })
         if (index === undefined || index !== turnTeam - 1) possibleEnemies.includes(enemy) ? setEnemy(enemy) : setEnemy(possibleEnemies[0])
@@ -146,7 +145,7 @@ export default function Play({ router, isFullScreen }) {
         <Head><title>{modes[mode]} | Star Wars</title></Head>
         {loading ? <Loader /> : <>
             {[team1, team2].map((team, index) => {
-                const displayName = online ? (myTeam === index + 1 ? name : opponent) : mode === 'computer' && index ? 'Computer' : `Team ${index + 1}`
+                const displayName = online ? (myTeam === index + 1 ? getStorage('name', '', true) : getStorage('opponent', '')) : mode === 'computer' && index ? 'Computer' : `Team ${index + 1}`
                 return <div id={`team${index + 1}`} key={index} className={`fixed top-0 px-1 max-w-[5.75rem] overflow-hidden ${index ? 'right-4' : 'left-4'} space-y-4 flex flex-col items-center justify-center h-full`}>
                     <span className='detail-heading font-semibold mx-auto whitespace-nowrap' title={displayName}>{displayName}</span>
                     {team.map((player, i) => {
