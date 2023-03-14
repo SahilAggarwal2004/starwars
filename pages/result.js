@@ -5,8 +5,9 @@ import { useGameContext } from '../contexts/ContextProvider'
 import { getStorage } from '../modules/storage'
 
 export default function Result({ router }) {
-    const { mode, myTeam } = useGameContext()
+    const { myTeam } = useGameContext()
     const [winner, setWinner] = useState()
+    const mode = getStorage('mode', '', true)
 
     useEffect(() => {
         const winner = getStorage('winner')
