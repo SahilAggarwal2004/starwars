@@ -58,7 +58,10 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
                 if (started) {
                     setStorage('winner', team)
                     router.push('/result')
-                } else router.push('/waiting-lobby')
+                } else {
+                    setTeam(0)
+                    router.push('/waiting-lobby')
+                }
             })
             newSocket.on('selected-player', (team1, team2) => {
                 if (team1) setTeam1(team1)

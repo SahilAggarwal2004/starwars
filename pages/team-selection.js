@@ -18,6 +18,8 @@ export default function TeamSelection({ router }) {
     const [hoverPlayer, setHoverPlayer] = useState()
     const count = teams.length
     const currentTeam = count % 2 + 1
+    const role = count < 2 ? 'leader' : 'player'
+    const instruction = online ? (currentTeam === myTeam ? "Select your " : "Opponent's turn to select ") + role : `Select ${role} for Team ${currentTeam}`
 
     useEffect(() => {
         if (online) socket?.emit("get-players", (players, team1, team2) => {
@@ -81,7 +83,7 @@ export default function TeamSelection({ router }) {
     return <>
         <Head><title>{modes[mode]} | Star Wars</title></Head>
         {loading ? <Loader /> : <>
-            <span className='main-heading center -translate-y-[calc(3vw+0.5rem+50%)]'>Select {count < 2 ? 'leader' : 'player'} for Team {currentTeam}</span>
+            <span className='main-heading center -translate-y-[calc(3vw+0.5rem+50%)]'>{instruction}</span>
             <div className='grid grid-cols-12 fixed x-center bottom-4 gap-x-2.5 min-w-max'>
                 {players.map(player => <div className='relative w-[6vw] aspect-square flex justify-center hover:border-2 hover:outline border-transparent rounded-sm' key={player.name} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => selectPlayer(player)} onContextMenu={event => event.preventDefault()}>
                     <img src={`/images/players/${player.name}.webp`} alt={player.name} width='120' className='rounded-sm aspect-square' />
