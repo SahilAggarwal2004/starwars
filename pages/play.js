@@ -90,7 +90,7 @@ export default function Play({ router, isFullScreen }) {
     // Over turn effects
     useEffect(() => {
         const player = teams[turn]
-        if (loading || !player || isAttacking) return
+        if (loading || isAttacking || !player) return
         selectEnemy(enemy)
         player.health += 25 * stackCount('health', 'buff', player);
         player.health -= 25 * stackCount('health', 'debuff', player);
