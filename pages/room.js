@@ -16,6 +16,7 @@ export default function Room({ router }) {
         if (!tempRoom || !tempPassword || !tempName) return toast.error('Please fill the required fields first')
         setStorage('name', tempName, true)
         const method = event.target.getAttribute('method')
+        if (!socket.connected) return toast.error('Something went wrong, try again!')
         socket.emit(method, { room: tempRoom, password: tempPassword, name: tempName }, ({ message, opponent }) => {
             toast.success(message)
             setStorage('connection', true)
