@@ -10,6 +10,8 @@ const withPWA = require('next-pwa')({
         { url: '/play', revision },
         { url: '/result', revision },
         { url: '/how-to-play', revision },
+        { url: '/room', revision },
+        { url: '/waiting-lobby', revision },
         { url: '/images/players/Bastila Shan.webp', revision },
         { url: '/images/players/Chewbecca.webp', revision },
         { url: '/images/players/Count Dooku.webp', revision },
@@ -103,7 +105,7 @@ const withPWA = require('next-pwa')({
                 const isSameOrigin = self.origin === url.origin
                 return !isSameOrigin
             },
-            handler: 'StaleWhileRevalidate',
+            handler: 'NetworkOnly',
             options: { cacheName: 'cross-origin' }
         }
     ]
