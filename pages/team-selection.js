@@ -30,7 +30,7 @@ export default function TeamSelection({ router }) {
             setTeam2(team2)
             setLoading(false)
         })
-    }, [])
+    }, [socket])
 
     useEffect(() => {
         if (players.length && count === maxPlayers) {
