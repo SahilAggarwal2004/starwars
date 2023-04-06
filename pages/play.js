@@ -30,6 +30,18 @@ export default function Play({ router, isFullScreen }) {
 
     useEffect(() => {
         setHoverPlayer()
+        window.addEventListener('resize', updatePositions)
+        if (!navigator.userAgentData?.mobile) {
+            window.history.pushState(null, document.title, window.location.href) // preventing back initially
+            window.addEventListener('popstate', confirmBack)
+        }
+        return () => {
+            window.removeEventListener('resize', updatePositions)
+            window.removeEventListener('popstate', confirmBack)
+        };
+    }, [])
+
+    useEffect(() => {
         if (online) socket?.emit('get-data', ({ team, team1, team2, turn, initialData, turnmeter, healthSteal }) => {
             setTeam(team)
             setTeam1(team1)
@@ -41,16 +53,7 @@ export default function Play({ router, isFullScreen }) {
             setLoading(false)
             setTimeout(updatePositions, 1)
         })
-        window.addEventListener('resize', updatePositions)
-        if (!navigator.userAgentData?.mobile) {
-            window.history.pushState(null, document.title, window.location.href) // preventing back initially
-            window.addEventListener('popstate', confirmBack)
-        }
-        return () => {
-            window.removeEventListener('resize', updatePositions)
-            window.removeEventListener('popstate', confirmBack)
-        };
-    }, [])
+    }, [socket])
 
     useEffect(() => { setTimeout(updatePositions, 1) }, [isFullScreen])
 
@@ -105,8 +108,7 @@ export default function Play({ router, isFullScreen }) {
     function selectEnemy(enemy, index) {
         const enemyTeam = turnTeam === 1 ? team2 : team1
         const possibleEnemies = []
-        console.log(enemyTeam)
-        enemyTeam.forEach((enemy, i) => { console.log(enemy); if (hasTaunt(enemy, team1, team2)) possibleEnemies.push(i) })
+        enemyTeam.forEach((enemy, i) => { if (hasTaunt(enemy, team1, team2)) possibleEnemies.push(i) })
         if (!possibleEnemies.length) enemyTeam.forEach((enemy, i) => { if (enemy.health > 0 && !hasStealth(enemy)) possibleEnemies.push(i) })
         if (!possibleEnemies.length) enemyTeam.forEach(({ health }, i) => { if (health > 0) possibleEnemies.push(i) })
         if (index === undefined || index !== turnTeam - 1) possibleEnemies.includes(enemy) ? setEnemy(enemy) : setEnemy(possibleEnemies[0])
