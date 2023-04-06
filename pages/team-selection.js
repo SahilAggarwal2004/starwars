@@ -6,9 +6,11 @@ import { randomElement } from 'random-stuff-js';
 import { FaRandom, FaUndoAlt } from 'react-icons/fa'
 import { ImExit } from 'react-icons/im'
 import { useGameContext } from '../contexts/ContextProvider';
-import { allAbilities, details, features, modes } from '../constants';
+import { allAbilities, details, features, modes, playersPerTeam } from '../constants';
 import Loader from '../components/Loader';
 import { getStorage } from '../modules/storage';
+
+const maxPlayers = playersPerTeam * 2
 
 export default function TeamSelection({ router }) {
     const { team1, team2, teams, setTeam1, setTeam2, abilities, setInitialData, socket, myTeam, resetConnection, players, setPlayers } = useGameContext();
@@ -31,7 +33,7 @@ export default function TeamSelection({ router }) {
     }, [])
 
     useEffect(() => {
-        if (players.length && count === 10) {
+        if (players.length && count === maxPlayers) {
             if (online) myTeam === 1 && socket.emit('initiate-game', () => router.push('/play'))
             else {
                 if (team1[0].leader?.type === 'start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
@@ -52,7 +54,7 @@ export default function TeamSelection({ router }) {
     }, [count])
 
     function addPlayer(player) {
-        if (!teams.includes(player) && count < 10) {
+        if (!teams.includes(player) && count < maxPlayers) {
             currentTeam === 1 ? setTeam1([...team1, player]) : setTeam2([...team2, player])
             return true
         }
@@ -72,12 +74,12 @@ export default function TeamSelection({ router }) {
 
     function shuffle() {
         const selected = []
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < maxPlayers; i++) {
             do { var player = randomElement(players) } while (selected.includes(player))
             selected.push(player)
         }
-        setTeam1(selected.slice(0, 5))
-        setTeam2(selected.slice(5))
+        setTeam1(selected.slice(0, playersPerTeam))
+        setTeam2(selected.slice(playersPerTeam))
     }
 
     return <>

@@ -8,7 +8,7 @@ import { animateBullet, multiAttack } from '../modules/animation'
 import useStorage from '../hooks/useStorage';
 import { hasEffect, hasStealth, hasTaunt, stackCount } from '../modules/effects';
 import { getStorage, removeStorage, setStorage } from '../modules/storage';
-import { indexes, multiAttackers, onlineConnected, persistConnection, preserveGame } from '../constants';
+import { indexes, multiAttackers, onlineConnected, persistConnection, playersPerTeam, preserveGame } from '../constants';
 import { damageMultiplier, reduce } from '../modules/functions';
 import { getPlayers } from '../players';
 
@@ -30,7 +30,7 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
     const [isAttacking, setAttacking] = useState(false)
     const [bullet, setBullet] = useState([])
     const [socket, setSocket] = useState()
-    const turnTeam = Math.ceil((turn + 1) / 5)
+    const turnTeam = Math.ceil((turn + 1) / playersPerTeam)
     const mode = getStorage('mode', '', true)
     const online = mode === 'online'
 
@@ -108,7 +108,7 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
                 allyTeam.forEach(({ health }, i) => { if (health > 0 && i != player) randomPlayers.push(i) })
                 const randomPlayer = randomElement(randomPlayers);
                 if (randomPlayer == undefined) return
-                turnmeter[turnTeam * 5 - 5 + randomPlayer] = Number.MAX_SAFE_INTEGER
+                turnmeter[(turnTeam - 1) * playersPerTeam + randomPlayer] = Number.MAX_SAFE_INTEGER
                 setTurnmeter(turnmeter)
             },
             special: ({ enemy, enemyTeam }) => apply({ effect: 'stun', type: 'debuff', enemy, enemyTeam }),
@@ -401,7 +401,7 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
                     if (data) returnUnique = { ...returnUnique, ...data }
                 }))
                 setTimeout(() => {
-                    newTurn(player + turnTeam * 5 - 5)
+                    newTurn((turnTeam - 1) * playersPerTeam + player)
                     setTeams(allyTeam, enemyTeam, isCountering)
                 }, returnUnique.wait || 50);
             }, wait || 50);

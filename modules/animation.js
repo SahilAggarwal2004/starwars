@@ -1,10 +1,13 @@
+import { playersPerTeam } from "../constants"
 import { getStorage } from "./storage"
+
+const getEnemy = (turnTeam, enemy = 0) => ((turnTeam == 1 ? 2 : 1) - 1) * playersPerTeam + enemy
 
 async function animateBullet(player, enemy, turnTeam, setBullet, isCountering) {
     if (isCountering) turnTeam = turnTeam === 1 ? 2 : 1
     const positions = getStorage('positions')
-    const { left: playerLeft, right: playerRight, top: playerTop, bottom: playerBottom } = positions[turnTeam * 5 - 5 + player]
-    const { left: enemyLeft, right: enemyRight, top: enemyTop, bottom: enemyBottom } = positions[(turnTeam == 1 ? 2 : 1) * 5 - 5 + enemy]
+    const { left: playerLeft, right: playerRight, top: playerTop, bottom: playerBottom } = positions[(turnTeam - 1) * playersPerTeam + player]
+    const { left: enemyLeft, right: enemyRight, top: enemyTop, bottom: enemyBottom } = positions[getEnemy(turnTeam, enemy)]
     const bulletRef = document.getElementById('bullet0').style
     bulletRef.left = `${(playerLeft + playerRight) / 2}px`;
     bulletRef.top = `${(playerTop + playerBottom) / 2}px`;
@@ -17,35 +20,35 @@ async function animateBullet(player, enemy, turnTeam, setBullet, isCountering) {
 
 async function multiAttack(player, enemyTeam, turnTeam, setBullet) {
     const positions = getStorage('positions')
-    const { left: playerLeft, top: playerTop } = positions[turnTeam * 5 - 5 + player]
-    const enemyLeft = positions[(turnTeam == 1 ? 2 : 1) * 5 - 5].left
+    const { left: playerLeft, top: playerTop } = positions[(turnTeam - 1) * playersPerTeam + player]
+    const enemyLeft = positions[getEnemy(turnTeam)].left
     let bulletRef, bulletRef1, bulletRef2, bulletRef3, bulletRef4, enemyTop, enemyTop1, enemyTop2, enemyTop3, enemyTop4
     if (enemyTeam[0].health > 0) {
-        enemyTop = positions[(turnTeam == 1 ? 2 : 1) * 5 - 5].top
+        enemyTop = positions[getEnemy(turnTeam)].top
         bulletRef = document.getElementById('bullet0').style
         bulletRef.left = `calc(${playerLeft}px + 3vw)`;
         bulletRef.top = `calc(${playerTop}px + 3vw)`;
     }
     if (enemyTeam[1].health > 0) {
-        enemyTop1 = positions[(turnTeam == 1 ? 2 : 1) * 5 - 4].top
+        enemyTop1 = positions[getEnemy(turnTeam, 1)].top
         bulletRef1 = document.getElementById('bullet1').style
         bulletRef1.left = `calc(${playerLeft}px + 3vw)`;
         bulletRef1.top = `calc(${playerTop}px + 3vw)`;
     }
     if (enemyTeam[2].health > 0) {
-        enemyTop2 = positions[(turnTeam == 1 ? 2 : 1) * 5 - 3].top
+        enemyTop2 = positions[getEnemy(turnTeam, 2)].top
         bulletRef2 = document.getElementById('bullet2').style
         bulletRef2.left = `calc(${playerLeft}px + 3vw)`;
         bulletRef2.top = `calc(${playerTop}px + 3vw)`;
     }
     if (enemyTeam[3].health > 0) {
-        enemyTop3 = positions[(turnTeam == 1 ? 2 : 1) * 5 - 2].top
+        enemyTop3 = positions[getEnemy(turnTeam, 3)].top
         bulletRef3 = document.getElementById('bullet3').style
         bulletRef3.left = `calc(${playerLeft}px + 3vw)`;
         bulletRef3.top = `calc(${playerTop}px + 3vw)`;
     }
     if (enemyTeam[4].health > 0) {
-        enemyTop4 = positions[(turnTeam == 1 ? 2 : 1) * 5 - 1].top
+        enemyTop4 = positions[getEnemy(turnTeam, 4)].top
         bulletRef4 = document.getElementById('bullet4').style
         bulletRef4.left = `calc(${playerLeft}px + 3vw)`;
         bulletRef4.top = `calc(${playerTop}px + 3vw)`;

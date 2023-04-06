@@ -6,7 +6,7 @@ import { useGameContext } from "../contexts/ContextProvider"
 import { maximumNumber, randomElement } from "random-stuff-js"
 import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules/effects"
 import { getStorage, setStorage } from "../modules/storage"
-import { details, features, gameAbilities, indexes, modes, usableAbilities } from "../constants"
+import { details, features, gameAbilities, indexes, modes, playersPerTeam, usableAbilities } from "../constants"
 import { exists, findPlayer, merge } from "../modules/functions"
 import Loader from "../components/Loader"
 
@@ -81,7 +81,7 @@ export default function Play({ router, isFullScreen }) {
                 let enemies = []
                 team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
                 const enemy = randomElement(enemies)
-                setTimeout(() => attack({ player: turn - 5, enemy, ability: 'special' }), 500);
+                setTimeout(() => attack({ player: turn - playersPerTeam, enemy, ability: 'special' }), 500);
             } else if (team1.length && team1[enemy].health <= 0) {
                 let enemies = [];
                 team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
@@ -115,11 +115,11 @@ export default function Play({ router, isFullScreen }) {
     }
 
     function checkResult() {
-        let gameover = false, sum1 = 0, sum2 = 0, winner;
+        let sum1 = 0, sum2 = 0, winner;
         team1.forEach(player => { if (player.health <= 0) sum1++ });
         team2.forEach(player => { if (player.health <= 0) sum2++ });
-        if (sum1 == 5 || sum2 == 5) gameover = true
-        if (gameover) sum1 == 5 ? winner = 2 : winner = 1
+        const gameover = sum1 === playersPerTeam || sum2 === playersPerTeam
+        if (gameover) sum1 === playersPerTeam ? winner = 2 : winner = 1
         return { gameover, winner }
     }
 
@@ -151,7 +151,7 @@ export default function Play({ router, isFullScreen }) {
                 return <div id={`team${index + 1}`} key={index} className={`fixed top-0 px-1 max-w-[5.75rem] overflow-hidden ${index ? 'right-4' : 'left-4'} space-y-4 flex flex-col items-center justify-center h-full`}>
                     <span className='detail-heading font-semibold mx-auto whitespace-nowrap' title={displayName}>{displayName}</span>
                     {team.map((player, i) => {
-                        const playerIndex = i + index * 5
+                        const playerIndex = i + index * playersPerTeam
                         const selectedPlayer = turn === playerIndex
                         return <div key={i} className={`${player.health <= 0 && 'invisible'}`}>
                             <div className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${selectedPlayer ? 'outline border-2 outline-green-500' : enemy === i && turnTeam !== index + 1 ? 'outline border-2 outline-red-500' : 'hover:border-2 hover:outline hover:outline-black'} border-transparent rounded-sm ${hasEffect('stealth', 'buff', player) && 'opacity-50'}`} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => selectEnemy(i, index)} onContextMenu={event => event.preventDefault()}>
