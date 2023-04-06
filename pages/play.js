@@ -10,6 +10,8 @@ import { details, features, gameAbilities, indexes, modes, playersPerTeam, usabl
 import { exists, findPlayer, merge } from "../modules/functions"
 import Loader from "../components/Loader"
 
+const maxPlayers = playersPerTeam * 2
+
 function confirmBack() {
     if (confirm('Your current game progress will be lost!')) {
         window.removeEventListener('popstate', confirmBack)
@@ -58,10 +60,10 @@ export default function Play({ router, isFullScreen }) {
     useEffect(() => { setTimeout(updatePositions, 1) }, [isFullScreen])
 
     useEffect(() => {
-        if (!loading && teams.length < 6) router.push('/')
+        if (!loading && teams.length < maxPlayers) router.push('/')
         if (turn < 0) newTurn()
-        const { gameover, winner } = checkResult()
-        if (gameover) {
+        const winner = checkResult()
+        if (winner) {
             setStorage('winner', winner)
             router.push('/result')
         }
@@ -118,9 +120,8 @@ export default function Play({ router, isFullScreen }) {
         let sum1 = 0, sum2 = 0, winner;
         team1.forEach(player => { if (player.health <= 0) sum1++ });
         team2.forEach(player => { if (player.health <= 0) sum2++ });
-        const gameover = sum1 === playersPerTeam || sum2 === playersPerTeam
-        if (gameover) sum1 === playersPerTeam ? winner = 2 : winner = 1
-        return { gameover, winner }
+        if (sum1 === playersPerTeam || sum2 === playersPerTeam) sum1 === playersPerTeam ? winner = 2 : winner = 1
+        return winner
     }
 
     function handleAttack(ability, index) {
