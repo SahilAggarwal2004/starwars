@@ -11,6 +11,7 @@ const withPWA = require('next-pwa')({
         { url: '/result', revision },
         { url: '/how-to-play', revision },
         { url: '/room', revision },
+        { url: '/room/[share]', revision },
         { url: '/waiting-lobby', revision },
         { url: '/images/players/Bastila Shan.webp', revision },
         { url: '/images/players/Chewbecca.webp', revision },
