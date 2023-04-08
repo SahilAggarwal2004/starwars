@@ -10,5 +10,5 @@ export const gameAbilities = usableAbilities.concat('unique')
 export const allAbilities = gameAbilities.concat('leader')
 export const onlineConnected = ['/waiting-lobby', '/team-selection', '/play']
 export const persistConnection = ['/room', '/room/[share]', '/result', ...onlineConnected]
-export const notFullscreen = ['/', '/room', '/waiting-lobby']
+export const notFullscreen = ['/', '/room', '/room/[share]', '/waiting-lobby']
 export const noMode = ['/', '/how-to-play', '/room/[share]']
