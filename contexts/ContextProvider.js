@@ -8,7 +8,7 @@ import { animateBullet, multiAttack } from '../modules/animation'
 import useStorage from '../hooks/useStorage';
 import { hasEffect, hasStealth, hasTaunt, stackCount } from '../modules/effects';
 import { getStorage, removeStorage, setStorage } from '../modules/storage';
-import { indexes, multiAttackers, onlineConnected, persistConnection, playersPerTeam, preserveGame } from '../constants';
+import { indexes, multiAttackers, noMode, onlineConnected, persistConnection, playersPerTeam, preserveGame } from '../constants';
 import { damageMultiplier, reduce } from '../modules/functions';
 import { getPlayers } from '../players';
 
@@ -32,11 +32,11 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
     const [bullet, setBullet] = useState([])
     const [socket, setSocket] = useState()
     const turnTeam = Math.ceil((turn + 1) / playersPerTeam)
-    const mode = getStorage('mode', '', true)
+    const mode = getStorage('mode', '')
     const online = mode === 'online'
 
     useEffect(() => {
-        if (!mode) router.push('/')
+        if (!mode && !noMode.includes(router.pathname)) router.push('/')
         if (!preserveGame.includes(router.pathname)) resetGame()
         if (router.pathname !== '/result') removeStorage('winner')
         if (online && !persistConnection.includes(router.pathname)) return resetConnection('/')
@@ -47,7 +47,10 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
         if (!online) return
         const newSocket = io(server, { query: { userId: getStorage('userId', Date.now()) } })
         newSocket.on('connect', () => {
-            newSocket.on('error', error => toast.error(error))
+            newSocket.on('error', (error, type) => {
+                toast.error(error)
+                if (type === 'redirect') resetConnection('/room')
+            })
             newSocket.on('new-user', opponent => {
                 toast.success(`${opponent} joined the room!`)
                 setTeam(1)
@@ -255,7 +258,7 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
 
     function handlePlay(event) {
         const mode = event?.target.getAttribute('mode')
-        if (mode) setStorage('mode', mode, true)
+        if (mode) setStorage('mode', mode)
         const sendToRoom = router.pathname === '/' && (online || mode === 'online')
         router.push(sendToRoom ? '/room' : '/team-selection')
         if (navigator.userAgentData?.mobile && !sendToRoom) enterFullscreen()

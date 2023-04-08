@@ -21,7 +21,7 @@ function confirmBack() {
 
 export default function Play({ router, isFullScreen }) {
     const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, bullet, attack, isAttacking, turnTeam, turnmeter, healthSteal, setHealthSteal, setInitialData, setTurnmeter, socket, myTeam, setTeam, players } = useGameContext()
-    const mode = getStorage('mode', '', true)
+    const mode = getStorage('mode', '')
     const online = mode === 'online'
     const [loading, setLoading] = useState(online)
     const [enemy, setEnemy] = useState(0)

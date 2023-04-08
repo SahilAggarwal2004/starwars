@@ -15,7 +15,7 @@ export default function Home() {
     await loadFull(engine);
   }, []);
 
-  useEffect(() => { removeStorage('mode', true) }, [])
+  useEffect(() => { removeStorage('mode') }, [])
 
   return <>
     <Particles

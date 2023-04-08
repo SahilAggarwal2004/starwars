@@ -14,7 +14,7 @@ const maxPlayers = playersPerTeam * 2
 
 export default function TeamSelection({ router }) {
     const { team1, team2, teams, setTeam1, setTeam2, abilities, setInitialData, socket, myTeam, resetConnection, players, setPlayers } = useGameContext();
-    const mode = getStorage('mode', '', true)
+    const mode = getStorage('mode', '')
     const online = mode === 'online'
     const [loading, setLoading] = useState(online)
     const [hoverPlayer, setHoverPlayer] = useState()
