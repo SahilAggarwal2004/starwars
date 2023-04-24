@@ -69,9 +69,11 @@ export default function Play({ router, isFullScreen }) {
         }
     }, [teams])
 
-    // Computer mode
     useEffect(() => {
-        if (loading || isAttacking || enemy < 0) return
+        const player = teams[turn]
+        if (loading || isAttacking || !player) return
+        
+        // Computer mode
         if (turnTeam === 1) {
             if (team2.length && team2[enemy].health <= 0) {
                 let enemies = [];
@@ -90,13 +92,8 @@ export default function Play({ router, isFullScreen }) {
                 selectEnemy(randomElement(enemies))
             } else selectEnemy(enemy);
         }
-    }, [isAttacking])
 
-    // Over turn effects
-    useEffect(() => {
-        const player = teams[turn]
-        if (loading || isAttacking || !player) return
-        selectEnemy(enemy)
+        // Over turn effects
         player.health += 25 * stackCount('health', 'buff', player);
         player.health -= 25 * stackCount('health', 'debuff', player);
         if (player.health <= 0) setTimeout(() => {
