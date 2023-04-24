@@ -13,7 +13,6 @@ import { damageMultiplier, reduce } from '../modules/functions';
 import { getPlayers } from '../players';
 
 const server = process.env.NODE_ENV === 'production' ? 'https://starwarsgame.onrender.com' : 'http://localhost:5000'
-const initialTurnmeter = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 const Context = createContext();
 export const useGameContext = () => useContext(Context)
@@ -23,7 +22,7 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
     const [team1, setTeam1] = useStorage('team1', [])
     const [team2, setTeam2] = useStorage('team2', [])
     const [myTeam, setTeam] = useState(0)
-    const [turnmeter, setTurnmeter] = useStorage('turnmeter', initialTurnmeter)
+    const [turnmeter, setTurnmeter] = useStorage('turnmeter', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
     const [healthSteal, setHealthSteal] = useStorage('health-steal', [0, 0])
     const [initialData, setInitialData] = useStorage('initial-data', [])
     const teams = team1.concat(team2)
@@ -256,6 +255,8 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
         }
     }
 
+    const isGameStart = () => turnmeter.reduce((sum, speed) => sum + speed, 0) === 0
+
     function handlePlay(event) {
         const mode = event?.target.getAttribute('mode')
         if (mode) setStorage('mode', mode)
@@ -278,7 +279,7 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
         setTeam2([])
         setTurn(-1)
         setAttacking(false)
-        setTurnmeter(initialTurnmeter)
+        setTurnmeter([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         setHealthSteal([0, 0])
         setInitialData([])
         removeStorage('positions')
@@ -307,7 +308,7 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
 
     function newTurn(oldTurn) {
         if (oldTurn !== undefined) turnmeter[oldTurn] = 0
-        if (turn >= 0 || turnmeter === initialTurnmeter) teams.forEach((player, index) => { player.health > 0 ? turnmeter[index] += player.speed : turnmeter[index] = -1 })
+        if (turn >= 0 || isGameStart()) teams.forEach((player, index) => { player.health > 0 ? turnmeter[index] += player.speed : turnmeter[index] = -1 })
         setTurnmeter(turnmeter)
         const max = maximumNumber(turnmeter)
         const indexes = [];
