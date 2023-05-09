@@ -88,23 +88,9 @@ const withPWA = require('next-pwa')({
             options: { cacheName: 'static-data-assets' }
         },
         {
-            urlPattern: ({ url }) => {
-                const isSameOrigin = self.origin === url.origin
-                if (!isSameOrigin) return false
-                const pathname = url.pathname
-                if (pathname.startsWith('/api/')) return false
-                return true
-            },
-            handler: 'CacheFirst',
-            options: { cacheName: 'others' }
-        },
-        {
-            urlPattern: ({ url }) => {
-                const isSameOrigin = self.origin === url.origin
-                return !isSameOrigin
-            },
+            urlPattern: () => true,
             handler: 'NetworkOnly',
-            options: { cacheName: 'cross-origin' }
+            options: { cacheName: 'others' }
         }
     ]
 })
