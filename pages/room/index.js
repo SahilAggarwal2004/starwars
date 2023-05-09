@@ -11,12 +11,12 @@ export default function Room({ router }) {
 
     const restrictInput = e => e.target.value = e.target.value.replace('.', '')
 
-    function handleClick(event) {
+    function handleClick(e) {
         const tempName = name.current.value, tempRoom = room.current.value, tempPassword = pass.current.value;
         setStorage('name', tempName, true)
         if (!tempRoom || !tempPassword) return toast.error('Please fill the required fields first')
         if (!socket.connected) return toast.error('Something went wrong, try again!')
-        const method = event.target.getAttribute('method')
+        const method = e.target.getAttribute('method')
         socket.emit(method, { name: tempName, room: tempRoom, password: tempPassword }, ({ message, opponent }) => {
             toast.success(message)
             setStorage('connection', true)
@@ -29,7 +29,7 @@ export default function Room({ router }) {
         })
     }
 
-    return <form className='flex flex-col h-screen items-center justify-center space-y-10' onSubmit={event => event.preventDefault()}>
+    return <form className='flex flex-col h-screen items-center justify-center space-y-10' onSubmit={e => e.preventDefault()}>
         <div className='flex flex-col space-y-1'>
             <input className='text-center border px-2 py-0.5 rounded-t' type='text' ref={name} placeholder='Enter your name' defaultValue={getStorage('name', '', true)} />
             <input className='text-center border px-2 py-0.5' type='text' ref={room} placeholder='Enter room id' autoComplete='new-password' onInput={restrictInput} />

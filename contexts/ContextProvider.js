@@ -257,8 +257,8 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
 
     const isGameStart = () => turnmeter.reduce((sum, speed) => sum + speed, 0) === 0
 
-    function handlePlay(event) {
-        const mode = event?.target.getAttribute('mode')
+    function handlePlay(e) {
+        const mode = e?.target.getAttribute('mode')
         if (mode) setStorage('mode', mode)
         const sendToRoom = router.pathname === '/' && (online || mode === 'online')
         router.push(sendToRoom ? '/room' : '/team-selection')

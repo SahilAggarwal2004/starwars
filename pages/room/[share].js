@@ -35,7 +35,7 @@ export default function Share({ router }) {
         }
     }
 
-    return <form className='flex flex-col h-screen items-center justify-center space-y-6' onSubmit={event => event.preventDefault()}>
+    return <form className='flex flex-col h-screen items-center justify-center space-y-6' onSubmit={e => e.preventDefault()}>
         <input className='text-center border px-2 py-0.5 rounded' type='text' ref={name} placeholder='Enter your name' defaultValue={getStorage('name', '', true)} />
         <button type='submit' method='join-room' className='px-3 py-1 rounded text-white bg-green-500 border border-white hover:bg-green-600' onClick={handleClick}>Join Room</button>
     </form>
