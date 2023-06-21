@@ -3,7 +3,7 @@
   "name": "Star Wars - PvP strategy game",
   "version": "1.0.1",
   "manifest_version": 2,
-  "description": "Star Wars is a strategy PvP game where 2 players build up their teams according to their strategy and tactics and then fight to defeat the opponent player using the abilities of their team members. The leader ability of players creates a big impact on the whole team. So choose your leader and team wisely and enjoy playing the game!",
+  "description": "Star Wars is a strategy PvP game where 2 players build up their teams and then fight to defeat the opponent player.",
   "author": "Sahil Aggarwal",
   "icons": [
     {
@@ -51,7 +51,7 @@
     "window-controls-overlay"
   ],
   "lang": "en",
-  "dir": "ltr",
+  "dir": "auto",
   "prefer_related_applications": false,
   "categories": [
     "games"
