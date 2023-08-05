@@ -3381,10 +3381,10 @@ queue-microtask@^1.2.2:
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
-random-stuff-js@^0.5.6:
-  version "0.5.6"
-  resolved "https://registry.yarnpkg.com/random-stuff-js/-/random-stuff-js-0.5.6.tgz#f9a9629a23c06c3eea9fc54d222bed69ed25fa38"
-  integrity sha512-7k4ssADkYKQhX0FHhXG6cOODoUClC0/G4EkGuqgFb/VP72e32jKReXIuxgVLADatbYvIW7P2d1AokP3+VPGI3A==
+random-stuff-js@^0.6.2:
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/random-stuff-js/-/random-stuff-js-0.6.2.tgz#3fad5d5c6dcd44590d0fc949d5e8555e3a42546f"
+  integrity sha512-BapJauM7GjQG82of57snV46zbb35OI3XAxxq3RQBCFU+7ENgsB3f+Gx0lJ8V0XMfYIuaXwDe5LDP51Jed5uWcg==
 
 randombytes@^2.1.0:
   version "2.1.0"
