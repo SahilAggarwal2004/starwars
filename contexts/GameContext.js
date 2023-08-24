@@ -17,8 +17,9 @@ const server = process.env.NODE_ENV === 'production' ? 'https://starwarsgame.onr
 const Context = createContext();
 export const useGameContext = () => useContext(Context)
 
-const ContextProvider = ({ router, children, enterFullscreen }) => {
+const GameContext = ({ router, children, enterFullscreen }) => {
     const [players, setPlayers] = useStorage('players', getPlayers())
+    const [rooms, setRooms] = useState([])
     const [team1, setTeam1] = useStorage('team1', [])
     const [team2, setTeam2] = useStorage('team2', [])
     const [myTeam, setTeam] = useState(0)
@@ -50,6 +51,7 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
                 toast.error(error)
                 if (type === 'redirect') resetConnection('/room')
             })
+            newSocket.on('public-rooms', rooms => setRooms(rooms))
             newSocket.on('new-user', opponent => {
                 toast.success(`${opponent} joined the room!`)
                 setTeam(1)
@@ -413,9 +415,9 @@ const ContextProvider = ({ router, children, enterFullscreen }) => {
         }, animation ? 2000 : 50);
     }
 
-    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, attack, bullet, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, socket, resetConnection, myTeam, setTeam, handlePlay, players, setPlayers }}>
+    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, attack, bullet, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, socket, resetConnection, myTeam, setTeam, handlePlay, players, setPlayers, rooms, setRooms }}>
         {children}
     </Context.Provider>
 }
 
-export default ContextProvider;
+export default GameContext;

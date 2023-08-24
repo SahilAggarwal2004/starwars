@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Head from "next/head"
 import { useEffect, useState } from "react"
-import { useGameContext } from "../contexts/ContextProvider"
+import { useGameContext } from "../contexts/GameContext"
 import { maximumNumber, randomElement } from "random-stuff-js"
 import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules/effects"
 import { getStorage, setStorage } from "../modules/storage"

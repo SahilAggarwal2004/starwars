@@ -4,12 +4,12 @@ import { ImExit } from 'react-icons/im'
 import { FaShareSquare } from 'react-icons/fa'
 import QRCode from 'react-qr-code'
 import { toast } from 'react-toastify'
-import { useGameContext } from '../contexts/ContextProvider'
+import { useGameContext } from '../contexts/GameContext'
 import { getStorage } from "../modules/storage";
 
 export default function Waiting() {
     const { myTeam, resetConnection, handlePlay } = useGameContext()
-    const link = `${window.location.origin}/room/${getStorage('share-code')}`
+    const link = `${window.location.origin}/room/${getStorage('roomId')}`
 
     useEffect(() => { if (myTeam) handlePlay() }, [myTeam])
 

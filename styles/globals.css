@@ -25,8 +25,12 @@
     @apply md:text-lg lg:text-xl xl:text-2xl fixed font-semibold
 }
 
-.main-button {
+.primary-button {
     @apply inline-block rounded bg-custom-gradient from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 px-3 py-1 w-fit text-white text-sm sm:text-base md:text-xl font-semibold mx-2.5
+}
+
+.secondary-button {
+    @apply rounded text-white bg-green-500 border border-white hover:bg-green-600
 }
 
 .ability {
@@ -47,4 +51,16 @@
 
 :fullscreen, ::backdrop {
     background-color: rgba(255,255,255,0);
+}
+
+::-webkit-scrollbar {
+    width: 2.5px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgb(128, 128, 128, 0.75);
 }

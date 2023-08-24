@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { randomElement } from 'random-stuff-js';
 import { FaRandom, FaUndoAlt } from 'react-icons/fa'
 import { ImExit } from 'react-icons/im'
-import { useGameContext } from '../contexts/ContextProvider';
+import { useGameContext } from '../contexts/GameContext';
 import { allAbilities, details, features, modes, playersPerTeam } from '../constants';
 import Loader from '../components/Loader';
 import { getStorage } from '../modules/storage';

@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react'
 import Particles from 'react-tsparticles'
 import { loadFull } from 'tsparticles'
 import { modes } from '../constants';
-import { useGameContext } from '../contexts/ContextProvider';
+import { useGameContext } from '../contexts/GameContext';
 import { removeStorage } from '../modules/storage';
 
 export default function Home() {
@@ -59,7 +59,7 @@ export default function Home() {
     </div>
     <div className='fixed bg-black inset-0 -z-10' />
     <div className='fixed bottom-8 x-center space-y-3 w-full text-center px-5'>
-      {Object.keys(modes).map(mode => <button key={mode} mode={mode} className='main-button' onClick={handlePlay}>{modes[mode]}</button>)}
+      {Object.keys(modes).map(mode => <button key={mode} mode={mode} className='primary-button' onClick={handlePlay}>{modes[mode]}</button>)}
     </div>
   </>
 }

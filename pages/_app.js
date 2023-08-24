@@ -6,9 +6,11 @@ import Script from 'next/script'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import { ToastContainer } from 'react-toastify'
-import ContextProvider from '../contexts/ContextProvider'
+import GameContext from '../contexts/GameContext'
 import Loader from '../components/Loader';
 import { notFullscreen } from '../constants';
+import UtilityContext from '../contexts/UtilityContext';
+import Modal from '../components/Modal';
 
 function MyApp({ Component, pageProps }) {
 	const router = useRouter();
@@ -107,15 +109,18 @@ function MyApp({ Component, pageProps }) {
             gtag('config', 'G-ED6RPYHXQN');`}
 		</Script>
 
-		{loading ? <Loader /> : <ContextProvider router={router} enterFullscreen={enterFullscreen}>
-			<div ref={fullscreenElement} className='font-mono'>
-				<ToastContainer pauseOnFocusLoss={false} position='top-left' />
-				{!isMobile || notFullscreen.includes(router.pathname) ? <Component {...pageProps} /> : !isFullscreen ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
-					<div>Please enter full screen mode</div>
-					<button onClick={enterFullscreen}>Click Here</button>
-				</div> : !orientation ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div> : <Component {...pageProps} />}
-			</div>
-		</ContextProvider>}
+		{loading ? <Loader /> : <UtilityContext>
+			<GameContext router={router} enterFullscreen={enterFullscreen}>
+				<div ref={fullscreenElement} className='font-mono'>
+					{!isMobile || notFullscreen.includes(router.pathname) ? <Component {...pageProps} /> : !isFullscreen ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
+						<div>Please enter full screen mode</div>
+						<button onClick={enterFullscreen}>Click Here</button>
+					</div> : !orientation ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div> : <Component {...pageProps} />}
+					<Modal router={router} />
+					<ToastContainer pauseOnFocusLoss={false} position='top-left' />
+				</div>
+			</GameContext>
+		</UtilityContext>}
 	</>
 }
 
