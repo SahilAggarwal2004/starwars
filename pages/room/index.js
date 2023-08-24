@@ -52,7 +52,7 @@ export default function Room({ router }) {
         <form className='flex flex-col items-center justify-center space-y-4 pt-3' onSubmit={e => e.preventDefault()}>
             <div className='flex flex-col space-y-1 w-full max-w-[16rem]'>
                 <input className='text-center border px-2 py-0.5 rounded-t' type='text' ref={name} placeholder='Enter your name' defaultValue={getStorage('name', '', true)} required onInput={restrictNameInput} />
-                <input className='text-center border px-2 py-0.5 rounded-b' type='text' ref={room} placeholder={`Enter room id ${type === 'public' ? ' (optional)' : ''}`} autoComplete='new-password' onInput={restrictRoomInput} />
+                <input className='text-center border px-2 py-0.5 rounded-b' type='text' ref={room} placeholder={`Enter room id${type === 'public' ? ' (optional)' : ''}`} autoComplete='new-password' onInput={restrictRoomInput} />
             </div>
             <div className='flex justify-center space-x-5'>
                 <button type='submit' method='create-room' className='secondary-button px-3 py-1' onClick={handleClick}>Create Room</button>
