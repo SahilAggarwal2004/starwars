@@ -1,14 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 import Head from "next/head"
-import { useEffect, useState } from "react"
-import { useGameContext } from "../contexts/GameContext"
+import { useEffect, useRef, useState } from "react"
 import { maximumNumber, randomElement } from "random-stuff-js"
+import { toast } from "react-toastify"
+import { useGameContext } from "../contexts/GameContext"
 import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules/effects"
 import { getStorage, setStorage } from "../modules/storage"
-import { details, features, gameAbilities, indexes, modes, playersPerTeam, usableAbilities } from "../constants"
+import { details, features, gameAbilities, indexes, modes, peerOptions, playersPerTeam, usableAbilities } from "../constants"
 import { exists, findPlayer, merge } from "../modules/functions"
 import Loader from "../components/Loader"
+import useStorage from "../hooks/useStorage"
 
 const maxPlayers = playersPerTeam * 2
 
@@ -27,6 +29,8 @@ export default function Play({ router, isFullScreen }) {
     const [enemy, setEnemy] = useState(0)
     const [hoverPlayer, setHoverPlayer] = useState()
     const [hoverAbility, setHoverAbility] = useState()
+    const [audio, setAudio] = useStorage('audio', false, { local: true, save: true })
+    const streamRef = useRef();
     const player = hoverPlayer && merge(hoverPlayer, findPlayer(players, hoverPlayer.name))
     const ability = hoverAbility && { ...findPlayer(players, teams[turn].name)[hoverAbility], ...teams[turn][hoverAbility] }
 
@@ -72,7 +76,6 @@ export default function Play({ router, isFullScreen }) {
     useEffect(() => {
         const player = teams[turn]
         if (loading || isAttacking || !player) return
-        
         // Computer mode
         if (turnTeam === 1) {
             if (team2.length && team2[enemy].health <= 0) {
@@ -103,6 +106,27 @@ export default function Play({ router, isFullScreen }) {
         }, 500);
         if (online) setTimeout(() => socket.emit('sync-data', { team1, team2, turn, turnmeter, healthSteal }), +(player.health <= 0 && 600));
     }, [isAttacking, turn])
+
+    useEffect(() => {
+        const id = getStorage('roomId')
+        if (!myTeam || !online || !id || !audio) return
+        const Peer = require('peerjs').default
+        const peer = new Peer(`${id}-${myTeam}`, peerOptions)
+        let call;
+        peer.on('open', () => {
+            const getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+            getUserMedia({ video: false, audio: true }, stream => {
+                peer.on('call', call => call.answer(stream)) // Answer the call with an A/V stream.
+                call = peer.call(`${id}-${myTeam === 1 ? 2 : 1}`, stream);
+                call.on('stream', remoteStream => streamRef.current.srcObject = remoteStream);
+            }, _error => toast.error("Can't access microphone!"));
+        })
+        return () => {
+            call?.close()
+            peer.removeAllListeners()
+            peer.destroy()
+        }
+    }, [myTeam, audio])
 
     function selectEnemy(enemy, index) {
         const enemyTeam = turnTeam === 1 ? team2 : team1
@@ -144,6 +168,11 @@ export default function Play({ router, isFullScreen }) {
     return <>
         <Head><title>{modes[mode]} | Star Wars</title></Head>
         {loading ? <Loader /> : <>
+            <div className="fixed flex x-center top-3 space-x-2">
+                {online && <button onClick={() => setAudio(!audio)}>
+                    {audio ? 'stop' : 'start'}
+                </button>}
+            </div>
             {[team1, team2].map((team, index) => {
                 const displayName = online ? (myTeam === index + 1 ? getStorage('name', '', true) : getStorage('opponent', '')) : mode === 'computer' && index ? 'Computer' : `Team ${index + 1}`
                 return <div id={`team${index + 1}`} key={index} className={`fixed top-0 px-1 max-w-[5.75rem] overflow-hidden ${index ? 'right-4' : 'left-4'} space-y-4 flex flex-col items-center justify-center h-full`}>
@@ -195,6 +224,7 @@ export default function Play({ router, isFullScreen }) {
                 </div>
             </div>}
             {indexes.map(number => bullet[number] && <span key={number} id={`bullet${number}`} className='fixed block bg-red-500 -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 transition-all ease-linear duration-[1900ms]' />)}
+            {online && audio && <audio ref={streamRef} autoPlay />}
         </>}
     </>
 }
