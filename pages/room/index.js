@@ -12,8 +12,8 @@ export default function Room({ router }) {
     const { socket, setTeam, setRooms } = useGameContext()
     const { setModal } = useUtilityContext()
     const [type, setType] = useState('public')
+    const [room, setRoom] = useState()
     const name = useRef();
-    const room = useRef();
 
     useEffect(() => {
         socket?.emit("get-public-rooms", rooms => setRooms(rooms))
@@ -21,12 +21,12 @@ export default function Room({ router }) {
 
     const restrictNameInput = e => e.target.value = e.target.value.substring(0, 20)
 
-    const restrictRoomInput = e => e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+    const restrictRoomInput = e => setRoom(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))
 
     function handleClick(e) {
         const tempName = name.current.value
         if (!tempName) return
-        let tempRoom = room.current.value;
+        let tempRoom = room
         setStorage('name', tempName, true)
         if (!socket.connected) return toast.error('Something went wrong, try again!')
         const method = e.target.getAttribute('method')
@@ -52,11 +52,13 @@ export default function Room({ router }) {
         <form className='flex flex-col items-center justify-center space-y-4 pt-3' onSubmit={e => e.preventDefault()}>
             <div className='flex flex-col space-y-1 w-full max-w-[16rem]'>
                 <input className='text-center border px-2 py-0.5 rounded-t' type='text' ref={name} placeholder='Enter your name' defaultValue={getStorage('name', '', true)} required onInput={restrictNameInput} />
-                <input className='text-center border px-2 py-0.5 rounded-b' type='text' ref={room} placeholder={`Enter room id${type === 'public' ? ' (optional)' : ''}`} autoComplete='new-password' onInput={restrictRoomInput} />
+                <input className='text-center border px-2 py-0.5 rounded-b' type='text' value={room} placeholder={`Enter room id${type === 'public' ? ' (optional)' : ''}`} autoComplete='new-password' onChange={restrictRoomInput} />
             </div>
             <div className='flex justify-center space-x-5'>
                 <button type='submit' method='create-room' className='secondary-button px-3 py-1' onClick={handleClick}>Create Room</button>
-                <button type='submit' method='join-room' className='px-3 py-1 rounded text-green-500 bg-white border border-green-500 hover:text-white hover:bg-green-500 hover:border-white' onClick={handleClick}>Join Room</button>
+                <button type='submit' method='join-room' className='px-3 py-1 rounded text-green-500 bg-white border border-green-500 hover:text-white hover:bg-green-500 hover:border-white' onClick={handleClick}>
+                    {type === 'private' || room ? 'Join Room' : 'Public Rooms'}
+                </button>
             </div>
         </form>
         <div className='text-center'>
