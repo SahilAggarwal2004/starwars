@@ -14,11 +14,11 @@
 }
 
 .detail-heading {
-    @apply text-[3vh]
+    @apply text-[2.25vh] sm:text-[2.5vh] md:text-[2.75vh] lg:text-[3vh]
 }
 
 .detail-text {
-    @apply text-[2.75vh]
+    @apply text-[2vh] sm:text-[2.25vh] md:text-[2.5vh] lg:text-[2.75vh]
 }
 
 .main-heading {
@@ -31,6 +31,10 @@
 
 .secondary-button {
     @apply rounded text-white bg-green-500 border border-white hover:bg-green-600
+}
+
+.tertiary-button {
+    @apply rounded text-green-500 bg-white border border-green-500 hover:text-white hover:bg-green-500 hover:border-white
 }
 
 .ability {

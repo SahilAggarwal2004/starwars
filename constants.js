@@ -13,5 +13,5 @@ export const persistConnection = ['/room', '/room/[roomId]', '/result', ...onlin
 export const notFullscreen = ['/', '/room', '/room/[roomId]', '/waiting-lobby']
 export const noMode = ['/', '/how-to-play', '/room/[roomId]']
 export const uselessErrors = ['e', 'ta']
-export const showModal = ['/room']
+export const showModal = ['/room', '/play']
 export const peerOptions = { host: 'starwars-peer.onrender.com', secure: true, pingInterval: 5000 }

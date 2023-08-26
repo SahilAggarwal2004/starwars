@@ -56,7 +56,7 @@ export default function Room({ router }) {
             </div>
             <div className='flex justify-center space-x-5'>
                 <button type='submit' method='create-room' className='secondary-button px-3 py-1' onClick={handleClick}>Create Room</button>
-                <button type='submit' method='join-room' className='px-3 py-1 rounded text-green-500 bg-white border border-green-500 hover:text-white hover:bg-green-500 hover:border-white' onClick={handleClick}>
+                <button type='submit' method='join-room' className='tertiary-button px-3 py-1' onClick={handleClick}>
                     {type === 'private' || room ? 'Join Room' : 'Public Rooms'}
                 </button>
             </div>

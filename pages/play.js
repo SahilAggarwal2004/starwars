@@ -1,16 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 import Head from "next/head"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { maximumNumber, randomElement } from "random-stuff-js"
-import { toast } from "react-toastify"
+import { ImExit } from 'react-icons/im'
 import { useGameContext } from "../contexts/GameContext"
+import { useUtilityContext } from "../contexts/UtilityContext"
 import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules/effects"
 import { getStorage, setStorage } from "../modules/storage"
-import { details, features, gameAbilities, indexes, modes, peerOptions, playersPerTeam, usableAbilities } from "../constants"
+import { details, features, gameAbilities, indexes, modes, playersPerTeam, usableAbilities } from "../constants"
 import { exists, findPlayer, merge } from "../modules/functions"
 import Loader from "../components/Loader"
-import useStorage from "../hooks/useStorage"
+import VoiceChat from "../components/VoiceChat"
 
 const maxPlayers = playersPerTeam * 2
 
@@ -23,14 +24,14 @@ function confirmBack() {
 
 export default function Play({ router, isFullScreen }) {
     const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, bullet, attack, isAttacking, turnTeam, turnmeter, healthSteal, setHealthSteal, setInitialData, setTurnmeter, socket, myTeam, setTeam, players } = useGameContext()
+    const { setModal } = useUtilityContext()
     const mode = getStorage('mode', '')
     const online = mode === 'online'
+    const id = getStorage('roomId')
     const [loading, setLoading] = useState(online)
     const [enemy, setEnemy] = useState(0)
     const [hoverPlayer, setHoverPlayer] = useState()
     const [hoverAbility, setHoverAbility] = useState()
-    const [audio, setAudio] = useStorage('audio', false, { local: true, save: true })
-    const streamRef = useRef();
     const player = hoverPlayer && merge(hoverPlayer, findPlayer(players, hoverPlayer.name))
     const ability = hoverAbility && { ...findPlayer(players, teams[turn].name)[hoverAbility], ...teams[turn][hoverAbility] }
 
@@ -107,27 +108,6 @@ export default function Play({ router, isFullScreen }) {
         if (online) setTimeout(() => socket.emit('sync-data', { team1, team2, turn, turnmeter, healthSteal }), +(player.health <= 0 && 600));
     }, [isAttacking, turn])
 
-    useEffect(() => {
-        const id = getStorage('roomId')
-        if (!myTeam || !online || !id || !audio) return
-        const Peer = require('peerjs').default
-        const peer = new Peer(`${id}-${myTeam}`, peerOptions)
-        let call;
-        peer.on('open', () => {
-            const getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-            getUserMedia({ video: false, audio: true }, stream => {
-                peer.on('call', call => call.answer(stream)) // Answer the call with an A/V stream.
-                call = peer.call(`${id}-${myTeam === 1 ? 2 : 1}`, stream);
-                call.on('stream', remoteStream => streamRef.current.srcObject = remoteStream);
-            }, _error => toast.error("Can't access microphone!"));
-        })
-        return () => {
-            call?.close()
-            peer.removeAllListeners()
-            peer.destroy()
-        }
-    }, [myTeam, audio])
-
     function selectEnemy(enemy, index) {
         const enemyTeam = turnTeam === 1 ? team2 : team1
         const possibleEnemies = []
@@ -168,10 +148,9 @@ export default function Play({ router, isFullScreen }) {
     return <>
         <Head><title>{modes[mode]} | Star Wars</title></Head>
         {loading ? <Loader /> : <>
-            <div className="fixed flex x-center top-3 space-x-2">
-                {online && <button onClick={() => setAudio(!audio)}>
-                    {audio ? 'stop' : 'start'}
-                </button>}
+            <div className="fixed flex x-center top-4 space-x-4 scale-125">
+                {online && myTeam && id && <VoiceChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} />}
+                <ImExit className='cursor-pointer' onClick={() => setModal({ active: true, type: 'exit' })} title="Exit" />
             </div>
             {[team1, team2].map((team, index) => {
                 const displayName = online ? (myTeam === index + 1 ? getStorage('name', '', true) : getStorage('opponent', '')) : mode === 'computer' && index ? 'Computer' : `Team ${index + 1}`
@@ -224,7 +203,6 @@ export default function Play({ router, isFullScreen }) {
                 </div>
             </div>}
             {indexes.map(number => bullet[number] && <span key={number} id={`bullet${number}`} className='fixed block bg-red-500 -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 transition-all ease-linear duration-[1900ms]' />)}
-            {online && audio && <audio ref={streamRef} autoPlay />}
         </>}
     </>
 }
