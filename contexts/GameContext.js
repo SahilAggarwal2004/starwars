@@ -62,7 +62,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
                 removeStorage('opponent')
                 if (started) {
                     setStorage('winner', team)
-                    resetConnection('/result')
+                    router.push('/result')
                 } else {
                     setTeam(0)
                     router.push('/waiting-lobby')

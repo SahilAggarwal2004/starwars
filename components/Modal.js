@@ -6,7 +6,7 @@ import { setStorage } from '../modules/storage'
 import QrScanner from './QrScanner'
 
 export default function Modal({ router }) {
-	const { socket, myTeam, setTeam, rooms, resetConnection } = useGameContext()
+	const { socket, myTeam, setTeam, rooms } = useGameContext()
 	const { modal: { active, type, props }, setModal } = useUtilityContext()
 
 	const handleCancel = () => setModal({ active: false })
@@ -31,7 +31,7 @@ export default function Modal({ router }) {
 	function handleExit() {
 		setModal({ active: false })
 		setStorage('winner', myTeam === 1 ? 2 : 1)
-		resetConnection('/result')
+		router.push('/result')
 	}
 
 	return showModal.includes(router.pathname) && <>

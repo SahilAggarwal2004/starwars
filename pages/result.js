@@ -2,16 +2,21 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useGameContext } from '../contexts/GameContext'
-import { getStorage } from '../modules/storage'
+import { getStorage, removeStorage, setStorage } from '../modules/storage'
 
 export default function Result({ router }) {
-    const { myTeam } = useGameContext()
+    const { myTeam, socket } = useGameContext()
     const [winner, setWinner] = useState()
     const mode = getStorage('mode', '')
 
     useEffect(() => {
         const winner = getStorage('winner')
-        winner ? setWinner(winner) : router.push('/')
+        if (winner) {
+            setWinner(winner)
+            socket?.emit('leave-room')
+            setStorage('connection', false)
+            removeStorage('opponent')
+        } else router.push('/')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
