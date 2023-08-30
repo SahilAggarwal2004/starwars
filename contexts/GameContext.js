@@ -10,7 +10,7 @@ import { hasEffect, hasStealth, hasTaunt, stackCount } from '../modules/effects'
 import { getStorage, removeStorage, setStorage } from '../modules/storage';
 import { indexes, multiAttackers, noMode, onlineConnected, persistConnection, playersPerTeam, preserveGame } from '../constants';
 import { damageMultiplier, reduce } from '../modules/functions';
-import { getPlayers } from '../players';
+import { getPlayers, leaderAbilities } from '../public/players';
 
 const server = process.env.NODE_ENV === 'production' ? 'https://starwarsgame.onrender.com' : 'http://localhost:5000'
 
@@ -117,14 +117,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
                 setTurnmeter(turnmeter)
             },
             special: ({ enemy, enemyTeam }) => apply({ effect: 'stun', type: 'debuff', enemy, enemyTeam }),
-            leader: ({ allyTeam }) => {
-                allyTeam.forEach(({ type }, i) => {
-                    if (type != 'light') return
-                    const data = allyTeam[i];
-                    data.basic.damage *= 1.25
-                    data.special.damage *= 1.25
-                })
-            }
+            leader: leaderAbilities['Bastila Shan']
         },
         'Chewbecca': {
             basic: ({ allyTeam }) => probability(0.1) && allyTeam.forEach(({ type }, i) => { if (type == 'light') allyTeam[i].health *= 2 }),
@@ -181,12 +174,12 @@ const GameContext = ({ router, children, enterFullscreen }) => {
                 setHealthSteal(healthSteal)
             },
             special: block,
-            leader: ({ enemyTeam }) => indexes.forEach(index => enemyTeam[index].speed -= 8)
+            leader: leaderAbilities['Darth Revan']
         },
         'Darth Vader': {
             basic: ({ enemy, enemyTeam }) => apply({ effect: 'offense', type: 'debuff', enemy, enemyTeam }),
             special: ({ enemyTeam }) => apply({ effect: 'health', type: 'debuff', enemyTeam, stack: 2, all: true }),
-            leader: ({ allyTeam }) => allyTeam.forEach(({ type }, i) => { if (type === 'dark') allyTeam[i].speed += 10 }),
+            leader: leaderAbilities['Darth Vader'],
             unique: ({ player, enemy, allyTeam, enemyTeam, animation, ability }) => {
                 const { result, index } = verify('member', 'Darth Vader', enemyTeam)
                 if (!result || !animation) return
@@ -232,7 +225,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
                 remove({ effect: 'all', type: 'debuff', allyTeam, all: true })
                 apply({ effect: 'offense', type: 'buff', player, allyTeam, all: true })
             },
-            leader: ({ allyTeam }) => indexes.forEach(index => allyTeam[index].health *= 1.25)
+            leader: leaderAbilities['Jolee Bindo']
         },
         'Mother Talzin': {
             basic: ({ enemy, enemyTeam }) => probability(0.25) && apply({ effect: 'stun', type: 'debuff', enemy, enemyTeam }),
@@ -245,7 +238,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
                     else data.buffs.foresight = [];
                 })
             },
-            leader: ({ allyTeam }) => allyTeam.forEach(({ type }, index) => { if (type == 'dark') allyTeam[index].health *= 1.40 })
+            leader: leaderAbilities['Mother Talzin']
         },
         'Old Daka': {
             special: ({ player, allyTeam }) => revive(allyTeam, allyTeam[player].health * 1.5, initialData),

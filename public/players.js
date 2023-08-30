@@ -1,5 +1,7 @@
 import { randomNumber } from 'random-stuff-js'
 
+const indexes = [0, 1, 2, 3, 4]
+
 class Player {
     buffs = {
         foresight: [],
@@ -104,3 +106,18 @@ export const getPlayers = () => [
         leader: { description: "Whenever an ally suffers damage from an attack (excluding attacks out of turn), the ally recovers 15% health.", type: 'in-game', foresight: false }
     })
 ]
+
+export const leaderAbilities = {
+    'Bastila Shan': ({ allyTeam }) => {
+        allyTeam.forEach(({ type }, i) => {
+            if (type != 'light') return
+            const data = allyTeam[i];
+            data.basic.damage *= 1.25
+            data.special.damage *= 1.25
+        })
+    },
+    'Darth Revan': ({ enemyTeam }) => indexes.forEach(index => enemyTeam[index].speed -= 8),
+    'Darth Vader': ({ allyTeam }) => allyTeam.forEach(({ type }, i) => { if (type === 'dark') allyTeam[i].speed += 10 }),
+    'Jolee Bindo': ({ allyTeam }) => indexes.forEach(index => allyTeam[index].health *= 1.25),
+    'Mother Talzin': ({ allyTeam }) => allyTeam.forEach(({ type }, index) => { if (type == 'dark') allyTeam[index].health *= 1.40 })
+}
