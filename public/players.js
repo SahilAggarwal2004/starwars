@@ -1,6 +1,9 @@
 import { randomNumber } from 'random-stuff-js'
 
-const indexes = [0, 1, 2, 3, 4]
+const minSpeed = 100
+export const speedVariation = 50
+export const playersPerTeam = 5
+export const indexes = Array.from(Array(playersPerTeam).keys())
 
 class Player {
     buffs = {
@@ -19,7 +22,7 @@ class Player {
         immunity: [],
         health: []
     };
-    constructor({ name, health = 1, type, speed = randomNumber(100, 150), defense = 1, basic, special, unique, leader }) {
+    constructor({ name, health = 1, type, speed = randomNumber(minSpeed, minSpeed + speedVariation), defense = 1, basic, special, unique, leader }) {
         this.name = name;
         this.health = randomNumber(350 * health, 500 * health)
         this.type = type;
@@ -73,7 +76,13 @@ export const getPlayers = () => [
         name: 'Grand Master Yoda', type: 'light',
         basic: { damage: randomNumber(60, 100), description: 'Gain foresight for 1 turn.', animation: true, foresight: true },
         special: { description: 'Grant foresight to all allies for 1 turn.', cooldown: 1, animation: false, foresight: true },
-        leader: { description: 'Whenever a light side ally uses a special ability, it will gain foresight for 2 turns.', type: 'in-game', foresight: true }
+        leader: { description: 'Whenever a light side ally uses a special ability, it will gain foresight for 2 turns. If Hermit Yoda is an ally, he gains 5% turn meter.', type: 'in-game', foresight: true }
+    }),
+    new Player({
+        name: 'Hermit Yoda', type: 'light',
+        basic: { damage: randomNumber(60, 100), description: 'This attack has an 25% chance to deal double damage. If the leader is Grand Master Yoda, Hermit Yoda gains foresight for 1 turn.', animation: true, foresight: true },
+        special: { damage: randomNumber(125, 150), description: 'Call all the light side allies to assist dealing 50% less damage.', cooldown: 2, animation: true, foresight: true },
+        unique: { description: 'He gains 5% turn meter whenever he is attacked. If Grand Master Yoda is an ally, he also gains 5% turn meter.', type: 'after', foresight: false }
     }),
     new Player({
         name: 'Jedi Consular', type: 'light',

@@ -68,17 +68,15 @@ const remove = ({ effect, type, player, enemy, allyTeam, enemyTeam, all = false,
 
 const assist = (player, enemy, allyTeam, enemyTeam, attack) => {
     if (enemyTeam[enemy].health <= 0) return
-    let assistPlayers = [];
-    allyTeam.forEach((ally, i) => { if (ally.health > 0 && !hasEffect('stun', 'debuff', ally) && i != player) assistPlayers.push(i) })
+    const assistPlayers = allyTeam.flatMap((ally, i) => (ally.health > 0 && !hasEffect('stun', 'debuff', ally) && i != player) ? [i] : [])
     const assistPlayer = randomElement(assistPlayers);
     if (assistPlayer == undefined) return
-    setTimeout(() => attack({ player: assistPlayer, enemy, isAssisting: true }), 50);
-    return 2100
+    attack({ player: assistPlayer, enemy, isAssisting: true })
+    return 2000
 }
 
 const revive = (allyTeam, health, initialData) => {
-    let revivePlayers = []
-    allyTeam.forEach(({ health }, i) => { if (health <= 0) revivePlayers.push(i) })
+    const revivePlayers = allyTeam.flatMap(({ health }, i) => (health <= 0) ? [i] : [])
     const revivePlayer = randomElement(revivePlayers)
     if (revivePlayer == undefined) return
     const playerData = allyTeam[revivePlayer];

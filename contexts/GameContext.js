@@ -4,13 +4,13 @@ import { maximumNumber, randomElement, probability } from 'random-stuff-js'
 import { io } from 'socket.io-client';
 import { toast } from 'react-toastify';
 import { assist, block, revive, verify, kill, apply, remove } from '../modules/abilities';
-import { animateBullet, multiAttack } from '../modules/animation'
+import { animateBullet } from '../modules/animation'
 import useStorage from '../hooks/useStorage';
 import { hasEffect, hasStealth, hasTaunt, stackCount } from '../modules/effects';
 import { getStorage, removeStorage, setStorage } from '../modules/storage';
-import { indexes, multiAttackers, noMode, onlineConnected, persistConnection, playersPerTeam, preserveGame } from '../constants';
-import { damageMultiplier, reduce } from '../modules/functions';
-import { getPlayers, leaderAbilities } from '../public/players';
+import { multiAttackers, noMode, onlineConnected, persistConnection, preserveGame } from '../constants';
+import { calculateDamage, reduce } from '../modules/functions';
+import { getPlayers, indexes, leaderAbilities, playersPerTeam, speedVariation } from '../public/players';
 
 const server = process.env.NODE_ENV === 'production' ? 'https://starwarsgame.onrender.com' : 'http://localhost:5000'
 
@@ -29,7 +29,6 @@ const GameContext = ({ router, children, enterFullscreen }) => {
     const teams = team1.concat(team2)
     const [turn, setTurn] = useState(-1)
     const [isAttacking, setAttacking] = useState(false)
-    const [bullet, setBullet] = useState([])
     const [socket, setSocket] = useState()
     const turnTeam = Math.ceil((turn + 1) / playersPerTeam)
     const mode = getStorage('mode', '')
@@ -88,15 +87,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
                     router.push('/team-selection')
                 } else router.push('/play')
             })
-            newSocket.on('animation', ({ multi, player, enemy, turnTeam, isCountering, enemyTeam }) => {
-                if (multi) {
-                    setBullet(indexes.map(i => enemyTeam[i].health > 0))
-                    setTimeout(() => multiAttack(player, enemyTeam, turnTeam, setBullet), 0);
-                } else {
-                    setBullet([true])
-                    setTimeout(() => animateBullet(player, enemy, turnTeam, setBullet, isCountering), 0);
-                }
-            })
+            newSocket.on('animation', animateBullet)
         })
         setSocket(newSocket)
         return () => {
@@ -109,12 +100,12 @@ const GameContext = ({ router, children, enterFullscreen }) => {
         'Bastila Shan': {
             basic: ({ player, allyTeam }) => {
                 if (probability(0.5)) return
-                let randomPlayers = [];
-                allyTeam.forEach(({ health }, i) => { if (health > 0 && i != player) randomPlayers.push(i) })
+                const randomPlayers = allyTeam.flatMap(({ health }, i) => (health > 0 && i != player) ? [i] : [])
                 const randomPlayer = randomElement(randomPlayers);
-                if (randomPlayer == undefined) return
-                turnmeter[(turnTeam - 1) * playersPerTeam + randomPlayer] = Number.MAX_SAFE_INTEGER
-                setTurnmeter(turnmeter)
+                if (randomPlayer) setTurnmeter(old => {
+                    old[(turnTeam - 1) * playersPerTeam + randomPlayer] = maximumNumber(old) + speedVariation + 1
+                    return old
+                })
             },
             special: ({ enemy, enemyTeam }) => apply({ effect: 'stun', type: 'debuff', enemy, enemyTeam }),
             leader: leaderAbilities['Bastila Shan']
@@ -133,16 +124,14 @@ const GameContext = ({ router, children, enterFullscreen }) => {
                 if (hasTaunt(data, team1, team2)) return { enemy: index }
                 const stealth = enemy == index && hasStealth(data)
                 if (stealth) {
-                    let randomEnemies = []
-                    enemyTeam.forEach(({ health }, i) => { if (health > 0 && i != index) randomEnemies.push(i) })
+                    const randomEnemies = enemyTeam.flatMap(({ health }, i) => (health > 0 && i != index) ? [i] : [])
                     return { enemy: randomElement(randomEnemies) || index };
                 }
             }
         },
         'Count Dooku': {
             basic: ({ allyTeam }) => {
-                if (probability(0.8)) return
-                revive(allyTeam, initialData['Count Dooku'].health, initialData)
+                if (probability(0.2)) revive(allyTeam, initialData['Count Dooku'].health, initialData)
             },
             special: ({ enemy, enemyTeam }) => {
                 apply({ effect: 'immunity', type: 'debuff', enemy, enemyTeam })
@@ -152,15 +141,13 @@ const GameContext = ({ router, children, enterFullscreen }) => {
                 const { result, index } = verify('member', 'Count Dooku', enemyTeam)
                 const playerData = allyTeam[player];
                 const data = enemyTeam[index];
-                if (!result || hasEffect('stun', 'debuff', data) || data.health <= 0 || !animation || hasStealth(playerData)) return
+                if (!result || data.health <= 0 || !animation || hasEffect('stun', 'debuff', data) || hasStealth(playerData)) return
                 if (enemy == index || (ability == 'special' && multiAttackers.includes(playerData.name))) {
-                    setTimeout(() => {
-                        if (!hasEffect('stun', 'debuff', data) && data.health > 0) {
-                            data.health *= 1.05
-                            attack({ player: index, enemy: player, isCountering: true })
-                        }
-                    }, 50);
-                    return { wait: 2100 }
+                    if (!hasEffect('stun', 'debuff', data) && data.health > 0) {
+                        data.health *= 1.05
+                        attack({ player: index, enemy: player, isCountering: true })
+                    }
+                    return { wait: 2000 }
                 }
             }
         },
@@ -169,10 +156,10 @@ const GameContext = ({ router, children, enterFullscreen }) => {
             special: kill
         },
         'Darth Revan': {
-            basic: () => {
-                healthSteal[turnTeam - 1] += 0.05
-                setHealthSteal(healthSteal)
-            },
+            basic: () => setHealthSteal(old => {
+                old[turnTeam - 1] += 0.05
+                return old
+            }),
             special: block,
             leader: leaderAbilities['Darth Revan']
         },
@@ -191,7 +178,39 @@ const GameContext = ({ router, children, enterFullscreen }) => {
             special: ({ player, allyTeam }) => apply({ effect: 'foresight', type: 'buff', player, allyTeam, all: true }),
             leader: ({ player, ability, allyTeam }) => {
                 const { result } = verify('leader', 'Grand Master Yoda', allyTeam)
-                if (result && allyTeam[player].type === 'light' && ability == 'special') apply({ effect: 'foresight', type: 'buff', player, allyTeam, turns: 2 })
+                if (!result || allyTeam[player].type !== 'light' || ability !== 'special') return
+                apply({ effect: 'foresight', type: 'buff', player, allyTeam, turns: 2 })
+                const { result: memberResult, index } = verify('member', 'Hermit Yoda', allyTeam)
+                if (memberResult) setTurnmeter(old => {
+                    old[(turnTeam - 1) * playersPerTeam + index] += maximumNumber(old) * 0.05
+                    return old
+                })
+            }
+        },
+        'Hermit Yoda': {
+            basic: ({ player, enemy, allyTeam, enemyTeam, damage }) => {
+                const enemyData = enemyTeam[enemy]
+                if (enemyData.health <= 0 && probability(0.25)) enemyData.health -= damage
+                const { result } = verify('leader', 'Grand Master Yoda', allyTeam)
+                if (result) apply({ effect: 'foresight', type: 'buff', player, allyTeam })
+            },
+            special: ({ player, enemy, allyTeam, enemyTeam }) => {
+                if (enemyTeam[enemy].health <= 0) return
+                const assistPlayers = allyTeam.flatMap((ally, i) => (ally.health > 0 && ally.type === 'light' && !hasEffect('stun', 'debuff', ally) && i != player) ? [i] : [])
+                assistPlayers.forEach(assistPlayer => attack({ player: assistPlayer, enemy, isAssisting: true, damageMultiplier: 0.5 }))
+                return 2000
+            },
+            unique: ({ enemy, enemyTeam, animation }) => {
+                const { result, index } = verify('member', 'Hermit Yoda', enemyTeam)
+                if (!result || enemyTeam[index].health <= 0 || !animation || enemy !== index) return
+                setTurnmeter(old => {
+                    const bonus = maximumNumber(old) * 0.05
+                    const baseEnemyIndex = ((turnTeam === 1 ? 2 : 1) - 1) * playersPerTeam
+                    old[baseEnemyIndex + enemy] += bonus
+                    const { result, index } = verify('member', 'Grand Master Yoda', enemyTeam)
+                    if (result && enemyTeam[index].health > 0) old[baseEnemyIndex + index] += bonus
+                    return old
+                })
             }
         },
         'Jedi Consular': {
@@ -234,7 +253,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
                 allyTeam.forEach(({ health }, index) => { if (health > 0) allyTeam[index].health += playerData.health * 0.2 })
                 enemyTeam.forEach(({ health }, index) => {
                     const data = enemyTeam[index];
-                    if (health > 0 && !hasEffect('foresight', 'buff', data)) data.health -= playerData.special.damage * damageMultiplier(playerData, data);
+                    if (health > 0 && !hasEffect('foresight', 'buff', data)) data.health -= calculateDamage(playerData.special.damage, playerData, data);
                     else data.buffs.foresight = [];
                 })
             },
@@ -303,11 +322,13 @@ const GameContext = ({ router, children, enterFullscreen }) => {
 
     function newTurn(oldTurn) {
         if (oldTurn !== undefined) turnmeter[oldTurn] = 0
-        if (turn >= 0 || isGameStart()) teams.forEach((player, index) => { player.health > 0 ? turnmeter[index] += player.speed : turnmeter[index] = -1 })
+        if (turn >= 0 || isGameStart()) teams.forEach((player, index) => {
+            if (player.health > 0) turnmeter[index] += player.speed
+            else turnmeter[index] = -1
+        })
         setTurnmeter(turnmeter)
         const max = maximumNumber(turnmeter)
-        const indexes = [];
-        turnmeter.forEach((value, index) => { if (value == max) indexes.push(index) })
+        const indexes = turnmeter.flatMap((value, index) => (value == max) ? [index] : [])
         const index = randomElement(indexes)
         const player = teams[index];
         const stun = hasEffect('stun', 'debuff', player)
@@ -338,7 +359,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
         }
     }
 
-    function attack({ player, enemy, ability = 'basic', isAssisting = false, isCountering = false }) {
+    function attack({ player, enemy, ability = 'basic', isAssisting = false, isCountering = false, damageMultiplier = 1 }) {
         if (player < 0 || player > 4 || isAttacking) return
         let returnUnique = {};
         const teams = getTeams(isCountering)
@@ -363,26 +384,23 @@ const GameContext = ({ router, children, enterFullscreen }) => {
         enemy = returnUnique?.enemy || enemy
         const enemyData = enemyTeam[enemy];
         const foresight = hasEffect('foresight', 'buff', enemyData)
-        const damage = (playerData[ability].damage || 0) * damageMultiplier(playerData, enemyData)
+        const damage = calculateDamage(playerData[ability].damage, playerData, enemyData, damageMultiplier)
         const animation = playerData[ability].animation;
 
-        const multi = ability == 'special' && multiAttackers.includes(playerData.name)
-        if (multi) {
-            setBullet(indexes.map(i => enemyTeam[i].health > 0))
-            setTimeout(() => multiAttack(player, enemyTeam, turnTeam, setBullet), 0);
-        } else {
-            setBullet([true])
-            setTimeout(() => animation && animateBullet(player, enemy, turnTeam, setBullet, isCountering), 0);
+        const multi = ability === 'special' && multiAttackers.includes(playerData.name)
+        const animationObj = { multi, player, enemy, turnTeam, enemyTeam: multi ? enemyTeam : [enemyData], isCountering }
+        if (animation) {
+            animateBullet(animationObj)
+            if (online) socket.emit('animation', animationObj)
         }
-        if (online && animation) socket.emit('animation', { multi, player, enemy, turnTeam, isCountering, enemyTeam: multi && enemyTeam })
         setTimeout(() => {
             if (!foresight) {
                 enemyData.health -= damage
                 if (playerData.health < initialData[playerData.name].health) playerData.health += damage * healthSteal[turnTeam - 1]
-                var wait = abilities[playerData.name][ability]?.({ player, enemy, allyTeam, enemyTeam })
+                var wait = abilities[playerData.name][ability]?.({ player, enemy, allyTeam, enemyTeam, damage })
             } else {
                 if (damage) enemyData.buffs.foresight = []
-                wait = playerData[ability]?.foresight ? abilities[playerData.name][ability]?.({ player, enemy, allyTeam, enemyTeam }) : 0
+                wait = playerData[ability]?.foresight ? abilities[playerData.name][ability]?.({ player, enemy, allyTeam, enemyTeam, damage }) : 0
             }
 
             // In-game leader abilities:
@@ -408,7 +426,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
         }, animation ? 2000 : 50);
     }
 
-    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, attack, bullet, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, socket, resetConnection, myTeam, setTeam, handlePlay, players, setPlayers, rooms, setRooms }}>
+    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, attack, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, socket, resetConnection, myTeam, setTeam, handlePlay, players, setPlayers, rooms, setRooms }}>
         {children}
     </Context.Provider>
 }

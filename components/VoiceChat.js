@@ -22,9 +22,9 @@ export default function VoiceChat({ peerId, remotePeerId }) {
             getUserMedia({
                 video: false,
                 audio: {
-                    autoGainControl: false,   // Disable automatic gain control
-                    noiseSuppression: true,   // Enable noise suppression
-                    echoCancellation: true    // Enable echo cancellation
+                    autoGainControl: false, // Disable automatic gain control
+                    noiseSuppression: true, // Enable noise suppression
+                    echoCancellation: true // Enable echo cancellation
                 }
             }, stream => {
                 localStream.current = stream
@@ -54,10 +54,10 @@ export default function VoiceChat({ peerId, remotePeerId }) {
         }
     }, [audio])
 
-    return <button>
+    return <button onClick={() => setAudio(audio => !audio)}>
         {audio ? <>
             <audio ref={streamRef} autoPlay className='hidden' />
-            <BsFillMicFill onClick={() => setAudio(false)} title="Turn mic off" />
-        </> : <BsFillMicMuteFill onClick={() => setAudio(true)} title="Turn mic on" />}
+            <BsFillMicFill title="Turn mic off" />
+        </> : <BsFillMicMuteFill title="Turn mic on" />}
     </button>
 }

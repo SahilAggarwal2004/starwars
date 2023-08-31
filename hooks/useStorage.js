@@ -5,8 +5,11 @@ export default function useStorage(key, initialValue, { local = false, save = fa
     save ||= getStorage('mode') !== 'online'
     const [storedValue, setStoredValue] = useState(save ? getStorage(key, initialValue, local) : initialValue)
     const setValue = value => {
-        setStoredValue(value)
-        if (save) setStorage(key, value, local)
+        setStoredValue(old => {
+            const updatedValue = typeof value === 'function' ? value(old) : value;
+            if (save) setStorage(key, updatedValue, local)
+            return updatedValue
+        })
     };
     return [storedValue, setValue];
 }

@@ -29,15 +29,14 @@ const hasTaunt = ({ name, health, buffs, debuffs }, team1, team2) => {
     return verify('member', 'Chewbecca', team1).result ? team1.map(({ health }) => health > 0 && health < 100).includes(true) : verify('member', 'Chewbecca', team2).result ? team2.map(({ health }) => health > 0 && health < 100).includes(true) : false
 }
 
-const effects = [
-    { effect: 'taunt', condition: hasTaunt, stack: player => stackCount('taunt', 'buff', player) },
-    { effect: 'stealth', condition: hasStealth, stack: player => stackCount('stealth', 'buff', player) }
-]
-effectArr.forEach(effect => effects.push({
+const effects = effectArr.reduce((arr, effect) => arr.concat({
     effect,
     condition: player => hasEffect(effectObj[effect][0], effectObj[effect][1], player),
     stack: player => stackCount(effectObj[effect][0], effectObj[effect][1], player)
-}))
+}), [
+    { effect: 'taunt', condition: hasTaunt, stack: player => stackCount('taunt', 'buff', player) },
+    { effect: 'stealth', condition: hasStealth, stack: player => stackCount('stealth', 'buff', player) }
+])
 
 export default effects
 export { hasEffect, stackCount, hasTaunt, hasStealth }

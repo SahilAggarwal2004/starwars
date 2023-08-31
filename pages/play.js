@@ -8,8 +8,9 @@ import { useGameContext } from "../contexts/GameContext"
 import { useUtilityContext } from "../contexts/UtilityContext"
 import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules/effects"
 import { getStorage, setStorage } from "../modules/storage"
-import { details, features, gameAbilities, indexes, modes, playersPerTeam, usableAbilities } from "../constants"
+import { details, features, gameAbilities, modes, usableAbilities } from "../constants"
 import { exists, findPlayer, merge } from "../modules/functions"
+import { indexes, playersPerTeam } from "../public/players"
 import Loader from "../components/Loader"
 import VoiceChat from "../components/VoiceChat"
 
@@ -23,7 +24,7 @@ function confirmBack() {
 }
 
 export default function Play({ router, isFullScreen }) {
-    const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, bullet, attack, isAttacking, turnTeam, turnmeter, healthSteal, setHealthSteal, setInitialData, setTurnmeter, socket, myTeam, setTeam, players } = useGameContext()
+    const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, attack, isAttacking, turnTeam, turnmeter, healthSteal, setHealthSteal, setInitialData, setTurnmeter, socket, myTeam, setTeam, players } = useGameContext()
     const { setModal } = useUtilityContext()
     const mode = getStorage('mode', '')
     const online = mode === 'online'
@@ -80,19 +81,16 @@ export default function Play({ router, isFullScreen }) {
         // Computer mode
         if (turnTeam === 1) {
             if (team2.length && team2[enemy].health <= 0) {
-                let enemies = [];
-                team2.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
+                const enemies = team2.flatMap((enemy, index) => (enemy.health > 0) ? [index] : [])
                 selectEnemy(randomElement(enemies))
             } else selectEnemy(enemy);
         } else if (turnTeam === 2) {
             if (mode === 'computer') {
-                let enemies = []
-                team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
+                const enemies = team1.flatMap((enemy, index) => (enemy.health > 0) ? [index] : [])
                 const enemy = randomElement(enemies)
                 setTimeout(() => attack({ player: turn - playersPerTeam, enemy, ability: 'special' }), 500);
             } else if (team1.length && team1[enemy].health <= 0) {
-                let enemies = [];
-                team1.forEach((enemy, index) => { if (enemy.health > 0) enemies.push(index) })
+                const enemies = team1.flatMap((enemy, index) => (enemy.health > 0) ? [index] : [])
                 selectEnemy(randomElement(enemies))
             } else selectEnemy(enemy);
         }
@@ -110,8 +108,7 @@ export default function Play({ router, isFullScreen }) {
 
     function selectEnemy(enemy, index) {
         const enemyTeam = turnTeam === 1 ? team2 : team1
-        const possibleEnemies = []
-        enemyTeam.forEach((enemy, i) => { if (hasTaunt(enemy, team1, team2)) possibleEnemies.push(i) })
+        const possibleEnemies = enemyTeam.flatMap((enemy, i) => (hasTaunt(enemy, team1, team2)) ? [i] : [])
         if (!possibleEnemies.length) enemyTeam.forEach((enemy, i) => { if (enemy.health > 0 && !hasStealth(enemy)) possibleEnemies.push(i) })
         if (!possibleEnemies.length) enemyTeam.forEach(({ health }, i) => { if (health > 0) possibleEnemies.push(i) })
         if (index === undefined || index !== turnTeam - 1) possibleEnemies.includes(enemy) ? setEnemy(enemy) : setEnemy(possibleEnemies[0])
@@ -202,7 +199,6 @@ export default function Play({ router, isFullScreen }) {
                     {features.map(feature => ability[feature] !== undefined && <div key={feature} className='detail-text'><span className="capitalize">{feature}</span>: {ability[feature]}</div>)}
                 </div>
             </div>}
-            {indexes.map(number => bullet[number] && <span key={number} id={`bullet${number}`} className='fixed block bg-red-500 -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 transition-all ease-linear duration-[1900ms]' />)}
         </>}
     </>
 }

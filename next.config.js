@@ -17,6 +17,7 @@ const withPWA = require('next-pwa')({
         { url: '/images/players/Darth Revan.webp', revision },
         { url: '/images/players/Darth Vader.webp', revision },
         { url: '/images/players/Grand Master Yoda.webp', revision },
+        { url: '/images/players/Hermit Yoda.webp', revision },
         { url: '/images/players/Jedi Consular.webp', revision },
         { url: '/images/players/Jedi Knight Revan.webp', revision },
         { url: '/images/players/Jolee Bindo.webp', revision },

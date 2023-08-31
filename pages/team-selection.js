@@ -6,9 +6,10 @@ import { randomElement } from 'random-stuff-js';
 import { FaRandom, FaUndoAlt } from 'react-icons/fa'
 import { ImExit } from 'react-icons/im'
 import { useGameContext } from '../contexts/GameContext';
-import { allAbilities, details, features, modes, playersPerTeam } from '../constants';
-import Loader from '../components/Loader';
+import { allAbilities, details, features, modes } from '../constants';
 import { getStorage } from '../modules/storage';
+import { playersPerTeam } from '../public/players';
+import Loader from '../components/Loader';
 
 const maxPlayers = playersPerTeam * 2
 
@@ -86,11 +87,11 @@ export default function TeamSelection({ router }) {
         <Head><title>{modes[mode]} | Star Wars</title></Head>
         {loading ? <Loader /> : <>
             <span className='main-heading center -translate-y-[calc(3vw+0.5rem+50%)]'>{instruction}</span>
-            <div className='grid grid-cols-12 fixed x-center bottom-4 gap-x-2.5 min-w-max'>
+            <div className={`grid grid-cols-[repeat(${players.length},_minmax(0,_1fr))] fixed x-center bottom-4 gap-x-2.5 min-w-max`}>
                 {players.map(player => <div className='relative w-[6vw] aspect-square flex justify-center hover:border-2 hover:outline border-transparent rounded-sm' key={player.name} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => selectPlayer(player)} onContextMenu={e => e.preventDefault()}>
                     <img src={`/images/players/${player.name}.webp`} alt={player.name} width='120' className='rounded-sm aspect-square' />
-                    {JSON.stringify(team1).includes(player.name) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-blue-500 z-10'>1</div>}
-                    {JSON.stringify(team2).includes(player.name) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10'>{mode === 'computer' ? 'C' : 2}</div>}
+                    {team1.map(({ name }) => name).includes(player.name) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-blue-500 z-10'>1</div>}
+                    {team2.map(({ name }) => name).includes(player.name) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10'>{mode === 'computer' ? 'C' : 2}</div>}
                 </div>)}
             </div>
             {hoverPlayer && <div className='detail-container top-6 x-center w-[calc(100vw-4rem)] h-[calc(100vh-6vw-4rem)]'>
