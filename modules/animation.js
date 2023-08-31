@@ -10,7 +10,7 @@ export async function animateBullet({ multi, player, enemy, turnTeam, enemyTeam,
     enemyTeam.forEach(({ health }, index) => {
         if (health <= 0) return
         const bullet = document.createElement('span')
-        bullet.className = 'fixed bg-red-500 -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 transition-all ease-linear duration-[1900ms]'
+        bullet.className = 'bullet'
         const bulletRef = bullet.style
         bulletRef.left = `${(playerLeft + playerRight) / 2}px`;
         bulletRef.top = `${(playerTop + playerBottom) / 2}px`;

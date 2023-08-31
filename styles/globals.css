@@ -41,6 +41,10 @@
     @apply bg-black text-white px-3 py-1 cursor-pointer capitalize
 }
 
+.bullet {
+    @apply fixed bg-red-500 -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 transition-all ease-linear duration-[1900ms]
+}
+
 @font-face {
     font-family: starwars;
     src: url(../fonts/Starjedi.woff);
