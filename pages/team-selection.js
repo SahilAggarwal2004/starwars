@@ -8,6 +8,7 @@ import { ImExit } from 'react-icons/im'
 import { useGameContext } from '../contexts/GameContext';
 import { allAbilities, details, features, modes } from '../constants';
 import { getStorage } from '../modules/storage';
+import { mapName } from '../modules/functions';
 import { playersPerTeam } from '../public/players';
 import Loader from '../components/Loader';
 
@@ -90,8 +91,8 @@ export default function TeamSelection({ router }) {
             <div className={`grid fixed x-center bottom-4 gap-x-2.5 min-w-max`} style={{ gridTemplateColumns: `repeat(${players.length}, minmax(0, 1fr))` }}>
                 {players.map(player => <div className='relative w-[6vw] aspect-square flex justify-center hover:border-2 hover:outline border-transparent rounded-sm' key={player.name} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => selectPlayer(player)} onContextMenu={e => e.preventDefault()}>
                     <img src={`/images/players/${player.name}.webp`} alt={player.name} width='120' className='rounded-sm aspect-square' />
-                    {team1.map(({ name }) => name).includes(player.name) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-blue-500 z-10'>1</div>}
-                    {team2.map(({ name }) => name).includes(player.name) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10'>{mode === 'computer' ? 'C' : 2}</div>}
+                    {team1.map(mapName).includes(player.name) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-blue-500 z-10'>1</div>}
+                    {team2.map(mapName).includes(player.name) && <div className='absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10'>{mode === 'computer' ? 'C' : 2}</div>}
                 </div>)}
             </div>
             {hoverPlayer && <div className='detail-container top-6 x-center w-[calc(100vw-4rem)] h-[calc(100vh-6vw-4rem)]'>
