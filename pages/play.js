@@ -73,11 +73,12 @@ export default function Play({ router, isFullScreen }) {
             setStorage('winner', winner)
             router.push('/result')
         }
-    }, [teams])
+    }, [team1, team2])
 
     useEffect(() => {
         const player = teams[turn]
         if (loading || isAttacking || !player) return
+
         // Computer mode
         if (turnTeam === 1) {
             if (team2.length && team2[enemy].health <= 0) {

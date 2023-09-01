@@ -1,4 +1,4 @@
-import { verify } from "./abilities"
+import { verify } from "./functions";
 
 const effectObj = {
     'foresight': ['foresight', 'buff'],
@@ -26,7 +26,9 @@ const hasStealth = ({ name, health, buffs, debuffs }) => health > 0 && buffs.ste
 const hasTaunt = ({ name, health, buffs, debuffs }, team1, team2) => {
     if (buffs.taunt.length > 0) return true
     if (name !== 'Chewbecca' || health <= 100 || debuffs.immunity.length) return false
-    return verify('member', 'Chewbecca', team1).result ? team1.map(({ health }) => health > 0 && health < 100).includes(true) : verify('member', 'Chewbecca', team2).result ? team2.map(({ health }) => health > 0 && health < 100).includes(true) : false
+    if (verify('Chewbecca', team1).result) return team1.map(({ health }) => health > 0 && health < 100).includes(true)
+    if (verify('Chewbecca', team2).result) return team2.map(({ health }) => health > 0 && health < 100).includes(true)
+    return false
 }
 
 const effects = effectArr.reduce((arr, effect) => arr.concat({

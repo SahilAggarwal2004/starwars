@@ -16,7 +16,7 @@ const apply = ({ effect, type, player, enemy, allyTeam, enemyTeam, turns = 1, st
                 if (stack) for (let i = 0; i < stack; i++) buff.push(turns)
                 else buff[0] = (buff[0] || 0) + turns
             }
-        } else if (!hasEffect('immunity', 'debuff', playerData)) {
+        } else if (playerData.health > 0 && !hasEffect('immunity', 'debuff', playerData)) {
             if (stack) for (let i = 0; i < stack; i++) buff.push(turns)
             else buff[0] = (buff[0] || 0) + turns
         }
@@ -30,7 +30,7 @@ const apply = ({ effect, type, player, enemy, allyTeam, enemyTeam, turns = 1, st
                 if (stack) for (let i = 0; i < stack; i++) debuff.push(turns)
                 else debuff[0] = (debuff[0] || 0) + turns
             }
-        } else if (!hasEffect('immunity', 'buff', enemyData)) {
+        } else if (enemyData.health > 0 && !hasEffect('immunity', 'buff', enemyData)) {
             const debuff = enemyData.debuffs[effect]
             if (stack) for (let i = 0; i < stack; i++) debuff.push(turns)
             else debuff[0] = (debuff[0] || 0) + turns
@@ -88,17 +88,4 @@ const revive = (allyTeam, health, initialData) => {
     Object.keys(debuffs).forEach(i => debuffs[i] = [])
 }
 
-const verify = (type, names, allyTeam) => {
-    let result = false, index;
-    if (typeof names !== 'object') names = [names]
-    if (type !== 'leader') {
-        allyTeam.forEach(({ name }, i) => {
-            if (!names.includes(name)) return
-            result = true
-            index = i
-        })
-    } else if (names.includes(allyTeam[0].name)) result = true
-    return { result, index }
-}
-
-export { kill, block, apply, remove, assist, revive, verify }
+export { kill, block, apply, remove, assist, revive }
