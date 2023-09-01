@@ -186,7 +186,8 @@ const GameContext = ({ router, children, enterFullscreen }) => {
         'Hermit Yoda': {
             basic: ({ player, enemy, allyTeam, enemyTeam, damage, foresight }) => {
                 const enemyData = enemyTeam[enemy]
-                if (probability(0.25) && enemyData.health > 0 && !foresight) enemyData.health -= damage
+                if (foresight) enemyData.buffs.foresight = [];
+                else enemyData.health -= damage * (probability(0.25) ? 2 : 1)
                 const { result } = verify('Grand Master Yoda', allyTeam, { index: 0 })
                 if (result) apply({ effect: 'foresight', type: 'buff', player, allyTeam })
             },
@@ -244,13 +245,12 @@ const GameContext = ({ router, children, enterFullscreen }) => {
         },
         'Mother Talzin': {
             basic: ({ enemy, enemyTeam }) => probability(0.25) && apply({ effect: 'stun', type: 'debuff', enemy, enemyTeam }),
-            special: ({ player, allyTeam, enemy, enemyTeam, foresight }) => {
+            special: ({ player, allyTeam, enemy, enemyTeam }) => {
                 const playerData = structuredClone(allyTeam[player]);
                 allyTeam.forEach(allyData => { if (allyData.health > 0) allyData.health += playerData.health * 0.2 })
                 enemyTeam.forEach((enemyData, index) => {
-                    if (foresight && enemy === index) return
                     if (hasEffect('foresight', 'buff', enemyData)) enemyData.buffs.foresight = [];
-                    else if (enemyData.health > 0) enemyData.health -= calculateDamage(playerData.special.damage, playerData, enemyData);
+                    else if (enemyData.health > 0) enemyData.health -= calculateDamage(playerData.special.damage, playerData, enemyData, enemy === index ? 2 : 1);
                 })
             },
             leader: leaderAbilities['Mother Talzin']
@@ -400,14 +400,15 @@ const GameContext = ({ router, children, enterFullscreen }) => {
             }))
 
             // Damage and abilities:
-            if (damage) {
+            const playerAbility = playerData[ability] || {}
+            if (playerAbility.auto) {
                 if (foresight) enemyData.buffs.foresight = []
                 else {
                     enemyData.health -= damage
                     if (playerData.health < initialData[playerData.name].health) playerData.health += damage * healthSteal[turnTeam - 1]
                 }
             }
-            const wait = (!foresight || playerData[ability]?.foresight) ? abilities[playerData.name][ability]?.({ player, enemy, allyTeam, enemyTeam, damage, foresight }) : 0
+            const wait = (!foresight || playerAbility.foresight) ? abilities[playerData.name][ability]?.({ player, enemy, allyTeam, enemyTeam, damage, foresight }) : 0
 
             // In-game leader abilities:
             teams.forEach(team => {
