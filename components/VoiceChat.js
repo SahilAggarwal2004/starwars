@@ -30,18 +30,12 @@ export default function VoiceChat({ peerId, remotePeerId }) {
                 localStream.current = stream
                 call = peer.call(remotePeerId, stream);
                 call.on('stream', handleRemoteStream);
-                call.on('close', () => {
-                    call.removeAllListeners()
-                    call = null;
-                })
+                call.on('close', call.removeAllListeners)
                 peer.on('call', e => {
                     call = e
                     call.answer(stream) // Answer the call with an A/V stream.
                     call.on('stream', handleRemoteStream);
-                    call.on('close', () => {
-                        call.removeAllListeners()
-                        call = null;
-                    })
+                    call.on('close', call.removeAllListeners)
                 })
             }, () => toast.error("Can't access microphone!"));
         })
