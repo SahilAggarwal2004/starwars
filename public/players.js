@@ -70,7 +70,7 @@ export const getPlayers = () => [
         basic: { damage: randomNumber(60, 100), description: 'Inflict offense down on target enemy 1 turn.', animation: true, auto: true },
         special: { description: 'Inflict 2 damage over turn effects on all enemies for 1 turn.', cooldown: 1, foresight: true },
         leader: { description: 'All dark side allies have +10 speed.', type: 'start' },
-        unique: { description: 'Whenever an enemy attacks Darth Vader in his turn, the enemy gains damage over turn for 1 turn.', type: 'preceding' }
+        unique: { description: 'Whenever an enemy attacks Darth Vader, the enemy gains damage over turn for 1 turn.', type: 'preceding' }
     }),
     new Player({
         name: 'Grand Master Yoda', type: 'light',
@@ -82,7 +82,7 @@ export const getPlayers = () => [
         name: 'Hermit Yoda', type: 'light',
         basic: { damage: randomNumber(60, 100), description: 'This attack has an 25% chance to deal double damage. If the leader is Grand Master Yoda, Hermit Yoda gains foresight for 1 turn.', animation: true, foresight: true },
         special: { damage: randomNumber(125, 150), description: 'Call all the light side allies to assist dealing 50% less damage.', cooldown: 2, animation: true, foresight: true, auto: true },
-        unique: { description: 'He gains 5% turn meter whenever he is attacked. If Grand Master Yoda is an ally, he also gains 5% turn meter.', type: 'after' }
+        unique: { description: 'He gains 5% turn meter whenever he is attacked, excluding counter attacks. If Grand Master Yoda is an ally, he also gains 5% turn meter.', type: 'preceding' }
     }),
     new Player({
         name: 'Jedi Consular', type: 'light',
@@ -112,7 +112,7 @@ export const getPlayers = () => [
         name: 'Old Daka', type: 'dark',
         basic: { damage: randomNumber(75, 120), animation: true, auto: true },
         special: { description: "Revive a random defeated ally at 150% of her current health.", cooldown: 2, foresight: true },
-        leader: { description: "Whenever an ally suffers damage from an attack (excluding attacks out of turn), the ally recovers 15% health.", type: 'in-game' }
+        leader: { description: "Whenever an ally suffers damage from an attack, excluding attacks out of turn, the ally recovers 15% health.", type: 'in-game' }
     })
 ]
 

@@ -197,8 +197,8 @@ const GameContext = ({ router, children, enterFullscreen }) => {
                 assistPlayers.forEach(assistPlayer => attack({ player: assistPlayer, enemy, isAssisting: true, damageMultiplier: 0.5 }))
                 return 2000
             },
-            unique: ({ player, allyTeam, enemy, enemyTeam, animation, ability }) => {
-                if (!animation) return
+            unique: ({ player, allyTeam, enemy, enemyTeam, animation, ability, isCountering }) => {
+                if (!animation || isCountering) return
                 const { result, index } = verify('Hermit Yoda', enemyTeam, { alive: true })
                 if (!result) return
                 if (enemy === index || (ability === 'special' && multiAttackers.includes(allyTeam[player].name))) setTurnmeter(old => {
@@ -395,7 +395,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
             teams.forEach((team, teamIndex) => team.forEach((data, index) => {
                 const { name, unique = {} } = data
                 if (unique.type !== 'preceding' || (teamIndex && foresightArr[index] && unique.foresight)) return
-                const uniqueData = abilities[name].unique?.({ player, enemy, allyTeam, enemyTeam, animation, ability }) || {}
+                const uniqueData = abilities[name].unique?.({ player, enemy, allyTeam, enemyTeam, animation, ability, isCountering }) || {}
                 returnUnique = { ...returnUnique, ...uniqueData }
             }))
 
@@ -430,7 +430,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
                 }))
                 setTimeout(() => {
                     newTurn((turnTeam - 1) * playersPerTeam + player)
-                    setTeams(allyTeam, enemyTeam, isCountering)
+                    setTeams(allyTeam, enemyTeam)
                 }, returnUnique.wait || 50);
             }, wait || 50);
         }, animation ? 2000 : 50);
