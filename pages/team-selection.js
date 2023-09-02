@@ -11,6 +11,7 @@ import { getStorage } from '../modules/storage';
 import { mapName } from '../modules/functions';
 import { playersPerTeam } from '../public/players';
 import Loader from '../components/Loader';
+import VoiceChat from '../components/VoiceChat';
 
 const maxPlayers = playersPerTeam * 2
 
@@ -18,6 +19,7 @@ export default function TeamSelection({ router }) {
     const { team1, team2, teams, setTeam1, setTeam2, abilities, setInitialData, socket, myTeam, resetConnection, players, setPlayers } = useGameContext();
     const mode = getStorage('mode', '')
     const online = mode === 'online'
+    const id = getStorage('roomId')
     const [loading, setLoading] = useState(online)
     const [hoverPlayer, setHoverPlayer] = useState()
     const count = teams.length
@@ -106,8 +108,12 @@ export default function TeamSelection({ router }) {
                     </div>)}
                 </div>
             </div>}
-            <div className='fixed top-8 right-10 scale-125 cursor-pointer'>
-                {online ? <ImExit onClick={() => resetConnection('/room')} title="Exit" /> : count ? <FaUndoAlt onClick={reset} title="Reset" /> : <FaRandom onClick={shuffle} title="Shuffle" />}
+            <div className='fixed flex top-8 right-10 space-x-4 scale-125'>
+                {online ? <>
+                    {myTeam && id && <VoiceChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} />}
+                    <ImExit className='cursor-pointer' onClick={() => resetConnection('/room')} title="Exit" />
+                </> : count ? <FaUndoAlt className='cursor-pointer' onClick={reset} title="Reset" />
+                    : <FaRandom className='cursor-pointer' onClick={shuffle} title="Shuffle" />}
             </div>
         </>}
     </>
