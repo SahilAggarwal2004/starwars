@@ -390,14 +390,18 @@ const GameContext = ({ router, children, enterFullscreen }) => {
             animateBullet(animationObj)
             if (online) socket.emit('animation', animationObj)
         }
+
+        const abilityObj = { player, enemy, allyTeam, enemyTeam, damage, foresight, ability, animation, isAssisting, isCountering }
+        const runUniqueAbilities = type => teams.forEach((team, teamIndex) => team.forEach((data, index) => {
+            const { name, unique = {} } = data
+            if (unique.type !== type || (teamIndex && foresightArr[index] && unique.foresight)) return
+            const uniqueData = abilities[name].unique?.(abilityObj) || {}
+            returnUnique = { ...returnUnique, ...uniqueData }
+        }))
+
         setTimeout(() => {
             // Preceding(immediate before) attack unique abilities:
-            teams.forEach((team, teamIndex) => team.forEach((data, index) => {
-                const { name, unique = {} } = data
-                if (unique.type !== 'preceding' || (teamIndex && foresightArr[index] && unique.foresight)) return
-                const uniqueData = abilities[name].unique?.({ player, enemy, allyTeam, enemyTeam, animation, ability, isCountering }) || {}
-                returnUnique = { ...returnUnique, ...uniqueData }
-            }))
+            runUniqueAbilities('preceding')
 
             // Damage and abilities:
             const playerAbility = playerData[ability] || {}
@@ -408,26 +412,24 @@ const GameContext = ({ router, children, enterFullscreen }) => {
                     if (playerData.health < initialData[playerData.name].health) playerData.health += damage * healthSteal[turnTeam - 1]
                 }
             }
-            const wait = (!foresight || playerAbility.foresight) ? abilities[playerData.name][ability]?.({ player, enemy, allyTeam, enemyTeam, damage, foresight }) : 0
+            const wait = (!foresight || playerAbility.foresight) ? abilities[playerData.name][ability]?.(abilityObj) : 0
 
             // In-game leader abilities:
             teams.forEach(team => {
                 const { name, leader } = team[0];
                 if (foresight && !leader?.foresight) return
-                if (leader?.type === 'in-game') abilities[name].leader?.({ player, enemy, ability, allyTeam, enemyTeam, animation, isAssisting, isCountering })
+                if (leader?.type === 'in-game') abilities[name].leader?.(abilityObj)
             })
+
+            // Succeeding(immediate before) attack unique abilities:
+            runUniqueAbilities('succeeding')
 
             setTeams(allyTeam, enemyTeam, isCountering)
 
             if (isAssisting || isCountering) return
             setTimeout(() => {
                 // After attack unique abilities:
-                teams.forEach((team, teamIndex) => team.forEach((data, index) => {
-                    const { name, unique = {} } = data
-                    if (unique.type !== 'after' || (teamIndex && foresightArr[index] && unique.foresight)) return
-                    const uniqueData = abilities[name].unique?.({ player, enemy, allyTeam, enemyTeam, animation, ability }) || {}
-                    returnUnique = { ...returnUnique, ...uniqueData }
-                }))
+                runUniqueAbilities('after')
                 setTimeout(() => {
                     newTurn((turnTeam - 1) * playersPerTeam + player)
                     setTeams(allyTeam, enemyTeam)

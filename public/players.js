@@ -82,7 +82,7 @@ export const getPlayers = () => [
         name: 'Hermit Yoda', type: 'light',
         basic: { damage: randomNumber(60, 100), description: 'This attack has an 25% chance to deal double damage. If the leader is Grand Master Yoda, Hermit Yoda gains foresight for 1 turn.', animation: true, foresight: true },
         special: { damage: randomNumber(125, 150), description: 'Call all the light side allies to assist dealing 50% less damage.', cooldown: 2, animation: true, foresight: true, auto: true },
-        unique: { description: 'He gains 5% turn meter whenever he is attacked, excluding counter attacks. If Grand Master Yoda is an ally, he also gains 5% turn meter.', type: 'preceding' }
+        unique: { description: 'He gains 5% turn meter whenever he is attacked, excluding counter attacks. If Grand Master Yoda is an ally, he also gains 5% turn meter.', type: 'succeeding' }
     }),
     new Player({
         name: 'Jedi Consular', type: 'light',
