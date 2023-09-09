@@ -146,7 +146,7 @@ export default function Play({ router, isFullScreen }) {
     return <>
         <Head><title>{modes[mode]} | Star Wars</title></Head>
         {loading ? <Loader /> : <>
-            {online && myTeam && id && <div className="fixed flex x-center top-4 space-x-4 scale-125">
+            {online && myTeam && id && <div className="fixed flex items-center x-center top-4 space-x-4 scale-125">
                 <VoiceChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} />
                 <ImExit className='cursor-pointer' onClick={() => setModal({ active: true, type: 'exit' })} title="Exit" />
             </div>}
@@ -194,7 +194,7 @@ export default function Play({ router, isFullScreen }) {
                     </div>)}
                 </div>
             </div>}
-            {hoverAbility && !isAttacking && <div className='bg-black text-white fixed flex flex-col space-x-0 space-y-5 items-center justify-center p-10 rounded z-10 detail-heading center max-w-[calc(100vw-15rem)]'>
+            {hoverAbility && !isAttacking && <div className='bg-black text-white border-2 border-white fixed flex flex-col space-x-0 space-y-5 items-center justify-center p-10 rounded z-10 detail-heading center max-w-[calc(100vw-15rem)]'>
                 <span className="capitalize">{hoverAbility}:</span>
                 <div>
                     {features.map(feature => ability[feature] !== undefined && <div key={feature} className='detail-text'><span className="capitalize">{feature}</span>: {ability[feature]}</div>)}

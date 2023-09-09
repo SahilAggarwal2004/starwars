@@ -10,7 +10,7 @@
 }
 
 .detail-container {
-    @apply bg-black text-white fixed flex space-x-8 items-center justify-center px-10 pt-3 pb-0 rounded z-10 min-h-[60vh] max-h-[calc(100vh-4rem)]
+    @apply bg-black text-white border-2 border-white fixed flex space-x-8 items-center justify-center px-10 pt-3 pb-0 rounded z-10 min-h-[60vh] max-h-[calc(100vh-4rem)]
 }
 
 .detail-heading {
@@ -57,8 +57,9 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-:fullscreen, ::backdrop {
-    background-color: rgba(255,255,255,0);
+:fullscreen,
+::backdrop {
+    background-color: rgba(255, 255, 255, 0);
 }
 
 ::-webkit-scrollbar {

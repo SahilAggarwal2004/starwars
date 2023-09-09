@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import '../styles/globals.css'
 import 'react-toastify/dist/ReactToastify.css';
+import 'react-peer-chat/build/styles.css'
 import Head from 'next/head'
 import Script from 'next/script'
 import { useEffect, useRef, useState } from 'react'

@@ -108,7 +108,7 @@ export default function TeamSelection({ router }) {
                     </div>)}
                 </div>
             </div>}
-            <div className='fixed flex top-8 right-10 space-x-4 scale-125'>
+            <div className='fixed flex items-center top-8 right-10 space-x-4 scale-125'>
                 {online ? <>
                     {myTeam && id && <VoiceChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} />}
                     <ImExit className='cursor-pointer' onClick={() => resetConnection('/room')} title="Exit" />

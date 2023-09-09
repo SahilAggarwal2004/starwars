@@ -3,6 +3,7 @@ import { createContext, useState, useEffect, useContext } from 'react'
 import { maximumNumber, randomElement, probability } from 'random-stuff-js'
 import { io } from 'socket.io-client';
 import { toast } from 'react-toastify';
+import { clearChat } from 'react-peer-chat';
 import useStorage from '../hooks/useStorage';
 import { assist, block, revive, kill, apply, remove } from '../modules/abilities';
 import { animateBullet } from '../modules/animation'
@@ -280,6 +281,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
         setTeam(0)
         setStorage('connection', false)
         removeStorage('opponent')
+        clearChat()
         if (dest) router.push(dest)
     }
 
