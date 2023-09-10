@@ -3614,10 +3614,10 @@ react-is@^16.13.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-peer-chat@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/react-peer-chat/-/react-peer-chat-0.3.2.tgz#939675608b705e97da60afea2dad805f41ee4c7a"
-  integrity sha512-jGyRGeHYZZ33JMGIzKcC1T1n7LfPn9JYbuDkhw7tBBoyCeSi/r9TwZMe9cHnWwPRz7dYXIVgVl9zaP+kJDSY+A==
+react-peer-chat@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/react-peer-chat/-/react-peer-chat-0.3.4.tgz#0356e76bdcc3625183870495c61d8d456d1fdc1e"
+  integrity sha512-x0o1pIxYfZMnCpLMEiseg3kkmGHzGRM7M/PBmv+ufHMlDoomE8KHwTlrXCqpwGIV1TjiLHQM8LzWze3VhxJ0xg==
   dependencies:
     peerjs "^1.5.0"
 

@@ -5,5 +5,5 @@ import { getStorage } from '../modules/storage'
 import { peerOptions } from '../constants'
 
 export default function VoiceChat({ peerId, remotePeerId, dialogOptions }) {
-    return <Chat name={getStorage('name', '', true)} peerId={peerId} remotePeerId={remotePeerId} peerOptions={peerOptions} onError={() => toast.error("Can not access microphone!")} dialogOptions={dialogOptions} />
+    return <Chat name={getStorage('name', '', true)} peerId={peerId} remotePeerId={remotePeerId} peerOptions={peerOptions} onError={() => toast.error("Microphone not accessible!")} dialogOptions={dialogOptions} />
 }
