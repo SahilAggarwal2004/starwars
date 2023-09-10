@@ -144,7 +144,10 @@ export default function Play({ router, isFullScreen }) {
     }
 
     return <>
-        <Head><title>{modes[mode]} | Star Wars</title></Head>
+        <Head>
+            <title>{modes[mode]} | Star Wars</title>
+            {online && <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-visual" />}
+        </Head>
         {loading ? <Loader /> : <>
             {online && Boolean(myTeam) && id && <div className="fixed flex items-center x-center top-4 space-x-4 scale-125">
                 <VoiceChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} />

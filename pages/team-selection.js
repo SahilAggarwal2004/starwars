@@ -87,7 +87,10 @@ export default function TeamSelection({ router }) {
     }
 
     return <>
-        <Head><title>{modes[mode]} | Star Wars</title></Head>
+        <Head>
+            <title>{modes[mode]} | Star Wars</title>
+            {online && <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-visual" />}
+        </Head>
         {loading ? <Loader /> : <>
             <span className='main-heading center -translate-y-[calc(3vw+0.5rem+50%)]'>{instruction}</span>
             <div className={`grid fixed x-center bottom-4 gap-x-2.5 min-w-max`} style={{ gridTemplateColumns: `repeat(${players.length}, minmax(0, 1fr))` }}>
