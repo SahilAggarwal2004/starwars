@@ -146,7 +146,7 @@ export default function Play({ router, isFullScreen }) {
     return <>
         <Head><title>{modes[mode]} | Star Wars</title></Head>
         {loading ? <Loader /> : <>
-            {online && myTeam && id && <div className="fixed flex items-center x-center top-4 space-x-4 scale-125">
+            {online && Boolean(myTeam) && id && <div className="fixed flex items-center x-center top-4 space-x-4 scale-125">
                 <VoiceChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} />
                 <ImExit className='cursor-pointer' onClick={() => setModal({ active: true, type: 'exit' })} title="Exit" />
             </div>}

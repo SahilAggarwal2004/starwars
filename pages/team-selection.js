@@ -110,7 +110,7 @@ export default function TeamSelection({ router }) {
             </div>}
             <div className='fixed flex items-center top-8 right-10 space-x-4 scale-125'>
                 {online ? <>
-                    {myTeam && id && <VoiceChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} dialogOptions={{ position: 'right', style: { marginRight: '0.2rem' } }} />}
+                    {Boolean(myTeam) && id && <VoiceChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} dialogOptions={{ position: 'right', style: { marginRight: '0.2rem' } }} />}
                     <ImExit className='cursor-pointer' onClick={() => resetConnection('/room')} title="Exit" />
                 </> : count ? <FaUndoAlt className='cursor-pointer' onClick={reset} title="Reset" />
                     : <FaRandom className='cursor-pointer' onClick={shuffle} title="Shuffle" />}
