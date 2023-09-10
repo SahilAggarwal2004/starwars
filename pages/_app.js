@@ -21,6 +21,7 @@ function MyApp({ Component, pageProps }) {
 	const [orientation, setOrientation] = useState()
 	const fullscreenElement = useRef()
 	const updateFullScreen = () => setFullscreen(document.fullscreen)
+	const updateOrientation = () => setOrientation(Boolean(window.orientation))
 	pageProps.router = router;
 
 	useEffect(() => {
@@ -28,14 +29,18 @@ function MyApp({ Component, pageProps }) {
 		setMobile(navigator.userAgentData?.mobile)
 		setFullscreen(document.fullscreen)
 		document.addEventListener('fullscreenchange', updateFullScreen)
-		return () => { document.removeEventListener('fullscreenchange', updateFullScreen) }
+		window.addEventListener('orientationchange', updateOrientation)
+		return () => {
+			document.removeEventListener('fullscreenchange', updateFullScreen)
+			window.removeEventListener('orientationchange', updateOrientation)
+		}
 	}, [])
 
 	async function enterFullscreen() {
 		setTimeout(() => {
 			fullscreenElement.current?.requestFullscreen?.()
 			fullscreenElement.current?.webkitRequestFullScreen?.()
-			screen.orientation.lock('landscape').then(() => setOrientation(true)).catch(() => setOrientation(false))
+			screen.orientation.lock('landscape')
 		}, 1);
 	}
 
@@ -46,7 +51,7 @@ function MyApp({ Component, pageProps }) {
 			<meta charSet="utf-8" />
 			<title>Star Wars - PvP strategy game</title>
 			<link rel="icon" href="/favicon.ico" />
-			<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
+			{orientation ? <meta name="viewport" content="width=device-width, initial-scale=1.0" /> : <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />}
 			<meta name="theme-color" content="#ffffff" />
 			<meta name="keywords"
 				content="star, wars, game, platform, starwars, offline, play, computer, player, pvp, nextjs, free, fast, independent, web app, pwa" />
