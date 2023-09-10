@@ -60,6 +60,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
             newSocket.on('left', ({ name, started, team }) => {
                 toast.error(`${name} left the lobby.`)
                 removeStorage('opponent')
+                clearChat()
                 if (started) {
                     setStorage('winner', team)
                     router.push('/result')

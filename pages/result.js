@@ -1,6 +1,7 @@
 // eslint-disable react-hooks/exhaustive-deps
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { clearChat } from 'react-peer-chat'
 import { useGameContext } from '../contexts/GameContext'
 import { getStorage, removeStorage, setStorage } from '../modules/storage'
 
@@ -16,6 +17,7 @@ export default function Result({ router }) {
             socket?.emit('leave-room')
             setStorage('connection', false)
             removeStorage('opponent')
+            clearChat()
         } else router.push('/')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
