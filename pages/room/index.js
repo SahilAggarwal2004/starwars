@@ -11,7 +11,7 @@ import { FaQrcode } from 'react-icons/fa';
 export default function Room({ router }) {
     const { socket, setTeam, setRooms } = useGameContext()
     const { setModal } = useUtilityContext()
-    const [type, setType] = useState('public')
+    const { type = 'public' } = router.query
     const [room, setRoom] = useState()
     const name = useRef();
 
@@ -48,7 +48,7 @@ export default function Room({ router }) {
     }
 
     return <div className='mt-10 space-y-5'>
-        <Select active={type} setActive={setType} values={[{ value: 'public', label: 'Public Room' }, { value: 'private', label: 'Private Room' }]} />
+        <Select active={type} values={[{ value: 'public', label: 'Public Room' }, { value: 'private', label: 'Private Room' }]} />
         <form className='flex flex-col items-center justify-center space-y-4 pt-3' onSubmit={e => e.preventDefault()}>
             <div className='flex flex-col space-y-1 w-full max-w-[16rem]'>
                 <input className='text-center border px-2 py-0.5 rounded-t' type='text' ref={name} placeholder='Enter your name' defaultValue={getStorage('name', '', true)} required onInput={restrictNameInput} />
