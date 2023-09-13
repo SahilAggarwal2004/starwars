@@ -11,7 +11,7 @@ import { getStorage } from '../modules/storage';
 import { mapName } from '../modules/functions';
 import { playersPerTeam } from '../public/players';
 import Loader from '../components/Loader';
-import VoiceChat from '../components/VoiceChat';
+import PeerChat from '../components/PeerChat';
 
 const maxPlayers = playersPerTeam * 2
 
@@ -110,7 +110,7 @@ export default function TeamSelection({ router }) {
             </div>}
             <div className='fixed flex items-center top-8 right-10 space-x-4 scale-125'>
                 {online ? <>
-                    {Boolean(myTeam) && id && <VoiceChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} dialogOptions={{ style: { translate: '-72%' } }} />}
+                    {Boolean(myTeam) && id && <PeerChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} dialogOptions={{ style: { translate: '-72%' } }} />}
                     <ImExit className='cursor-pointer' onClick={() => resetConnection('/room')} title="Exit" />
                 </> : count ? <FaUndoAlt className='cursor-pointer' onClick={reset} title="Reset" />
                     : <FaRandom className='cursor-pointer' onClick={shuffle} title="Shuffle" />}

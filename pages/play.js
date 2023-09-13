@@ -12,7 +12,7 @@ import { details, features, gameAbilities, modes, usableAbilities } from "../con
 import { exists, findPlayer, merge } from "../modules/functions"
 import { indexes, playersPerTeam } from "../public/players"
 import Loader from "../components/Loader"
-import VoiceChat from "../components/VoiceChat"
+import PeerChat from "../components/PeerChat"
 
 const maxPlayers = playersPerTeam * 2
 
@@ -147,7 +147,7 @@ export default function Play({ router, isFullScreen }) {
         <Head><title>{modes[mode]} | Star Wars</title></Head>
         {loading ? <Loader /> : <>
             {online && Boolean(myTeam) && id && <div className="fixed flex items-center x-center top-4 space-x-4 scale-125">
-                <VoiceChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} />
+                <PeerChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} />
                 <ImExit className='cursor-pointer' onClick={() => setModal({ active: true, type: 'exit' })} title="Exit" />
             </div>}
             {[team1, team2].map((team, index) => {
