@@ -5,7 +5,9 @@ const revision = `${Date.now()}`
 const withPWA = require('next-pwa')({
     dest: 'public',
     disable: process.env.NODE_ENV === 'development',
+    cacheStartUrl: false,
     additionalManifestEntries: [
+        { url: '/', revision },
         { url: '/team-selection', revision },
         { url: '/play', revision },
         { url: '/result', revision },
