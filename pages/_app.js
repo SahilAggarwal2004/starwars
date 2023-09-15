@@ -18,10 +18,10 @@ function MyApp({ Component, pageProps }) {
 	const [loading, setLoading] = useState(true)
 	const [isMobile, setMobile] = useState()
 	const [isFullscreen, setFullscreen] = useState()
-	const [orientation, setOrientation] = useState()
 	const fullscreenElement = useRef()
+	const landscape = typeof screen !== 'undefined' && screen.orientation.type.includes('landscape')
+	
 	const updateFullScreen = () => setFullscreen(document.fullscreen)
-	const updateOrientation = () => setOrientation(Boolean(window.orientation))
 	pageProps.router = router;
 
 	useEffect(() => {
@@ -29,11 +29,7 @@ function MyApp({ Component, pageProps }) {
 		setMobile(navigator.userAgentData?.mobile)
 		setFullscreen(document.fullscreen)
 		document.addEventListener('fullscreenchange', updateFullScreen)
-		window.addEventListener('orientationchange', updateOrientation)
-		return () => {
-			document.removeEventListener('fullscreenchange', updateFullScreen)
-			window.removeEventListener('orientationchange', updateOrientation)
-		}
+		return () => { document.removeEventListener('fullscreenchange', updateFullScreen) }
 	}, [])
 
 	async function enterFullscreen() {
@@ -51,7 +47,7 @@ function MyApp({ Component, pageProps }) {
 			<meta charSet="utf-8" />
 			<title>Star Wars - PvP strategy game</title>
 			<link rel="icon" href="/favicon.ico" />
-			{orientation ? <meta name="viewport" content="width=device-width, initial-scale=1.0" /> : <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />}
+			{landscape ? <meta name="viewport" content="width=device-width, initial-scale=1.0" /> : <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />}
 			<meta name="theme-color" content="#ffffff" />
 			<meta name="keywords"
 				content="star, wars, game, platform, starwars, offline, play, computer, player, pvp, nextjs, free, fast, independent, web app, pwa" />
@@ -121,7 +117,7 @@ function MyApp({ Component, pageProps }) {
 					{!isMobile || notFullscreen.includes(router.pathname) ? <Component {...pageProps} /> : !isFullscreen ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
 						<div>Please enter full screen mode</div>
 						<button onClick={enterFullscreen}>Click Here</button>
-					</div> : !orientation ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div> : <Component {...pageProps} />}
+					</div> : landscape ? <Component {...pageProps} /> : <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div>}
 					<Modal router={router} />
 					<ToastContainer pauseOnFocusLoss={false} position='top-left' />
 				</div>
