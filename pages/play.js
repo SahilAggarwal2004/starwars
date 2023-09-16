@@ -9,9 +9,10 @@ import { useUtilityContext } from "../contexts/UtilityContext"
 import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules/effects"
 import { getStorage, setStorage } from "../modules/storage"
 import { details, features, gameAbilities, modes, usableAbilities } from "../constants"
-import { exists, findPlayer, merge } from "../modules/functions"
+import { findPlayer, merge } from "../modules/functions"
 import { indexes, playersPerTeam } from "../public/players"
 import Loader from "../components/Loader"
+import Effect from "../components/Effect"
 import PeerChat from "../components/PeerChat"
 
 const maxPlayers = playersPerTeam * 2
@@ -162,44 +163,41 @@ export default function Play({ router, isFullScreen }) {
                                 <div className='block bg-blue-400 rounded-lg mb-0.5 h-0.5' style={{ width: `${turnmeter[playerIndex] / maximumNumber(turnmeter) * 100}%` }} />
                                 <img src={`/images/players/${player.name}.webp`} alt={player.name} width={120} className='rounded-sm aspect-square' />
                                 <div className="absolute bottom-0 left-0 right-0 flex justify-center space-x-0.5 z-10">
-                                    {effects.map(({ effect, condition, stack }) => {
-                                        if (condition(player, team1, team2)) {
-                                            const num = stack(player)
-                                            return <div key={effect} className="relative inline-block">
-                                                <img alt='' src={`images/effects/${effect}.webp`} width={20} height={20} />
-                                                <span className="absolute right-0 -top-1/2 text-white font-semibold text-xs">{num > 1 && num}</span>
-                                            </div>
-                                        }
-                                    })}
+                                    {effects.map(({ name, condition, stack }) => condition(player, team1, team2) && <Effect key={name} name={name} num={stack(player)} />)}
                                 </div>
                             </div>
                             {(mode !== 'computer' || turnTeam !== 2) && (!online || myTeam === turnTeam) && selectedPlayer && !isAttacking && <div className="fixed flex x-center bottom-3 space-x-2">
-                                {usableAbilities.map(ability => teams[turn][ability] && <div key={ability} className={`ability detail-heading ${teams[turn][ability].cooldown && 'opacity-50'}`} onPointerEnter={() => setHoverAbility(ability)} onPointerLeave={() => setHoverAbility()} onClick={() => !teams[turn][ability].cooldown && handleAttack(ability, i)}>{ability[0]}</div>)}
+                                {gameAbilities.map(ability => {
+                                    const abilityData = teams[turn][ability]
+                                    if (!abilityData) return
+                                    const usable = usableAbilities.includes(ability) && !abilityData.cooldown
+                                    return <div key={ability} className={`ability detail-heading ${!usable && 'opacity-50'}`} onPointerEnter={() => setHoverAbility(ability)} onPointerLeave={() => setHoverAbility()} onClick={() => usable && handleAttack(ability, i)}>{ability[0]}</div>
+                                })}
                             </div>}
                         </div>
                     })}
                 </div>
             })}
-            {player && !isAttacking && <div className='detail-container center w-[calc(100vw-15rem)]'>
+            {player && !isAttacking && <div className='detail-container center w-max max-w-[calc(100vw-15rem)] h-fit min-h-[40vh] space-x-0  px-10 py-3'>
                 <div className='flex flex-col min-w-max'>
                     {details.map(detail => <span key={detail} className='detail-heading capitalize'>{detail}: {detail == 'health' ? Math.ceil(player[detail]) : player[detail]}</span>)}
                 </div>
-                <div>
-                    {gameAbilities.map(ability => player[ability] && <div key={ability} className='mb-3 detail-heading'>
-                        <span className="capitalize">{ability}:</span>
-                        {features.map(feature => {
-                            const value = player[ability][feature]
-                            return exists(value) && <div key={feature} className='ml-3 detail-text'><span className="capitalize">{feature}</span>: {value}</div>
-                        })}
+                <div className="detail-text md:text-[2.25vh]">
+                    {effects.map(({ name, description, condition, stack }) => condition(player, team1, team2) && <div key={name} className="ml-8 flex items-center">
+                        <Effect name={name} num={stack(player)} />
+                        <span>: {description}</span>
                     </div>)}
                 </div>
-            </div>}
-            {hoverAbility && !isAttacking && <div className='bg-black text-white border-2 border-white fixed flex flex-col space-x-0 space-y-5 items-center justify-center p-10 rounded z-10 detail-heading center max-w-[calc(100vw-15rem)]'>
-                <span className="capitalize">{hoverAbility}:</span>
-                <div>
-                    {features.map(feature => ability[feature] !== undefined && <div key={feature} className='detail-text'><span className="capitalize">{feature}</span>: {ability[feature]}</div>)}
+            </div>
+            }
+            {
+                hoverAbility && !isAttacking && <div className='bg-black text-white border-2 border-white fixed flex flex-col space-x-0 space-y-5 items-center justify-center p-10 rounded z-10 detail-heading center max-w-[calc(100vw-15rem)]'>
+                    <span className="capitalize">{hoverAbility}:</span>
+                    <div>
+                        {features.map(feature => ability[feature] !== undefined && <div key={feature} className='detail-text'><span className="capitalize">{feature}</span>: {ability[feature]}</div>)}
+                    </div>
                 </div>
-            </div>}
+            }
         </>}
     </>
 }

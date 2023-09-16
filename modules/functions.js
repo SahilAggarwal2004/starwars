@@ -2,15 +2,22 @@ import { hasEffect } from "./effects";
 import { allAbilities } from '../constants'
 import { indexes } from "../public/players";
 
-export const calculateDamage = (baseDamage, player, enemy, damageMultiplier = 1) => (baseDamage || 0) * damageMultiplier * (hasEffect('offense', 'buff', player) ? 1.25 : 1) * (hasEffect('offense', 'debuff', player) ? 0.8 : 1) / (hasEffect('defense', 'buff', enemy) ? 1.25 : 1) / (hasEffect('defense', 'debuff', enemy) ? 0.8 : 1) / enemy.defense
-
-export const exists = value => value !== undefined && value !== null;
-
 export const reduce = arr => arr.filter(e => e !== 0)
 
 export const mapName = player => (typeof player === 'string') ? player : player.name
 
 export const findPlayer = (players, name) => players.find(player => player.name === name)
+
+export function calculateDamage(baseDamage, player, enemy, damageMultiplier = 1) {
+    if (!baseDamage) return 0
+    const damage = baseDamage * damageMultiplier / enemy.defense
+    let bonus = 0;
+    if (hasEffect('offense', 'buff', player)) bonus += damage * 0.25
+    if (hasEffect('offense', 'debuff', player)) bonus -= damage * 0.25
+    if (hasEffect('defense', 'buff', enemy)) bonus -= damage * 0.25
+    if (hasEffect('defense', 'debuff', enemy)) bonus += damage * 0.25
+    return damage + bonus
+}
 
 export function merge(player, description) {
     allAbilities.forEach(ability => { if (player[ability]) player[ability] = { ...description[ability], ...player[ability] } })
