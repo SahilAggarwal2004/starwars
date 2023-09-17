@@ -5,13 +5,11 @@ import { useGameContext } from '../../contexts/GameContext';
 import { getStorage, setStorage } from '../../modules/storage';
 
 export default function Room({ router }) {
-    const { socket, setTeam, resetConnection } = useGameContext()
+    const { setMode, socket, setTeam, resetConnection } = useGameContext()
     const { roomId } = router.query
     const name = useRef()
 
-    useEffect(() => {
-        setStorage('mode', 'online')
-    }, [])
+    useEffect(() => { setMode('online') }, [])
 
     function handleClick() {
         const tempName = name.current.value;

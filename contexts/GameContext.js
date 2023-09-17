@@ -27,12 +27,12 @@ const GameContext = ({ router, children, enterFullscreen }) => {
     const [turnmeter, setTurnmeter] = useStorage('turnmeter', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
     const [healthSteal, setHealthSteal] = useStorage('health-steal', [0, 0])
     const [initialData, setInitialData] = useStorage('initial-data', [])
+    const [mode, setMode] = useStorage('mode', '', { save: true })
     const teams = team1.concat(team2)
     const [turn, setTurn] = useState(-1)
     const [isAttacking, setAttacking] = useState(false)
     const [socket, setSocket] = useState()
     const turnTeam = Math.ceil((turn + 1) / playersPerTeam)
-    const mode = getStorage('mode', '')
     const online = mode === 'online'
 
     useEffect(() => {
@@ -271,7 +271,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
 
     function handlePlay(e) {
         const mode = e?.target.getAttribute('mode')
-        if (mode) setStorage('mode', mode)
+        if (mode) setMode(mode)
         const sendToRoom = router.pathname === '/' && (online || mode === 'online')
         router.push(sendToRoom ? '/room' : '/team-selection')
         if (navigator.userAgentData?.mobile && !sendToRoom) enterFullscreen()
@@ -441,7 +441,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
         }, animation ? 2000 : 50);
     }
 
-    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, attack, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, socket, resetConnection, myTeam, setTeam, handlePlay, players, setPlayers, rooms, setRooms }}>
+    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, attack, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, mode, setMode, socket, resetConnection, myTeam, setTeam, handlePlay, players, setPlayers, rooms, setRooms }}>
         {children}
     </Context.Provider>
 }

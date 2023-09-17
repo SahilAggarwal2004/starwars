@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from 'react'
+import { FaQrcode } from 'react-icons/fa';
+import { IoMdArrowRoundBack } from 'react-icons/io';
 import { toast } from 'react-toastify';
 import { useGameContext } from '../../contexts/GameContext';
 import { useUtilityContext } from '../../contexts/UtilityContext';
 import { getStorage, setStorage } from '../../modules/storage';
 import { generateRoomId } from '../../modules/random';
 import Select from '../../components/Select';
-import { FaQrcode } from 'react-icons/fa';
 
 export default function Room({ router }) {
     const { socket, setTeam, setRooms } = useGameContext()
@@ -47,14 +48,17 @@ export default function Room({ router }) {
         })
     }
 
-    return <div className='mt-10 space-y-5'>
+    return <div className='my-12 space-y-5 px-2'>
+        <div className='fixed flex items-center top-6 left-6 md:left-8 scale-150'>
+            <IoMdArrowRoundBack className='cursor-pointer' onClick={() => router.back()} title='Back' />
+        </div>
         <Select active={type} values={[{ value: 'public', label: 'Public Room' }, { value: 'private', label: 'Private Room' }]} />
         <form className='flex flex-col items-center justify-center space-y-4 pt-3' onSubmit={e => e.preventDefault()}>
             <div className='flex flex-col space-y-1 w-full max-w-[16rem]'>
                 <input className='text-center border px-2 py-0.5 rounded-t' type='text' ref={name} placeholder='Enter your name' defaultValue={getStorage('name', '', true)} required onInput={restrictNameInput} />
                 <input className='text-center border px-2 py-0.5 rounded-b' type='text' value={room} placeholder={`Enter room id${type === 'public' ? ' (optional)' : ''}`} autoComplete='new-password' onChange={restrictRoomInput} />
             </div>
-            <div className='flex justify-center space-x-5'>
+            <div className='flex justify-center space-x-2 xs:space-x-5'>
                 <button type='submit' method='create-room' className='secondary-button px-3 py-1' onClick={handleClick}>Create Room</button>
                 <button type='submit' method='join-room' className='tertiary-button px-3 py-1' onClick={handleClick}>
                     {type === 'private' || room ? 'Join Room' : 'Public Rooms'}
