@@ -8,6 +8,7 @@ import { useUtilityContext } from '../../contexts/UtilityContext';
 import { getStorage, setStorage } from '../../modules/storage';
 import { generateRoomId } from '../../modules/random';
 import Select from '../../components/Select';
+import Loader from '../../components/Loader';
 
 export default function Room({ router }) {
     const { socket, setTeam, setRooms } = useGameContext()
@@ -29,7 +30,6 @@ export default function Room({ router }) {
         if (!tempName) return
         let tempRoom = room
         setStorage('name', tempName, true)
-        if (!socket.connected) return toast.error('Something went wrong, try again!')
         const method = e.target.getAttribute('method')
         if (!tempRoom) {
             if (type === 'private') return toast.error('Please fill room id')
@@ -48,7 +48,7 @@ export default function Room({ router }) {
         })
     }
 
-    return <div className='my-12 space-y-5 px-2'>
+    return socket.connected ? <div className='my-12 space-y-5 px-2'>
         <div className='fixed flex items-center top-6 left-6 md:left-8 scale-150'>
             <IoMdArrowRoundBack className='cursor-pointer' onClick={() => router.back()} title='Back' />
         </div>
@@ -72,5 +72,5 @@ export default function Room({ router }) {
                 <span>Scan a QR Code</span>
             </div>
         </div>
-    </div>
+    </div> : <Loader />
 }

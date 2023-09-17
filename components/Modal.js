@@ -15,7 +15,7 @@ export default function Modal({ router }) {
 	function handleJoin(room) {
 		const name = props.tempName
 		setStorage('name', name, true)
-		if (!socket.connected) return toast.error('Something went wrong, try again!')
+		if (!socket.connected) return toast.error('Please check your internet connectivity')
 		socket.emit('join-room', { name, room, type }, ({ message, opponent }) => {
 			toast.success(message)
 			setModal({ active: false })
