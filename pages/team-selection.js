@@ -112,9 +112,9 @@ export default function TeamSelection({ router }) {
                     </div>)}
                 </div>
             </div>}
-            {!online && <div className='fixed flex items-center top-8 left-10 scale-150'>
+            <div className='fixed flex items-center top-8 left-10 scale-150'>
                 <IoMdArrowRoundBack className='cursor-pointer' onClick={goBack} title='Back' />
-            </div>}
+            </div>
             <div className='fixed flex items-center top-8 right-10 space-x-4 scale-125'>
                 {online ? <>
                     {Boolean(myTeam) && id && <PeerChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} dialogOptions={{ style: { translate: '-72%' } }} />}

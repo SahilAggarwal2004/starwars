@@ -22,7 +22,7 @@ export default function Waiting() {
         }
     }
 
-    return <div className='flex flex-col items-center justify-center w-screen h-screen space-y-5 text-center px-2'>
+    return <div className='flex flex-col items-center justify-center w-screen min-h-screen space-y-5 text-center px-2 py-12 '>
         <div className='text-lg xs:text-xl'>Waiting for the opponent to join...</div>
         <div className='text-center xs:text-lg space-y-2 bg-white text-black max-w-[95vw]'>
             <div className='cursor-pointer select-none font-medium text-gray-800 flex justify-center items-center space-x-1' onClick={share}>
@@ -35,6 +35,8 @@ export default function Waiting() {
                 <QRCode value={link} bgColor='#FFFFFF' fgColor='#000000' />
             </div>
         </div>
-        <ImExit className='fixed top-8 right-10 scale-125 cursor-pointer' onClick={() => resetConnection('/room')} title="Exit" />
+        <div  className='fixed flex items-center top-1 right-8 scale-125'>
+            <ImExit className='cursor-pointer' onClick={() => resetConnection('/room')} title="Exit" />
+        </div>
     </div>
 }
