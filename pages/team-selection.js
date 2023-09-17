@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { useEffect, useState } from 'react'
 import { randomElement } from 'random-stuff-js';
 import { FaRandom, FaUndoAlt } from 'react-icons/fa'
-import { IoMdArrowRoundBack } from 'react-icons/io'
+import { ImExit } from 'react-icons/im';
 import { useGameContext } from '../contexts/GameContext';
 import { allAbilities, details, features, modes } from '../constants';
 import { getStorage } from '../modules/storage';
@@ -16,7 +16,7 @@ import PeerChat from '../components/PeerChat';
 const maxPlayers = playersPerTeam * 2
 
 export default function TeamSelection({ router }) {
-    const { team1, team2, teams, setTeam1, setTeam2, abilities, setInitialData, mode, socket, myTeam, resetConnection, players, setPlayers } = useGameContext();
+    const { team1, team2, teams, setTeam1, setTeam2, abilities, setInitialData, mode, socket, myTeam, players, setPlayers } = useGameContext();
     const online = mode === 'online'
     const id = getStorage('roomId')
     const [loading, setLoading] = useState(online)
@@ -85,8 +85,8 @@ export default function TeamSelection({ router }) {
         setTeam2(selected.slice(playersPerTeam))
     }
 
-    function goBack() {
-        if (online) resetConnection('/room')
+    function exit() {
+        if (online) router.push('/room')
         else router.back()
     }
 
@@ -112,14 +112,12 @@ export default function TeamSelection({ router }) {
                     </div>)}
                 </div>
             </div>}
-            <div className='fixed flex items-center top-8 left-10 scale-150'>
-                <IoMdArrowRoundBack className='cursor-pointer' onClick={goBack} title='Back' />
-            </div>
             <div className='fixed flex items-center top-8 right-10 space-x-4 scale-125'>
                 {online ? <>
                     {Boolean(myTeam) && id && <PeerChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} dialogOptions={{ style: { translate: '-72%' } }} />}
                 </> : count ? <FaUndoAlt className='cursor-pointer' onClick={reset} title="Reset" />
                     : <FaRandom className='cursor-pointer' onClick={shuffle} title="Shuffle" />}
+                <ImExit className='cursor-pointer' onClick={exit} title='Exit' />
             </div>
         </>}
     </>

@@ -5,7 +5,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import { getStorage, setStorage } from '../../modules/storage';
 
 export default function Room({ router }) {
-    const { setMode, socket, setTeam, resetConnection } = useGameContext()
+    const { setMode, socket, setTeam } = useGameContext()
     const { roomId } = router.query
     const name = useRef()
 
@@ -28,7 +28,7 @@ export default function Room({ router }) {
             })
         } catch {
             toast.error('Invalid room id!')
-            resetConnection('/room')
+            router.push('/room')
         }
     }
 

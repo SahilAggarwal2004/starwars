@@ -7,8 +7,8 @@ import { toast } from 'react-toastify'
 import { useGameContext } from '../contexts/GameContext'
 import { getStorage } from "../modules/storage";
 
-export default function Waiting() {
-    const { myTeam, resetConnection, handlePlay } = useGameContext()
+export default function Waiting({ router }) {
+    const { myTeam, handlePlay } = useGameContext()
     const link = `${window.location.origin}/room/${getStorage('roomId')}`
 
     useEffect(() => { if (myTeam) handlePlay() }, [myTeam])
@@ -35,8 +35,8 @@ export default function Waiting() {
                 <QRCode value={link} bgColor='#FFFFFF' fgColor='#000000' />
             </div>
         </div>
-        <div  className='fixed flex items-center top-1 right-8 scale-125'>
-            <ImExit className='cursor-pointer' onClick={() => resetConnection('/room')} title="Exit" />
+        <div className='fixed flex items-center top-1 right-8 scale-125'>
+            <ImExit className='cursor-pointer' onClick={() => router.push('/room')} title="Exit" />
         </div>
     </div>
 }
