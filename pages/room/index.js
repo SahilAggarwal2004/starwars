@@ -50,7 +50,7 @@ export default function Room({ router }) {
 
     return socket?.connected ? <div className='my-12 space-y-5 px-2'>
         <div className='fixed flex items-center top-6 left-6 md:left-8 scale-150'>
-            <IoMdArrowRoundBack className='cursor-pointer' onClick={() => router.back()} title='Back' />
+            <IoMdArrowRoundBack className='cursor-pointer' onClick={() => router.replace('/')} title='Back' />
         </div>
         <Select active={type} values={[{ value: 'public', label: 'Public Room' }, { value: 'private', label: 'Private Room' }]} />
         <form className='flex flex-col items-center justify-center space-y-4 pt-3' onSubmit={e => e.preventDefault()}>
