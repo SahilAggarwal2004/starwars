@@ -5,8 +5,8 @@ import { loadFull } from 'tsparticles'
 import { modes } from '../constants';
 import { useGameContext } from '../contexts/GameContext';
 
-export default function Home() {
-  const { handlePlay, setMode } = useGameContext()
+export default function Home({ router, enterFullscreen }) {
+  const { setMode } = useGameContext()
   const particlesInit = useCallback(async engine => {
     // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
     // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
@@ -15,6 +15,14 @@ export default function Home() {
   }, []);
 
   useEffect(() => { setMode('') }, [])
+
+  function handlePlay(e) {
+    const mode = e.target.getAttribute('mode')
+    setMode(mode)
+    const sendToRoom = mode === 'online'
+    router.push(sendToRoom ? '/room' : '/team-selection')
+    if (navigator.userAgentData?.mobile && !sendToRoom) enterFullscreen()
+  }
 
   return <>
     <Particles

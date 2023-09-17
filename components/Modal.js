@@ -3,6 +3,7 @@ import { showModal } from '../constants'
 import { useGameContext } from '../contexts/GameContext'
 import { useUtilityContext } from '../contexts/UtilityContext'
 import { setStorage } from '../modules/storage'
+import { oppositeTeam } from '../modules/functions'
 import QrScanner from './QrScanner'
 
 export default function Modal({ router }) {
@@ -30,8 +31,8 @@ export default function Modal({ router }) {
 
 	function handleExit() {
 		setModal({ active: false })
-		setStorage('winner', myTeam === 1 ? 2 : 1)
-		router.push('/result')
+		setStorage('winner', oppositeTeam(myTeam))
+		router.replace('/result')
 	}
 
 	return showModal.includes(router.pathname) && <>

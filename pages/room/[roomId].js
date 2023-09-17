@@ -28,7 +28,7 @@ export default function Room({ router }) {
             })
         } catch {
             toast.error('Invalid room id!')
-            router.push('/room')
+            router.replace('/room')
         }
     }
 

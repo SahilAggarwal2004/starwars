@@ -7,11 +7,15 @@ import { toast } from 'react-toastify'
 import { useGameContext } from '../contexts/GameContext'
 import { getStorage } from "../modules/storage";
 
-export default function Waiting({ router }) {
-    const { myTeam, handlePlay } = useGameContext()
+export default function Waiting({ router, enterFullscreen }) {
+    const { myTeam } = useGameContext()
     const link = `${window.location.origin}/room/${getStorage('roomId')}`
 
-    useEffect(() => { if (myTeam) handlePlay() }, [myTeam])
+    useEffect(() => {
+        if (!myTeam) return
+        router.replace('/team-selection')
+        if (navigator.userAgentData?.mobile) enterFullscreen()
+    }, [myTeam])
 
     function share() {
         const data = { url: link }
@@ -36,7 +40,7 @@ export default function Waiting({ router }) {
             </div>
         </div>
         <div className='fixed flex items-center top-1 right-8 scale-125'>
-            <ImExit className='cursor-pointer' onClick={() => router.push('/room')} title="Exit" />
+            <ImExit className='cursor-pointer' onClick={() => router.replace('/room')} title="Exit" />
         </div>
     </div>
 }

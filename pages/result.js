@@ -17,7 +17,7 @@ export default function Result({ router }) {
             setStorage('connection', false)
             removeStorage('opponent')
             clearChat()
-        } else router.push('/')
+        } else router.replace('/')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -25,6 +25,6 @@ export default function Result({ router }) {
         <div className='main-heading static'>
             {mode === 'online' ? (winner === myTeam ? 'Congratulations! You won' : 'Uh oh! You lost') : mode === 'computer' && winner === 2 ? 'Computer won' : `Congratulations! Team ${winner} won`} the game.
         </div>
-        <Link href='/' className='primary-button'>Play Again</Link>
+        <Link href='/' replace className='primary-button'>Play Again</Link>
     </div>
 }

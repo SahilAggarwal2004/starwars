@@ -2,6 +2,8 @@ import { hasEffect } from "./effects";
 import { allAbilities } from '../constants'
 import { indexes } from "../public/players";
 
+export const oppositeTeam = team => team === 1 ? 2 : 1
+
 export const reduce = arr => arr.filter(e => e !== 0)
 
 export const mapName = player => (typeof player === 'string') ? player : player.name

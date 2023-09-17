@@ -8,7 +8,7 @@ import { ImExit } from 'react-icons/im';
 import { useGameContext } from '../contexts/GameContext';
 import { allAbilities, details, features, modes } from '../constants';
 import { getStorage } from '../modules/storage';
-import { mapName } from '../modules/functions';
+import { mapName, oppositeTeam } from '../modules/functions';
 import { playersPerTeam } from '../public/players';
 import Loader from '../components/Loader';
 import PeerChat from '../components/PeerChat';
@@ -37,7 +37,7 @@ export default function TeamSelection({ router }) {
 
     useEffect(() => {
         if (players.length && count === maxPlayers) {
-            if (online) myTeam === 1 && socket.emit('initiate-game', () => router.push('/play'))
+            if (online) myTeam === 1 && socket.emit('initiate-game', () => router.replace('/play'))
             else {
                 if (team1[0].leader?.type === 'start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
                 if (team2[0].leader?.type === 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
@@ -48,7 +48,7 @@ export default function TeamSelection({ router }) {
                     return obj
                 }, {});
                 setInitialData(initialData)
-                router.push('/play')
+                router.replace('/play')
             }
         } else if (mode === 'computer' && currentTeam === 2) {
             do { var player = randomElement(players) } while (teams.includes(player))
@@ -85,11 +85,6 @@ export default function TeamSelection({ router }) {
         setTeam2(selected.slice(playersPerTeam))
     }
 
-    function exit() {
-        if (online) router.push('/room')
-        else router.back()
-    }
-
     return <>
         <Head><title>{modes[mode]} | Star Wars</title></Head>
         {loading ? <Loader /> : <>
@@ -114,10 +109,10 @@ export default function TeamSelection({ router }) {
             </div>}
             <div className='fixed flex items-center top-8 right-10 space-x-4 scale-125'>
                 {online ? <>
-                    {Boolean(myTeam) && id && <PeerChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} dialogOptions={{ style: { translate: '-72%' } }} />}
+                    {Boolean(myTeam) && id && <PeerChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${oppositeTeam(myTeam)}`} dialogOptions={{ style: { translate: '-72%' } }} />}
                 </> : count ? <FaUndoAlt className='cursor-pointer' onClick={reset} title="Reset" />
                     : <FaRandom className='cursor-pointer' onClick={shuffle} title="Shuffle" />}
-                <ImExit className='cursor-pointer' onClick={exit} title='Exit' />
+                <ImExit className='cursor-pointer' onClick={() => router.back()} title='Exit' />
             </div>
         </>}
     </>

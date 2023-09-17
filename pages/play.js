@@ -9,7 +9,7 @@ import { useUtilityContext } from "../contexts/UtilityContext"
 import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules/effects"
 import { getStorage, setStorage } from "../modules/storage"
 import { details, features, gameAbilities, modes, usableAbilities } from "../constants"
-import { findPlayer, merge } from "../modules/functions"
+import { findPlayer, merge, oppositeTeam } from "../modules/functions"
 import { indexes, playersPerTeam } from "../public/players"
 import Loader from "../components/Loader"
 import Effect from "../components/Effect"
@@ -66,12 +66,12 @@ export default function Play({ router, isFullScreen }) {
     useEffect(() => { setTimeout(updatePositions, 1) }, [isFullScreen])
 
     useEffect(() => {
-        if (!loading && teams.length < maxPlayers) router.push('/')
+        if (!loading && teams.length < maxPlayers) router.replace('/')
         if (turn < 0) newTurn()
         const winner = checkResult()
         if (winner) {
             setStorage('winner', winner)
-            router.push('/result')
+            router.replace('/result')
         }
     }, [team1, team2])
 
@@ -147,7 +147,7 @@ export default function Play({ router, isFullScreen }) {
         <Head><title>{modes[mode]} | Star Wars</title></Head>
         {loading ? <Loader /> : <>
             {online && Boolean(myTeam) && id && <div className="fixed flex items-center x-center top-4 space-x-4 scale-125">
-                <PeerChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${myTeam === 1 ? 2 : 1}`} />
+                <PeerChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${oppositeTeam(myTeam)}`} />
                 <ImExit className='cursor-pointer' onClick={() => setModal({ active: true, type: 'exit' })} title="Exit" />
             </div>}
             {[team1, team2].map((team, index) => {

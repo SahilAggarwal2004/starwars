@@ -1,10 +1,11 @@
 import { playersPerTeam } from "../public/players"
+import { oppositeTeam } from "./functions"
 import { getStorage } from "./storage"
 
-const getEnemy = (turnTeam, enemy) => ((turnTeam == 1 ? 2 : 1) - 1) * playersPerTeam + enemy
+const getEnemy = (turnTeam, enemy) => (oppositeTeam(turnTeam) - 1) * playersPerTeam + enemy
 
 export async function animateBullet({ multi, player, enemy, turnTeam, enemyTeam, isCountering }) {
-    if (isCountering) turnTeam = turnTeam === 1 ? 2 : 1
+    if (isCountering) turnTeam = oppositeTeam(turnTeam)
     const positions = getStorage('positions')
     const { left: playerLeft, top: playerTop, right: playerRight, bottom: playerBottom } = positions[(turnTeam - 1) * playersPerTeam + player]
     enemyTeam.forEach(({ health }, index) => {

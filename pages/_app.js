@@ -25,6 +25,7 @@ function MyApp({ Component, pageProps }) {
 	const updateFullScreen = () => setFullscreen(document.fullscreen)
 	const updateOrientation = () => setOrientation(screen.orientation.type)
 	pageProps.router = router;
+	pageProps.enterFullscreen = enterFullscreen;
 	
 	useEffect(() => {
 		setLoading(false)

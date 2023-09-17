@@ -9,7 +9,7 @@ import { assist, block, revive, kill, apply, remove } from '../modules/abilities
 import { animateBullet } from '../modules/animation'
 import { hasEffect, hasStealth, hasTaunt, stackCount } from '../modules/effects';
 import { getStorage, removeStorage, setStorage } from '../modules/storage';
-import { calculateDamage, reduce, verify } from '../modules/functions';
+import { calculateDamage, oppositeTeam, reduce, verify } from '../modules/functions';
 import { multiAttackers, noMode, onlineConnected, persistConnection, preserveGame } from '../constants';
 import { getPlayers, indexes, leaderAbilities, playersPerTeam, speedVariation } from '../public/players';
 
@@ -18,7 +18,7 @@ const server = process.env.NODE_ENV === 'production' ? 'https://starwarsgame.onr
 const Context = createContext();
 export const useGameContext = () => useContext(Context)
 
-const GameContext = ({ router, children, enterFullscreen }) => {
+const GameContext = ({ router, children }) => {
     const [players, setPlayers] = useStorage('players', getPlayers())
     const [rooms, setRooms] = useState([])
     const [team1, setTeam1] = useStorage('team1', [])
@@ -36,11 +36,11 @@ const GameContext = ({ router, children, enterFullscreen }) => {
     const online = mode === 'online'
 
     useEffect(() => {
-        if (!mode && !noMode.includes(router.pathname)) router.push('/')
+        if (!mode && !noMode.includes(router.pathname)) router.replace('/')
         if (!preserveGame.includes(router.pathname)) resetGame()
         if (router.pathname !== '/result') removeStorage('winner')
         if (online && !persistConnection.includes(router.pathname)) return resetConnection()
-        if (online && !getStorage('connection') && onlineConnected.includes(router.pathname)) router.push('/room')
+        if (online && !getStorage('connection') && onlineConnected.includes(router.pathname)) router.replace('/room')
     }, [router.pathname])
 
     useEffect(() => {
@@ -49,7 +49,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
         newSocket.on('connect', () => {
             newSocket.on('error', (error, type) => {
                 toast.error(error)
-                if (type === 'redirect') router.push('/room')
+                if (type === 'redirect') router.replace('/room')
             })
             newSocket.on('public-rooms', rooms => setRooms(rooms))
             newSocket.on('new-user', opponent => {
@@ -63,17 +63,17 @@ const GameContext = ({ router, children, enterFullscreen }) => {
                 clearChat()
                 if (started) {
                     setStorage('winner', team)
-                    router.push('/result')
+                    router.replace('/result')
                 } else {
                     setTeam(0)
-                    router.push('/waiting-lobby')
+                    router.replace('/waiting-lobby')
                 }
             })
             newSocket.on('selected-player', (team1, team2) => {
                 if (team1) setTeam1(team1)
                 if (team2) setTeam2(team2)
             })
-            newSocket.on('ready', () => router.push('/play'))
+            newSocket.on('ready', () => router.replace('/play'))
             newSocket.on('sync-data', ({ team1, team2, turn, turnmeter, healthSteal }) => {
                 setTeam1(team1)
                 setTeam2(team2)
@@ -86,8 +86,8 @@ const GameContext = ({ router, children, enterFullscreen }) => {
                 setStorage('opponent', opponent)
                 if (team) {
                     setTeam(team)
-                    router.push('/team-selection')
-                } else router.push('/play')
+                    router.replace('/team-selection')
+                } else router.replace('/play')
             })
             newSocket.on('animation', animateBullet)
         })
@@ -205,7 +205,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
                 if (!result) return
                 if (enemy === index || (ability === 'special' && multiAttackers.includes(allyTeam[player].name))) setTurnmeter(old => {
                     const bonus = maximumNumber(old) * 0.05
-                    const baseIndex = ((turnTeam === 1 ? 2 : 1) - 1) * playersPerTeam
+                    const baseIndex = (oppositeTeam(turnTeam) - 1) * playersPerTeam
                     old[baseIndex + index] += bonus
                     const { result, index: gmyIndex } = verify('Grand Master Yoda', enemyTeam, { alive: true })
                     if (result) old[baseIndex + gmyIndex] += bonus
@@ -268,14 +268,6 @@ const GameContext = ({ router, children, enterFullscreen }) => {
     }
 
     const isGameStart = () => turnmeter.reduce((sum, speed) => sum + speed, 0) === 0
-
-    function handlePlay(e) {
-        const mode = e?.target.getAttribute('mode')
-        if (mode) setMode(mode)
-        const sendToRoom = router.pathname === '/' && (online || mode === 'online')
-        router.push(sendToRoom ? '/room' : '/team-selection')
-        if (navigator.userAgentData?.mobile && !sendToRoom) enterFullscreen()
-    }
 
     function resetConnection() {
         socket?.emit('leave-room')
@@ -440,7 +432,7 @@ const GameContext = ({ router, children, enterFullscreen }) => {
         }, animation ? 2000 : 50);
     }
 
-    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, attack, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, mode, setMode, socket, myTeam, setTeam, handlePlay, players, setPlayers, rooms, setRooms }}>
+    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, attack, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, mode, setMode, socket, myTeam, setTeam, players, setPlayers, rooms, setRooms }}>
         {children}
     </Context.Provider>
 }
