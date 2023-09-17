@@ -18,18 +18,24 @@ function MyApp({ Component, pageProps }) {
 	const [loading, setLoading] = useState(true)
 	const [isMobile, setMobile] = useState()
 	const [isFullscreen, setFullscreen] = useState()
+	const [orientation, setOrientation] = useState(typeof screen !== 'undefined' && screen.orientation.type)
 	const fullscreenElement = useRef()
-	const landscape = typeof screen !== 'undefined' && screen.orientation.type.includes('landscape')
+	const landscape = orientation && orientation.includes('landscape')
 	
 	const updateFullScreen = () => setFullscreen(document.fullscreen)
+	const updateOrientation = () => setOrientation(screen.orientation.type)
 	pageProps.router = router;
-
+	
 	useEffect(() => {
 		setLoading(false)
 		setMobile(navigator.userAgentData?.mobile)
 		setFullscreen(document.fullscreen)
 		document.addEventListener('fullscreenchange', updateFullScreen)
-		return () => { document.removeEventListener('fullscreenchange', updateFullScreen) }
+		screen.orientation.addEventListener('change', updateOrientation)
+		return () => {
+			document.removeEventListener('fullscreenchange', updateFullScreen)
+			screen.orientation.removeEventListener('change', updateOrientation)
+		}
 	}, [])
 
 	async function enterFullscreen() {
