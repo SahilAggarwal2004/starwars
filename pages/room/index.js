@@ -48,7 +48,7 @@ export default function Room({ router }) {
         })
     }
 
-    return socket?.connected ? <div className='my-12 space-y-5 px-2'>
+    return socket ? <div className='my-12 space-y-5 px-2'>
         <div className='fixed flex items-center top-6 left-6 md:left-8 scale-150'>
             <IoMdArrowRoundBack className='cursor-pointer' onClick={() => router.replace('/')} title='Back' />
         </div>

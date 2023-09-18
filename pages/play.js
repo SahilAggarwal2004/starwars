@@ -17,13 +17,6 @@ import PeerChat from "../components/PeerChat"
 
 const maxPlayers = playersPerTeam * 2
 
-function confirmBack() {
-    if (confirm('Your current game progress will be lost!')) {
-        window.removeEventListener('popstate', confirmBack)
-        window.history.back()
-    } else window.history.pushState(null, document.title, window.location.href) // preventing back for next click
-}
-
 export default function Play({ router, isFullScreen }) {
     const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, attack, isAttacking, turnTeam, turnmeter, healthSteal, setHealthSteal, setInitialData, mode, setTurnmeter, socket, myTeam, setTeam, players } = useGameContext()
     const { setModal } = useUtilityContext()
@@ -39,7 +32,7 @@ export default function Play({ router, isFullScreen }) {
     useEffect(() => {
         setHoverPlayer()
         window.addEventListener('resize', updatePositions)
-        if (!navigator.userAgentData?.mobile) {
+        if (mode) {
             window.history.pushState(null, document.title, window.location.href) // preventing back initially
             window.addEventListener('popstate', confirmBack)
         }
@@ -107,6 +100,13 @@ export default function Play({ router, isFullScreen }) {
         if (online) setTimeout(() => socket.emit('sync-data', { team1, team2, turn, turnmeter, healthSteal }), +(player.health <= 0 && 600));
     }, [isAttacking, turn])
 
+    function confirmBack() {
+        if (confirm('Your current game progress will be lost!')) {
+            window.removeEventListener('popstate', confirmBack)
+            router.replace('/')
+        } else window.history.pushState(null, document.title, window.location.href) // preventing back for next click
+    }
+
     function selectEnemy(enemy, index) {
         const enemyTeam = turnTeam === 1 ? team2 : team1
         const possibleEnemies = enemyTeam.flatMap((enemy, i) => (hasTaunt(enemy, team1, team2)) ? [i] : [])
@@ -143,13 +143,18 @@ export default function Play({ router, isFullScreen }) {
         setStorage('positions', positions);
     }
 
+    function exit() {
+        if (online) setModal({ active: true, type: 'exit' })
+        else window.history.back()
+    }
+
     return <>
         <Head><title>{modes[mode]} | Star Wars</title></Head>
         {loading ? <Loader /> : <>
-            {online && Boolean(myTeam) && id && <div className="fixed flex items-center x-center top-4 space-x-4 scale-125">
-                <PeerChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${oppositeTeam(myTeam)}`} />
-                <ImExit className='cursor-pointer' onClick={() => setModal({ active: true, type: 'exit' })} title="Exit" />
-            </div>}
+            <div className="fixed flex items-center x-center top-4 space-x-4 scale-125">
+                {online && Boolean(myTeam) && id && <PeerChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${oppositeTeam(myTeam)}`} />}
+                <ImExit className='cursor-pointer' onClick={exit} title="Exit" />
+            </div>
             {[team1, team2].map((team, index) => {
                 const displayName = online ? (myTeam === index + 1 ? getStorage('name', '', true) : getStorage('opponent', '')) : mode === 'computer' && index ? 'Computer' : `Team ${index + 1}`
                 return <div id={`team${index + 1}`} key={index} className={`fixed top-0 px-1 max-w-[5.75rem] overflow-hidden ${index ? 'right-4' : 'left-4'} space-y-4 flex flex-col items-center justify-center h-full`}>

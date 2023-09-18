@@ -5,6 +5,8 @@ import { loadFull } from 'tsparticles'
 import { modes } from '../constants';
 import { useGameContext } from '../contexts/GameContext';
 
+const back = () => window.history.back()
+
 export default function Home({ router, enterFullscreen }) {
   const { setMode } = useGameContext()
   const particlesInit = useCallback(async engine => {
@@ -14,7 +16,11 @@ export default function Home({ router, enterFullscreen }) {
     await loadFull(engine);
   }, []);
 
-  useEffect(() => { setMode('') }, [])
+  useEffect(() => {
+    setMode('')
+    window.addEventListener('popstate', back)
+    return () => { window.removeEventListener('popstate', back) }
+  }, [])
 
   function handlePlay(e) {
     const mode = e.target.getAttribute('mode')

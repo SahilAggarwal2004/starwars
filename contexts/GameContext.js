@@ -47,6 +47,7 @@ const GameContext = ({ router, children }) => {
         if (!online) return
         const newSocket = io(server, { query: { userId: getStorage('userId', Date.now()) } })
         newSocket.on('connect', () => {
+            setSocket(newSocket)
             newSocket.on('error', (error, type) => {
                 toast.error(error)
                 if (type === 'redirect') router.replace('/room')
@@ -91,7 +92,6 @@ const GameContext = ({ router, children }) => {
             })
             newSocket.on('animation', animateBullet)
         })
-        setSocket(newSocket)
         return () => {
             resetConnection()
             newSocket.disconnect()
