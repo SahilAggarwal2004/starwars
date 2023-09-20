@@ -94,6 +94,8 @@ const GameContext = ({ router, children }) => {
         })
         return () => {
             resetConnection()
+            setSocket()
+            newSocket.removeAllListeners()
             newSocket.disconnect()
         }
     }, [online])
