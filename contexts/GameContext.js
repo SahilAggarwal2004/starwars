@@ -231,7 +231,7 @@ const GameContext = ({ router, children }) => {
             basic: ({ player, allyTeam }) => apply({ effect: 'health', type: 'buff', player, allyTeam, all: true, stack: 2, side: 'light' }),
             special: ({ allyTeam, enemyTeam }) => {
                 allyTeam.forEach(({ name, type, health, special }, index) => { if (health > 0 && name !== 'Jedi Knight Revan' && type === 'light' && special) allyTeam[index].special.cooldown = 0 })
-                enemyTeam.forEach(({ health, type, speed }, index) => { if (health > 0 && type == 'dark' && speed > 1) enemyTeam[index].speed -= 5 })
+                enemyTeam.forEach(({ health, type, speed }, index) => { if (health > 0 && type == 'dark' && speed > 5) enemyTeam[index].speed -= 5 })
             },
             leader: ({ ability, allyTeam }) => {
                 if (ability !== 'basic') return
