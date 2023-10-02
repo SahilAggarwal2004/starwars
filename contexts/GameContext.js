@@ -137,12 +137,12 @@ const GameContext = ({ router, children }) => {
                 apply({ effect: 'immunity', type: 'debuff', enemy, enemyTeam })
                 apply({ effect: 'defense', type: 'debuff', enemyTeam, all: true })
             },
-            unique: ({ player, enemy, allyTeam, enemyTeam, animation, ability }) => {
+            unique: ({ player, enemy, allyTeam, enemyTeam, animation, multi }) => {
                 const playerData = allyTeam[player];
                 if (!animation || hasStealth(playerData)) return
                 const { result, index, data } = verify('Count Dooku', enemyTeam, { alive: true })
                 if (!result || hasEffect('stun', 'debuff', data)) return
-                if (enemy === index || (ability === 'special' && multiAttackers.includes(playerData.name))) {
+                if (enemy === index || multi) {
                     data.health *= 1.05
                     attack({ player: index, enemy: player, isCountering: true })
                     return { wait: 2000 }
@@ -165,11 +165,11 @@ const GameContext = ({ router, children }) => {
             basic: ({ enemy, enemyTeam }) => apply({ effect: 'offense', type: 'debuff', enemy, enemyTeam }),
             special: ({ enemyTeam }) => apply({ effect: 'health', type: 'debuff', enemyTeam, stack: 2, all: true }),
             leader: leaderAbilities['Darth Vader'],
-            unique: ({ player, enemy, allyTeam, enemyTeam, animation, ability }) => {
+            unique: ({ player, enemy, allyTeam, enemyTeam, animation, multi }) => {
                 if (!animation) return
                 const { result, index } = verify('Darth Vader', enemyTeam, { alive: true })
                 if (!result) return
-                if (enemy === index || (ability === 'special' && multiAttackers.includes(allyTeam[player].name))) apply({ effect: 'health', type: 'debuff', enemy: player, enemyTeam: allyTeam, turns: 2, stack: 1 }) // 2 turns passed as 1 turn will be deducted immediately
+                if (enemy === index || multi) apply({ effect: 'health', type: 'debuff', enemy: player, enemyTeam: allyTeam, turns: 2, stack: 1 }) // 2 turns passed as 1 turn will be deducted immediately
             }
         },
         'Grand Master Yoda': {
@@ -201,11 +201,11 @@ const GameContext = ({ router, children }) => {
                 assistPlayers.forEach(assistPlayer => attack({ player: assistPlayer, enemy, isAssisting: true, damageMultiplier: 0.5 }))
                 return 2000
             },
-            unique: ({ player, allyTeam, enemy, enemyTeam, animation, ability, isCountering }) => {
+            unique: ({ enemy, enemyTeam, multi, animation, isCountering }) => {
                 if (!animation || isCountering) return
                 const { result, index } = verify('Hermit Yoda', enemyTeam, { alive: true })
                 if (!result) return
-                if (enemy === index || (ability === 'special' && multiAttackers.includes(allyTeam[player].name))) setTurnmeter(old => {
+                if (enemy === index || multi) setTurnmeter(old => {
                     const bonus = maximumNumber(old) * 0.05
                     const baseIndex = (oppositeTeam(turnTeam) - 1) * playersPerTeam
                     old[baseIndex + index] += bonus
@@ -381,13 +381,13 @@ const GameContext = ({ router, children }) => {
         const foresight = foresightArr[enemy]
 
         const multi = ability === 'special' && multiAttackers.includes(playerData.name)
-        const animationObj = { multi, player, enemy, turnTeam, enemyTeam: multi ? enemyTeam : [enemyData], isCountering }
+        const animationObj = { player, enemy, turnTeam, enemyTeam: multi ? enemyTeam : [enemyData], multi, isCountering }
         if (animation) {
             animateBullet(animationObj)
             if (online) socket.emit('animation', animationObj)
         }
 
-        const abilityObj = { player, enemy, allyTeam, enemyTeam, damage, foresight, ability, animation, isAssisting, isCountering }
+        const abilityObj = { player, enemy, allyTeam, enemyTeam, damage, foresight, ability, multi, animation, isAssisting, isCountering }
         const runUniqueAbilities = type => teams.forEach((team, teamIndex) => team.forEach((data, index) => {
             const { name, unique = {} } = data
             if (unique.type !== type || (teamIndex && foresightArr[index] && unique.foresight)) return
