@@ -261,8 +261,8 @@ const GameContext = ({ router, children }) => {
         },
         'Old Daka': {
             special: ({ player, allyTeam }) => revive(allyTeam, allyTeam[player].health * 1.5, initialData),
-            leader: ({ enemy, enemyTeam, animation, isAssisting, isCountering }) => {
-                if (!animation || isAssisting || isCountering) return
+            leader: ({ enemy, enemyTeam, animation }) => {
+                if (!animation) return
                 const { result } = verify('Old Daka', enemyTeam, { index: 0 })
                 if (result) enemyTeam[enemy].health *= 1.15
             }

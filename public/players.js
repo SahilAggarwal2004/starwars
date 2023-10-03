@@ -112,7 +112,7 @@ export const getPlayers = () => [
         name: 'Old Daka', type: 'dark',
         basic: { damage: randomNumber(75, 120), animation: true, auto: true },
         special: { description: "Revive a random defeated ally at 150% of her current health.", cooldown: 2, foresight: true },
-        leader: { description: "Whenever an ally suffers damage from an attack, excluding attacks out of turn, the ally recovers 15% health.", type: 'in-game' }
+        leader: { description: "Whenever an ally suffers target damage from an attack, the ally recovers 15% health.", type: 'in-game' }
     })
 ]
 
