@@ -24,8 +24,8 @@ dependencies:
     specifier: ^4.11.0
     version: 4.11.0(react@18.2.0)
   react-peer-chat:
-    specifier: ^0.5.0
-    version: 0.5.0(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^0.5.2
+    version: 0.5.2(react-dom@18.2.0)(react@18.2.0)
   react-qr-code:
     specifier: ^2.0.12
     version: 2.0.12(react@18.2.0)
@@ -4130,8 +4130,8 @@ packages:
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
-  /react-peer-chat@0.5.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-U/jzvCuTbSGLbL+NQx+oORtSZImiP8OljU5ZTlBxdzu5rH0jqP/5iDK5uEQbL7IotMeT+stoSr4loj6g38Dc3A==}
+  /react-peer-chat@0.5.2(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-IXOT5+C8IjlZm7MWrjuyDjgvbxK3DTpQ9Ts7qAkS7c2h5DG6iN83FrhOdV/HZSY6ds89fcSdk7KHxaGckEie/w==}
     peerDependencies:
       react: '>=16.0.0'
       react-dom: '>=16.0.0'
