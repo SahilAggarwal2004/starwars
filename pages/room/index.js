@@ -15,6 +15,7 @@ export default function Room({ router }) {
     const { setModal } = useUtilityContext()
     const { type = 'public' } = router.query
     const [room, setRoom] = useState()
+    const [disabled, setDisabled] = useState(false)
     const name = useRef();
 
     useEffect(() => {
@@ -36,6 +37,8 @@ export default function Room({ router }) {
             if (method === 'join-room') return setModal({ active: true, type: 'public-rooms', props: { tempName } })
             tempRoom = generateRoomId()
         }
+        setDisabled(true)
+        setTimeout(() => setDisabled(false), 1000)
         socket.emit(method, { name: tempName, room: tempRoom, type }, ({ message, opponent }) => {
             toast.success(message)
             setStorage('connection', true)
@@ -59,8 +62,8 @@ export default function Room({ router }) {
                 <input className='text-center border px-2 py-0.5 rounded-b' type='text' value={room} placeholder={`Enter room id${type === 'public' ? ' (optional)' : ''}`} autoComplete='new-password' onChange={restrictRoomInput} />
             </div>
             <div className='flex justify-center space-x-2 xs:space-x-5'>
-                <button type='submit' method='create-room' className='secondary-button px-3 py-1' onClick={handleClick}>Create Room</button>
-                <button type='submit' method='join-room' className='tertiary-button px-3 py-1' onClick={handleClick}>
+                <button type='submit' method='create-room' disabled={disabled} className='secondary-button px-3 py-1' onClick={handleClick}>Create Room</button>
+                <button type='submit' method='join-room' disabled={disabled} className='tertiary-button px-3 py-1' onClick={handleClick}>
                     {type === 'private' || room ? 'Join Room' : 'Public Rooms'}
                 </button>
             </div>
