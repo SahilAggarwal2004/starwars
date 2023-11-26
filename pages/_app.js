@@ -1,17 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import '../styles/globals.css'
-import 'react-toastify/dist/ReactToastify.css';
-import 'react-peer-chat/dist/styles.css'
 import Head from 'next/head'
 import Script from 'next/script'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import { ToastContainer } from 'react-toastify'
 import GameContext from '../contexts/GameContext'
-import Loader from '../components/Loader';
 import { notFullscreen } from '../constants';
 import UtilityContext from '../contexts/UtilityContext';
 import Modal from '../components/Modal';
+import '../styles/globals.css'
+import 'react-toastify/dist/ReactToastify.css';
+import 'react-peer-chat/dist/styles.css'
 
 function MyApp({ Component, pageProps }) {
 	const router = useRouter();
@@ -21,12 +20,12 @@ function MyApp({ Component, pageProps }) {
 	const [orientation, setOrientation] = useState(typeof screen !== 'undefined' && screen.orientation.type)
 	const fullscreenElement = useRef()
 	const landscape = orientation && orientation.includes('landscape')
-	
+
 	const updateFullScreen = () => setFullscreen(document.fullscreen)
 	const updateOrientation = () => setOrientation(screen.orientation.type)
 	pageProps.router = router;
 	pageProps.enterFullscreen = enterFullscreen;
-	
+
 	useEffect(() => {
 		setLoading(false)
 		setMobile(navigator.userAgentData?.mobile)
@@ -118,18 +117,18 @@ function MyApp({ Component, pageProps }) {
             gtag('config', 'G-ED6RPYHXQN');`}
 		</Script>
 
-		{loading ? <Loader /> : <UtilityContext>
+		<UtilityContext>
 			<GameContext router={router} enterFullscreen={enterFullscreen}>
-				<div ref={fullscreenElement} className='font-mono'>
+				{!loading && router.isReady && <div ref={fullscreenElement} className='font-mono'>
 					{!isMobile || notFullscreen.includes(router.pathname) ? <Component {...pageProps} /> : !isFullscreen ? <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>
 						<div>Please enter full screen mode</div>
 						<button onClick={enterFullscreen}>Click Here</button>
 					</div> : landscape ? <Component {...pageProps} /> : <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div>}
 					<Modal router={router} />
 					<ToastContainer pauseOnFocusLoss={false} position='top-left' />
-				</div>
+				</div>}
 			</GameContext>
-		</UtilityContext>}
+		</UtilityContext>
 	</>
 }
 
