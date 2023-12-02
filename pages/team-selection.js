@@ -19,26 +19,27 @@ export default function TeamSelection({ router }) {
     const { team1, team2, teams, setTeam1, setTeam2, abilities, setInitialData, mode, socket, myTeam, players, setPlayers } = useGameContext();
     const online = mode === 'online'
     const id = getStorage('roomId')
+    const [first, setFirst] = useState(1)
     const [loading, setLoading] = useState(online)
     const [hoverPlayer, setHoverPlayer] = useState()
     const count = teams.length
-    const currentTeam = count % 2 + 1
+    const currentTeam = (count + first - 1) % 2 + 1
     const role = count < 2 ? 'leader' : 'player'
     const instruction = online ? (currentTeam === myTeam ? "Select your " : "Opponent's turn to select ") + role : `Select ${role} for Team ${currentTeam}`
 
     useEffect(() => {
-        if (online) socket?.emit("get-players", (players, team1, team2) => {
+        if (online) socket?.emit("get-players", (players, team1, team2, first) => {
             setPlayers(players)
             setTeam1(team1)
             setTeam2(team2)
+            setFirst(first)
             setLoading(false)
         })
     }, [socket])
 
     useEffect(() => {
         if (players.length && count === maxPlayers) {
-            if (online) myTeam === 1 && socket.emit('initiate-game', () => router.replace('/play'))
-            else {
+            if (!online) {
                 if (team1[0].leader?.type === 'start') abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 })
                 if (team2[0].leader?.type === 'start') abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 })
                 setTeam1(team1)
@@ -49,7 +50,7 @@ export default function TeamSelection({ router }) {
                 }, {});
                 setInitialData(initialData)
                 router.replace('/play')
-            }
+            } else if (myTeam === 1) socket.emit('initiate-game', () => router.replace('/play'))
         } else if (mode === 'computer' && currentTeam === 2) {
             do { var player = randomElement(players) } while (teams.includes(player))
             addPlayer(player)
@@ -58,7 +59,8 @@ export default function TeamSelection({ router }) {
 
     function addPlayer(player) {
         if (!teams.includes(player) && count < maxPlayers) {
-            currentTeam === 1 ? setTeam1([...team1, player]) : setTeam2([...team2, player])
+            if (currentTeam === 1) setTeam1(team => team.concat(player))
+            else setTeam2(team => team.concat(player))
             return true
         }
     }

@@ -70,9 +70,10 @@ const GameContext = ({ router, children }) => {
                     router.replace('/waiting-lobby')
                 }
             })
-            newSocket.on('selected-player', (team1, team2) => {
-                if (team1) setTeam1(team1)
-                if (team2) setTeam2(team2)
+            newSocket.on('selected-player', (team, players) => {
+                console.log(players)
+                if (team === 1) setTeam1(players)
+                else setTeam2(players)
             })
             newSocket.on('ready', () => router.replace('/play'))
             newSocket.on('sync-data', ({ team1, team2, turn, turnmeter, healthSteal }) => {
