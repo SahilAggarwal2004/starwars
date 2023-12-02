@@ -71,7 +71,6 @@ const GameContext = ({ router, children }) => {
                 }
             })
             newSocket.on('selected-player', (team, players) => {
-                console.log(players)
                 if (team === 1) setTeam1(players)
                 else setTeam2(players)
             })
@@ -435,7 +434,7 @@ const GameContext = ({ router, children }) => {
         }, animation ? 2000 : 50);
     }
 
-    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, attack, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, mode, setMode, socket, myTeam, setTeam, players, setPlayers, rooms, setRooms }}>
+    return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, attack, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, mode, setMode, socket, myTeam, setTeam, players, setPlayers, rooms }}>
         {children}
     </Context.Provider>
 }

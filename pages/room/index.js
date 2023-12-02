@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { FaQrcode } from 'react-icons/fa';
 import { IoMdArrowRoundBack } from 'react-icons/io';
 import { toast } from 'react-toastify';
@@ -11,16 +11,12 @@ import Select from '../../components/Select';
 import Loader from '../../components/Loader';
 
 export default function Room({ router }) {
-    const { socket, setTeam, setRooms } = useGameContext()
+    const { socket, setTeam } = useGameContext()
     const { setModal } = useUtilityContext()
     const { type = 'public' } = router.query
-    const [room, setRoom] = useState()
+    const [room, setRoom] = useState('')
     const [disabled, setDisabled] = useState(false)
     const name = useRef();
-
-    useEffect(() => {
-        socket?.emit("get-public-rooms", rooms => setRooms(rooms))
-    }, [socket])
 
     const restrictNameInput = e => e.target.value = e.target.value.substring(0, 20)
 
