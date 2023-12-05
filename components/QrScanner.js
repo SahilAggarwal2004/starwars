@@ -5,7 +5,7 @@ import { useUtilityContext } from '../contexts/UtilityContext'
 import { verifyUrl } from '../modules/functions'
 import { uselessErrors } from '../constants'
 
-export default function QrScanner({ redirect }) {
+export default function QrScanner({ router }) {
     const { modal, setModal } = useUtilityContext()
     const [error, setError] = useState(false)
 
@@ -19,7 +19,7 @@ export default function QrScanner({ redirect }) {
         if (!verified) return setError(true)
         setModal({ active: false })
         toast.success('Successfuly scanned the QR Code')
-        redirect(pathname)
+        router.push(pathname)
     }
 
     useEffect(() => { setError(false) }, [modal.type])

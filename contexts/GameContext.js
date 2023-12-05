@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useState, useEffect, useContext } from 'react'
+import { usePathname } from 'next/navigation';
 import { maximumNumber, randomElement, probability } from 'random-stuff-js'
 import { io } from 'socket.io-client';
 import { toast } from 'react-toastify';
@@ -19,6 +20,7 @@ const Context = createContext();
 export const useGameContext = () => useContext(Context)
 
 const GameContext = ({ router, children }) => {
+    const pathname = usePathname()
     const [players, setPlayers] = useStorage('players', getPlayers())
     const [rooms, setRooms] = useState([])
     const [team1, setTeam1] = useStorage('team1', [])
@@ -36,12 +38,12 @@ const GameContext = ({ router, children }) => {
     const online = mode === 'online'
 
     useEffect(() => {
-        if (!mode && !noMode.includes(router.pathname)) router.replace('/')
-        if (!preserveGame.includes(router.pathname)) resetGame()
-        if (router.pathname !== '/result') removeStorage('winner')
-        if (online && !persistConnection.includes(router.pathname)) return resetConnection()
-        if (online && !getStorage('connection') && onlineConnected.includes(router.pathname)) router.replace('/room')
-    }, [router.pathname])
+        if (!mode && !noMode.includes(pathname)) router.replace('/')
+        if (!preserveGame.includes(pathname)) resetGame()
+        if (pathname !== '/result') removeStorage('winner')
+        if (online && !persistConnection.includes(pathname)) return resetConnection()
+        if (online && !getStorage('connection') && onlineConnected.includes(pathname)) router.replace('/room')
+    }, [pathname])
 
     useEffect(() => {
         if (!online) return
