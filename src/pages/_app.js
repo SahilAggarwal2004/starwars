@@ -11,6 +11,7 @@ import Modal from '../components/Modal';
 import '../styles/globals.css'
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-peer-chat/dist/styles.css'
+import { removeStorage } from '../modules/storage'
 
 function MyApp({ Component, pageProps }) {
 	const router = useRouter();
@@ -20,9 +21,6 @@ function MyApp({ Component, pageProps }) {
 	const [orientation, setOrientation] = useState(typeof screen !== 'undefined' && screen.orientation.type)
 	const fullscreenElement = useRef()
 	const landscape = orientation && orientation.includes('landscape')
-
-	const updateFullScreen = () => setFullscreen(document.fullscreen)
-	const updateOrientation = () => setOrientation(screen.orientation.type)
 	pageProps.router = router;
 	pageProps.enterFullscreen = enterFullscreen;
 
@@ -30,12 +28,9 @@ function MyApp({ Component, pageProps }) {
 		setLoading(false)
 		setMobile(navigator.userAgentData?.mobile)
 		setFullscreen(document.fullscreen)
-		document.addEventListener('fullscreenchange', updateFullScreen)
-		screen.orientation.addEventListener('change', updateOrientation)
-		return () => {
-			document.removeEventListener('fullscreenchange', updateFullScreen)
-			screen.orientation.removeEventListener('change', updateOrientation)
-		}
+		document.addEventListener('fullscreenchange', () => setFullscreen(document.fullscreen))
+		screen.orientation.addEventListener('change', () => setOrientation(screen.orientation.type))
+		window.addEventListener('beforeunload', () => removeStorage('particles-init'))
 	}, [])
 
 	async function enterFullscreen() {

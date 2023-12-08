@@ -9,7 +9,7 @@ import { useGameContext } from '../contexts/GameContext';
 import { allAbilities, details, features, modes } from '../constants';
 import { getStorage } from '../modules/storage';
 import { mapName, oppositeTeam } from '../modules/functions';
-import { playersPerTeam } from '../public/players';
+import { playersPerTeam } from '../../public/players';
 import Loader from '../components/Loader';
 import PeerChat from '../components/PeerChat';
 

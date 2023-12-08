@@ -1,6 +1,6 @@
 import { hasEffect } from "./effects";
 import { allAbilities } from '../constants'
-import { indexes } from "../public/players";
+import { indexes } from "../../public/players";
 
 export const oppositeTeam = team => team % 2 + 1
 

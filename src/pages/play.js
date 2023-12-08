@@ -10,7 +10,7 @@ import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules
 import { getStorage, setStorage } from "../modules/storage"
 import { details, features, gameAbilities, modes, usableAbilities } from "../constants"
 import { findPlayer, merge, oppositeTeam } from "../modules/functions"
-import { indexes, playersPerTeam } from "../public/players"
+import { indexes, playersPerTeam } from "../../public/players"
 import Loader from "../components/Loader"
 import Effect from "../components/Effect"
 import PeerChat from "../components/PeerChat"

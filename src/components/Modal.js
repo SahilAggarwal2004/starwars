@@ -1,4 +1,3 @@
-import { usePathname } from 'next/navigation'
 import { toast } from 'react-toastify'
 import { showModal } from '../constants'
 import { useGameContext } from '../contexts/GameContext'
@@ -8,7 +7,6 @@ import { oppositeTeam } from '../modules/functions'
 import QrScanner from './QrScanner'
 
 export default function Modal({ router }) {
-	const pathname = usePathname()
 	const { socket, myTeam, setTeam, rooms } = useGameContext()
 	const { modal: { active, type, props }, setModal } = useUtilityContext()
 
@@ -37,7 +35,7 @@ export default function Modal({ router }) {
 		router.replace('/result')
 	}
 
-	return showModal.includes(pathname) && <>
+	return showModal.includes(router.pathname) && <>
 		<div className={`${active ? 'bg-opacity-50' : 'invisible bg-opacity-0'} bg-black fixed inset-0 transition-all duration-700 z-40`} onClick={handleCancel} />
 		<div className={`z-50 w-max max-w-[90vw] max-h-[98vh] overflow-y-auto fixed center text-center bg-white rounded-md px-4 py-4 ${active ? 'opacity-100' : 'hidden'}`}>
 			{type === 'public-rooms' ? <div className='space-y-4'>
