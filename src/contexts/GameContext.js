@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { createContext, useState, useEffect, useContext } from 'react'
+import { createContext, useState, useEffect, useContext, useMemo } from 'react'
 import { maximumNumber, randomElement, probability } from 'random-stuff-js'
 import { io } from 'socket.io-client';
 import { toast } from 'react-toastify';
@@ -10,10 +10,8 @@ import { animateBullet } from '../modules/animation'
 import { hasEffect, hasStealth, hasTaunt, stackCount } from '../modules/effects';
 import { getStorage, removeStorage, setStorage } from '../modules/storage';
 import { calculateDamage, oppositeTeam, reduce, verify } from '../modules/functions';
-import { multiAttackers, noMode, onlineConnected, persistConnection, preserveGame } from '../constants';
+import { multiAttackers, noMode, onlineConnected, persistConnection, preserveGame, server } from '../constants';
 import { getPlayers, indexes, leaderAbilities, playersPerTeam, speedVariation } from '../../public/players';
-
-const server = process.env.NODE_ENV === 'production' ? 'https://starwarsgame.onrender.com' : 'http://localhost:5000'
 
 const Context = createContext();
 export const useGameContext = () => useContext(Context)
@@ -100,7 +98,7 @@ const GameContext = ({ router, children }) => {
         }
     }, [online])
 
-    const abilities = {
+    const abilities = useMemo(() => ({
         'Bastila Shan': {
             basic: ({ player, allyTeam }) => {
                 if (probability(0.5)) return
@@ -267,7 +265,7 @@ const GameContext = ({ router, children }) => {
                 if (result) enemyTeam[enemy].health *= 1.15
             }
         }
-    }
+    }), [initialData, team1, team2, turnTeam])
 
     const isGameStart = () => turnmeter.reduce((sum, speed) => sum + speed, 0) === 0
 
