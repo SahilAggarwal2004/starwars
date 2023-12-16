@@ -1,3 +1,2 @@
 ## StarWars
-
-Star Wars is a strategy PvP game where 2 players build up their teams according to their strategy and tactics and then fight to defeat the opponent player using the abilities of their team members. The leader ability of players creates a big impact on the whole team. So choose your leader and team wisely and enjoy playing the game!
+Star Wars is a strategy Player versus Player (PvP) game where two players construct their teams based on individual strategies and tactics. The objective is to engage in battles and defeat the opposing player by leveraging the unique abilities of their team members. The leader's role is pivotal, significantly influencing the overall performance of the team. Players are encouraged to make thoughtful choices in selecting both their leader and team to enhance their gaming experience in this strategic and tactical Star Wars universe.
