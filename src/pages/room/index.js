@@ -9,6 +9,7 @@ import { getStorage, setStorage } from '../../modules/storage';
 import { generateRoomId } from '../../modules/random';
 import Select from '../../components/Select';
 import Loader from '../../components/Loader';
+import Offline from '../../components/Offline';
 
 export default function Room({ router }) {
     const { socket, setTeam } = useGameContext()
@@ -19,7 +20,6 @@ export default function Room({ router }) {
     const name = useRef();
 
     const restrictNameInput = e => e.target.value = e.target.value.substring(0, 20)
-
     const restrictRoomInput = e => setRoom(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))
 
     function handleClick(e) {
@@ -71,5 +71,5 @@ export default function Room({ router }) {
                 <span>Scan a QR Code</span>
             </div>
         </div>
-    </div> : <Loader />
+    </div> : navigator.onLine ? <Loader /> : <Offline />
 }
