@@ -9,9 +9,17 @@ installSerwist({
     precacheOptions: { ignoreURLParametersMatching: [/.*/] },
     runtimeCaching: [
         {
-            urlPattern: /\/room/i,
+            urlPattern: ({ request }) => request.destination === 'document',
             handler: 'NetworkOnly',
-            options: { cacheName: 'rooms' }
+            options: {
+                cacheName: 'fallback-documents',
+                plugins: [{
+                    handlerDidError: async () => {
+                        const fallbackResponse = await caches.match('/_offline', { ignoreSearch: true });
+                        return fallbackResponse || Response.error();
+                    }
+                }]
+            }
         },
         {
             urlPattern: /\.(?:eot|otf|ttc|ttf|woff|woff2|font.css)$/i,
