@@ -1,5 +1,7 @@
 import { installSerwist } from "@serwist/sw";
 
+const matcher = ({ request }) => request.destination === 'document'
+
 installSerwist({
     skipWaiting: true,
     clientsClaim: true,
@@ -7,19 +9,12 @@ installSerwist({
     offlineAnalyticsConfig: true,
     precacheEntries: self.__SW_MANIFEST,
     precacheOptions: { ignoreURLParametersMatching: [/.*/] },
+    fallbacks: { entries: [{ url: '/_offline', revision: `${Date.now()}`, matcher }] },
     runtimeCaching: [
         {
-            urlPattern: ({ request }) => request.destination === 'document',
+            urlPattern: matcher,
             handler: 'NetworkOnly',
-            options: {
-                cacheName: 'fallback-documents',
-                plugins: [{
-                    handlerDidError: async () => {
-                        const fallbackResponse = await caches.match('/_offline', { ignoreSearch: true });
-                        return fallbackResponse || Response.error();
-                    }
-                }]
-            }
+            options: { cacheName: 'documents' }
         },
         {
             urlPattern: /\.(?:eot|otf|ttc|ttf|woff|woff2|font.css)$/i,
