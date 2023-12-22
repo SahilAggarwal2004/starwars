@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import { ToastContainer } from 'react-toastify'
 import GameContext from '../contexts/GameContext'
-import { notFullscreen } from '../constants';
+import { notFullscreen, showModal } from '../constants';
 import UtilityContext from '../contexts/UtilityContext';
 import Modal from '../components/Modal';
 import '../styles/globals.css'
@@ -54,6 +54,8 @@ function MyApp({ Component, pageProps }) {
 				content="star, wars, game, platform, starwars, offline, play, computer, player, pvp, nextjs, free, fast, independent, web app, pwa" />
 			<meta name="description" content="Star Wars is a strategy PvP game where 2 players build up their teams according to their strategy and tactics and then fight to defeat the opponent player using the abilities of their team members. The leader ability of players creates a big impact on the whole team. So choose your leader and team wisely and enjoy playing the game!" />
 			<link rel='manifest' href='/manifest.json' />
+
+			<meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src *; worker-src 'self' blob:" />
 
 			<link rel="apple-touch-icon" href="icons/apple-icon-180.png" />
 			<meta name="apple-mobile-web-app-capable" content="yes" />
@@ -119,7 +121,7 @@ function MyApp({ Component, pageProps }) {
 						<div>Please enter full screen mode</div>
 						<button onClick={enterFullscreen}>Click Here</button>
 					</div> : landscape ? <Component {...pageProps} /> : <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div>}
-					<Modal router={router} />
+					{showModal.includes(router.pathname) && <Modal router={router} />}
 					<ToastContainer pauseOnFocusLoss={false} position='top-left' />
 				</div>}
 			</GameContext>

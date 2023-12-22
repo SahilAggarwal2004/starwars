@@ -11,6 +11,5 @@ export const onlineConnected = ['/waiting-lobby', '/team-selection', '/play']
 export const persistConnection = ['/room/[roomId]', '/result', ...onlineConnected]
 export const notFullscreen = ['/', '/room', '/room/[roomId]', '/waiting-lobby']
 export const noMode = ['/', '/how-to-play', '/room/[roomId]']
-export const uselessErrors = ['e', 'ta']
 export const showModal = ['/room', '/play']
 export const peerOptions = { host: 'starwars-peer.onrender.com', secure: true, pingInterval: 5000 }

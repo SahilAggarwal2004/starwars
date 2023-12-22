@@ -66,7 +66,7 @@ export default function Room({ router }) {
         </form>
         <div className='text-center'>
             <div className='font-bold mb-2'>OR</div>
-            <div className='cursor-pointer select-none font-medium text-gray-800 flex justify-center items-center space-x-1' onClick={() => setModal({ active: true, type: 'qr-reader' })}>
+            <div className='cursor-pointer select-none font-medium text-gray-800 flex justify-center items-center space-x-1' onClick={() => setModal({ active: true, type: 'qr-scanner' })}>
                 <FaQrcode />
                 <span>Scan a QR Code</span>
             </div>
