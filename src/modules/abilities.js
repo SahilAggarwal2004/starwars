@@ -1,4 +1,4 @@
-import { randomElement } from 'random-stuff-js';
+import { randomElement } from 'utility-kit';
 import { hasEffect } from './effects';
 
 const kill = ({ enemy, enemyTeam }) => enemyTeam[enemy].health = 0

@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Head from "next/head"
 import { useEffect, useState } from "react"
-import { maximumNumber, randomElement } from "random-stuff-js"
+import { maximumNumber, randomElement } from "utility-kit"
 import { ImExit } from 'react-icons/im'
 import { useGameContext } from "../contexts/GameContext"
 import { useUtilityContext } from "../contexts/UtilityContext"

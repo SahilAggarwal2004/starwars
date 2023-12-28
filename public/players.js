@@ -1,4 +1,4 @@
-import { randomNumber } from 'random-stuff-js'
+import { randomNumber } from 'utility-kit'
 
 const minSpeed = 100
 export const speedVariation = 50

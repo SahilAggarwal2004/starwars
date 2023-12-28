@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useState, useEffect, useContext, useMemo } from 'react'
-import { maximumNumber, randomElement, probability } from 'random-stuff-js'
+import { maximumNumber, randomElement, probability } from 'utility-kit'
 import { io } from 'socket.io-client';
 import { toast } from 'react-toastify';
 import { clearChat } from 'react-peer-chat';

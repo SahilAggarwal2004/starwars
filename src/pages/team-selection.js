@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Head from 'next/head';
 import { useEffect, useState } from 'react'
-import { randomElement } from 'random-stuff-js';
+import { randomElement } from 'utility-kit';
 import { FaRandom, FaUndoAlt } from 'react-icons/fa'
 import { ImExit } from 'react-icons/im';
 import { useGameContext } from '../contexts/GameContext';
