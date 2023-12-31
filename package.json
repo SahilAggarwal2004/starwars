@@ -9,8 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@serwist/next": "^8.2.0",
-    "@serwist/sw": "^8.2.0",
+    "@serwist/next": "^8.3.0",
+    "@serwist/sw": "^8.3.0",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.0.3",
     "next": "^14.0.4",
@@ -18,11 +18,11 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.12.0",
-    "react-peer-chat": "^0.5.4",
+    "react-peer-chat": "^0.5.5",
     "react-qr-code": "^2.0.12",
     "react-toastify": "^9.1.3",
     "socket.io-client": "^4.7.2",
-    "utility-kit": "^0.2.2"
+    "utility-kit": "^0.3.2"
   },
   "devDependencies": {
     "@builder.io/partytown": "^0.8.1",
