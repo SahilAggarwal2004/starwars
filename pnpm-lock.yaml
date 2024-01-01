@@ -45,8 +45,8 @@ dependencies:
     specifier: ^4.7.2
     version: 4.7.2
   utility-kit:
-    specifier: ^0.3.2
-    version: 0.3.2
+    specifier: ^0.3.3
+    version: 0.3.3
 
 devDependencies:
   '@builder.io/partytown':
@@ -3906,8 +3906,8 @@ packages:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
     dev: true
 
-  /utility-kit@0.3.2:
-    resolution: {integrity: sha512-djCUN5L7+DA2RMQCVIvh67lVwOqJheI32QcWqF/quvU75MzuHIXYJ3QUSrz3IiErSZ+ZMdgh0iZm5TsYhMP+uA==}
+  /utility-kit@0.3.3:
+    resolution: {integrity: sha512-0OfvEjWxt0D1ScfOsYcvR3ojXHoBHs+CoG9vRTslZeHYFIus++8Zq6QYHau8JMe6UvW/Tz/4IxRm1Ov43DQfyg==}
     dev: false
 
   /watchpack@2.4.0:
