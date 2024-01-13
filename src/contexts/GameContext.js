@@ -141,7 +141,7 @@ const GameContext = ({ router, children }) => {
                 const { result, index, data } = verify('Count Dooku', enemyTeam, { alive: true })
                 if (!result || hasEffect('stun', 'debuff', data)) return
                 if (enemy === index || multi) {
-                    data.health *= 1.05
+                    data.health += initialData['Count Dooku'].health * 0.05
                     attack({ player: index, enemy: player, isCountering: true })
                     return { wait: 2000 }
                 }
@@ -415,7 +415,7 @@ const GameContext = ({ router, children }) => {
                 if (leader?.type === 'in-game') abilities[name].leader?.(abilityObj)
             })
 
-            // Succeeding(immediate before) attack unique abilities:
+            // Succeeding(immediate after) attack unique abilities:
             runUniqueAbilities('succeeding')
 
             setTeams(allyTeam, enemyTeam, isCountering)

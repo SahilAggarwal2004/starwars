@@ -9,27 +9,27 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@serwist/next": "^8.3.0",
-    "@serwist/sw": "^8.3.0",
+    "@serwist/next": "^8.4.2",
+    "@serwist/sw": "^8.4.2",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.0.3",
     "next": "^14.0.4",
     "qr-scanner": "^1.4.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.12.0",
+    "react-icons": "^5.0.1",
     "react-peer-chat": "^0.5.5",
     "react-qr-code": "^2.0.12",
     "react-toastify": "^9.1.3",
-    "socket.io-client": "^4.7.2",
+    "socket.io-client": "^4.7.4",
     "utility-kit": "^0.3.3"
   },
   "devDependencies": {
-    "@builder.io/partytown": "^0.8.1",
+    "@builder.io/partytown": "^0.8.2",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.0.4",
-    "postcss": "^8.4.32",
-    "tailwindcss": "^3.4.0"
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1"
   }
 }

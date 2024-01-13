@@ -52,7 +52,7 @@ export const getPlayers = () => [
         name: 'Count Dooku', type: 'dark', defense: 1.25,
         basic: { damage: randomNumber(60, 100), description: "This attack has a 20% chance to revive a random defeated ally at 100% of his initial health.", animation: true, auto: true },
         special: { description: 'Inflict defense down on all enemies and buff immunity on target ally for 1 turn.', cooldown: 1, foresight: true },
-        unique: { description: 'This player has 100% counter chance and recovers 5% health whenever this player counters an attack. He takes 20% less damage from any attack.', type: 'after' }
+        unique: { description: 'This player has 100% counter chance and recovers 5% of his initial health whenever this player counters an attack. He takes 20% less damage from any attack.', type: 'after' }
     }),
     new Player({
         name: 'Darth Nihilus', type: 'dark',
