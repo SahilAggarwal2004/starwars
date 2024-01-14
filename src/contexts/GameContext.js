@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { createContext, useState, useEffect, useContext, useMemo } from 'react'
+import { createContext, useState, useEffect, useContext } from 'react'
 import { maximumNumber, randomElement, probability } from 'utility-kit'
 import { io } from 'socket.io-client';
 import { toast } from 'react-toastify';
@@ -98,7 +98,7 @@ const GameContext = ({ router, children }) => {
         }
     }, [online])
 
-    const abilities = useMemo(() => ({
+    const abilities = {
         'Bastila Shan': {
             basic: ({ player, allyTeam }) => {
                 if (probability(0.5)) return
@@ -265,7 +265,7 @@ const GameContext = ({ router, children }) => {
                 if (result) enemyTeam[enemy].health *= 1.15
             }
         }
-    }), [initialData, team1, team2, turnTeam])
+    }
 
     const isGameStart = () => turnmeter.reduce((sum, speed) => sum + speed, 0) === 0
 

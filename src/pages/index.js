@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { modes } from '../constants';
 import { useGameContext } from '../contexts/GameContext';
 import ParticleContainer from '../components/ParticleContainer';
