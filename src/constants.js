@@ -12,4 +12,21 @@ export const persistConnection = ['/room/[roomId]', '/result', ...onlineConnecte
 export const notFullscreen = ['/', '/room', '/room/[roomId]', '/waiting-lobby']
 export const noMode = ['/', '/how-to-play', '/room/[roomId]']
 export const showModal = ['/room', '/play']
-export const peerOptions = { host: 'starwars-peer.onrender.com', secure: true, pingInterval: 5000 }
+export const peerOptions = {
+    host: 'starwars-peer.onrender.com', secure: true, pingInterval: 5000,
+    config: {
+        iceServers: [
+            { urls: ["stun:stun.l.google.com:19302", "stun:stun.relay.metered.ca:80"] },
+            {
+                urls: [
+                    "turn:standard.relay.metered.ca:80",
+                    "turn:standard.relay.metered.ca:80?transport=tcp",
+                    "turn:standard.relay.metered.ca:443",
+                    "turns:standard.relay.metered.ca:443?transport=tcp"
+                ],
+                username: "1445612301e6388ac1561045",
+                credential: "DTQWqy2kz6C5kIFt"
+            }
+        ]
+    }
+}
