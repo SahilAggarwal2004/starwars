@@ -24,8 +24,8 @@ export const peerOptions = {
                     "turn:standard.relay.metered.ca:443",
                     "turns:standard.relay.metered.ca:443?transport=tcp"
                 ],
-                username: "1445612301e6388ac1561045",
-                credential: "DTQWqy2kz6C5kIFt"
+                username: "8a6dc8f9ad3700b8eeed8caa",
+                credential: "HLfi3rAY4kT/jeRm"
             }
         ]
     }

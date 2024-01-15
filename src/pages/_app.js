@@ -122,7 +122,7 @@ function MyApp({ Component, pageProps }) {
 						<button onClick={enterFullscreen}>Click Here</button>
 					</div> : landscape ? <Component {...pageProps} /> : <div className='bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4'>Please rotate the device</div>}
 					{showModal.includes(router.pathname) && <Modal router={router} />}
-					<ToastContainer pauseOnFocusLoss={false} position='top-left' />
+					<ToastContainer stacked pauseOnFocusLoss={false} position='top-left' />
 				</div>}
 			</GameContext>
 		</UtilityContext>
