@@ -151,9 +151,9 @@ export default function Play({ router, isFullScreen }) {
     return <>
         <Head><title>{modes[mode]} | Star Wars</title></Head>
         {loading ? <Loader /> : <>
-            <div className="fixed flex items-center x-center top-4 space-x-4 scale-125">
+            <div className="fixed flex items-center x-center top-4 space-x-4">
                 {online && Boolean(myTeam) && id && <PeerChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${oppositeTeam(myTeam)}`} />}
-                <ImExit className='cursor-pointer' onClick={exit} title="Exit" />
+                <ImExit className='cursor-pointer scale-125' onClick={exit} title="Exit" />
             </div>
             {[team1, team2].map((team, index) => {
                 const displayName = online ? (myTeam === index + 1 ? getStorage('name', '', true) : getStorage('opponent', '')) : mode === 'computer' && index ? 'Computer' : `Team ${index + 1}`

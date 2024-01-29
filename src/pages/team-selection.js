@@ -109,12 +109,12 @@ export default function TeamSelection({ router }) {
                     </div>)}
                 </div>
             </div>}
-            <div className='fixed flex items-center top-8 right-10 space-x-4 scale-125'>
+            <div className='fixed flex items-center top-8 right-10 space-x-4'>
                 {online ? <>
                     {Boolean(myTeam) && id && <PeerChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${oppositeTeam(myTeam)}`} dialogOptions={{ style: { translate: '-72%' } }} />}
-                </> : count ? <FaUndoAlt className='cursor-pointer' onClick={reset} title="Reset" />
-                    : <FaRandom className='cursor-pointer' onClick={shuffle} title="Shuffle" />}
-                <ImExit className='cursor-pointer' onClick={() => router.back()} title='Exit' />
+                </> : count ? <FaUndoAlt className='cursor-pointer scale-125' onClick={reset} title="Reset" />
+                    : <FaRandom className='cursor-pointer scale-125' onClick={shuffle} title="Shuffle" />}
+                <ImExit className='cursor-pointer scale-125' onClick={() => router.back()} title='Exit' />
             </div>
         </>}
     </>
