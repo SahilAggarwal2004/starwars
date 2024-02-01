@@ -13,7 +13,7 @@ dependencies:
     version: 8.4.4
   '@tsparticles/react':
     specifier: ^3.0.0
-    version: 3.0.0(@tsparticles/engine@3.1.0)(react-dom@18.2.0)(react@18.2.0)
+    version: 3.0.0(@tsparticles/engine@3.2.1)(react-dom@18.2.0)(react@18.2.0)
   '@tsparticles/slim':
     specifier: ^3.2.1
     version: 3.2.1
@@ -647,11 +647,6 @@ packages:
       '@tsparticles/updater-size': 3.2.1
     dev: false
 
-  /@tsparticles/engine@3.1.0:
-    resolution: {integrity: sha512-sQR79T76Y+0bdwMOQgJxA5jC+Na2XGJ8wABS4NsS3oYqD/Bdh7pwHFdoMkQu86uRrsvH5jdpqlHCMmZb7laXIQ==}
-    requiresBuild: true
-    dev: false
-
   /@tsparticles/engine@3.2.1:
     resolution: {integrity: sha512-mVzdwkOtRdT6/UOS0+GPGcKJsdvYCkqTTwg7df43TfXixsdZedpUkuVg30rwtNhTgPMH2nimOXqx2wmgL7bAZw==}
     requiresBuild: true
@@ -753,14 +748,14 @@ packages:
       '@tsparticles/engine': 3.2.1
     dev: false
 
-  /@tsparticles/react@3.0.0(@tsparticles/engine@3.1.0)(react-dom@18.2.0)(react@18.2.0):
+  /@tsparticles/react@3.0.0(@tsparticles/engine@3.2.1)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-hjGEtTT1cwv6BcjL+GcVgH++KYs52bIuQGW3PWv7z3tMa8g0bd6RI/vWSLj7p//NZ3uTjEIeilYIUPBh7Jfq/Q==}
     peerDependencies:
       '@tsparticles/engine': ^3.0.2
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
-      '@tsparticles/engine': 3.1.0
+      '@tsparticles/engine': 3.2.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false

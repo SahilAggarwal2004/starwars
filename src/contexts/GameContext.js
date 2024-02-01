@@ -10,7 +10,7 @@ import { animateBullet } from '../modules/animation'
 import { hasEffect, hasStealth, hasTaunt, stackCount } from '../modules/effects';
 import { getStorage, removeStorage, setStorage } from '../modules/storage';
 import { calculateDamage, oppositeTeam, reduce, verify } from '../modules/functions';
-import { multiAttackers, noMode, onlineConnected, persistConnection, preserveGame, server } from '../constants';
+import { multiAttackers, noMode, onlineConnected, persistConnection, preserveGame, server, version } from '../constants';
 import { getPlayers, indexes, leaderAbilities, playersPerTeam, speedVariation } from '../../public/players';
 
 const Context = createContext();
@@ -43,12 +43,20 @@ const GameContext = ({ router, children }) => {
 
     useEffect(() => {
         if (!online || !navigator.onLine) return
-        const newSocket = io(server, { query: { userId: getStorage('userId', Date.now()) } })
+        const newSocket = io(server, { query: { userId: getStorage('userId', Date.now()), userVersion: version } })
+
+        function resetSocket() {
+            setSocket()
+            newSocket.removeAllListeners()
+            newSocket.disconnect()
+        }
+
         newSocket.on('connect', () => {
             setSocket(newSocket)
             newSocket.on('error', (error, type) => {
                 toast.error(error)
                 if (type === 'redirect') router.replace('/room')
+                else if (type === 'version') resetSocket()
             })
             newSocket.on('public-rooms', rooms => setRooms(rooms))
             newSocket.on('new-user', opponent => {
@@ -92,9 +100,7 @@ const GameContext = ({ router, children }) => {
         })
         return () => {
             resetConnection()
-            setSocket()
-            newSocket.removeAllListeners()
-            newSocket.disconnect()
+            resetSocket()
         }
     }, [online])
 

@@ -31,5 +31,5 @@ export default function Room({ router }) {
     return socket ? <form className='flex flex-col h-screen items-center justify-center space-y-6' onSubmit={e => e.preventDefault()}>
         <input className='text-center border px-2 py-0.5 rounded' type='text' ref={name} placeholder='Enter your name' defaultValue={getStorage('name', '', true)} />
         <button type='submit' method='join-room' className='secondary-button px-3 py-1' onClick={handleClick}>Join Room</button>
-    </form> : navigator.onLine ? <Loader /> : <Offline />
+    </form> : navigator.onLine ? <Loader timeout={5500} /> : <Offline />
 }
