@@ -1,5 +1,7 @@
 import { randomNumber } from 'utility-kit'
 
+export const version = '01.02.2024.0'
+
 const minSpeed = 100
 export const speedVariation = 50
 export const playersPerTeam = 5

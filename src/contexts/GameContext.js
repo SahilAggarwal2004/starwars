@@ -10,8 +10,8 @@ import { animateBullet } from '../modules/animation'
 import { hasEffect, hasStealth, hasTaunt, stackCount } from '../modules/effects';
 import { getStorage, removeStorage, setStorage } from '../modules/storage';
 import { calculateDamage, oppositeTeam, reduce, verify } from '../modules/functions';
-import { multiAttackers, noMode, onlineConnected, persistConnection, preserveGame, server, version } from '../constants';
-import { getPlayers, indexes, leaderAbilities, playersPerTeam, speedVariation } from '../../public/players';
+import { multiAttackers, noMode, onlineConnected, persistConnection, preserveGame, server } from '../constants';
+import { getPlayers, indexes, leaderAbilities, playersPerTeam, speedVariation, version } from '../../public/players';
 
 const Context = createContext();
 export const useGameContext = () => useContext(Context)
