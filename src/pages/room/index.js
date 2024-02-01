@@ -71,5 +71,5 @@ export default function Room({ router }) {
                 <span>Scan a QR Code</span>
             </div>
         </div>
-    </div> : navigator.onLine ? <Loader timeout={5500} /> : <Offline />
+    </div> : navigator.onLine ? <Loader timeout={5000} /> : <Offline />
 }

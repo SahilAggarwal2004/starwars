@@ -1,13 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useRouter } from "next/router"
 import { useEffect } from "react"
 
 export default function Loader({ text = 'Loading...', timeout = 0 }) {
-    const router = useRouter()
-
     useEffect(() => {
         if (!timeout) return
-        const timeoutId = setTimeout(() => router.replace('/'), timeout)
+        const timeoutId = setTimeout(window.location.reload, timeout)
         return () => clearTimeout(timeoutId)
     }, [])
 
