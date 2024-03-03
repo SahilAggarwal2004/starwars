@@ -1,2 +1,2 @@
 import OfflinePage from "../components/Offline";
-export default OfflinePage
+export default OfflinePage;
