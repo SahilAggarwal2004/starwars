@@ -323,8 +323,8 @@ const GameContext = ({ router, children }) => {
   }
 
   function setTeams(allyTeam, enemyTeam, isCountering = false) {
-    allyTeam = [...allyTeam];
-    enemyTeam = [...enemyTeam];
+    allyTeam = allyTeam.slice();
+    enemyTeam = enemyTeam.slice();
     if (turnTeam === 1 && !isCountering) {
       setTeam1(allyTeam);
       setTeam2(enemyTeam);

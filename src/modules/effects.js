@@ -42,8 +42,18 @@ const effects = effectArr.reduce(
     });
   },
   [
-    { name: "taunt", condition: hasTaunt, stack: (player) => stackCount("taunt", "buff", player) },
-    { name: "stealth", condition: hasStealth, stack: (player) => stackCount("stealth", "buff", player) },
+    {
+      name: "taunt",
+      description: "Takes target attacks on self",
+      condition: hasTaunt,
+      stack: (player) => stackCount("taunt", "buff", player),
+    },
+    {
+      name: "stealth",
+      description: "Cannot be targetted for attack",
+      condition: hasStealth,
+      stack: (player) => stackCount("stealth", "buff", player),
+    },
   ]
 );
 
