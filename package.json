@@ -9,27 +9,27 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@serwist/next": "^8.4.4",
-    "@serwist/sw": "^8.4.4",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.3.0",
-    "next": "^14.1.4",
+    "next": "^14.2.3",
     "qr-scanner": "^1.4.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-icons": "^5.0.1",
-    "react-peer-chat": "^0.6.6",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "react-icons": "^5.1.0",
+    "react-peer-chat": "^0.6.7",
     "react-qr-code": "^2.0.12",
     "react-toastify": "^10.0.5",
     "socket.io-client": "^4.7.5",
-    "utility-kit": "^0.3.9"
+    "utility-kit": "^0.4.1"
   },
   "devDependencies": {
     "@builder.io/partytown": "^0.10.1",
+    "@serwist/next": "^9.0.2",
     "autoprefixer": "^10.4.19",
-    "eslint": "^9.0.0",
-    "eslint-config-next": "^14.1.4",
+    "eslint": "8.57.0",
+    "eslint-config-next": "^14.2.3",
     "postcss": "^8.4.38",
+    "serwist": "^9.0.2",
     "tailwindcss": "^3.4.3"
   },
   "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72",
