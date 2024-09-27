@@ -284,7 +284,7 @@ const GameContext = ({ router, children }) => {
       leader: ({ enemy, enemyTeam, animation }) => {
         if (!animation) return;
         const { result } = verify("Old Daka", enemyTeam, { index: 0 });
-        if (result) enemyTeam[enemy].health += Math.max(enemyTeam[enemy].health * 0.15, 150);
+        if (result) enemyTeam[enemy].health += Math.min(enemyTeam[enemy].health * 0.15, 150);
       },
     },
   };
