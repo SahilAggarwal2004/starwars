@@ -42,7 +42,7 @@ const GameContext = ({ router, children }) => {
   }, [router.pathname]);
 
   useEffect(() => {
-    if (!online || !navigator.onLine) return;
+    if (!online) return;
     const newSocket = io(server, { query: { userId: getStorage("userId", Date.now()), userVersion: version } });
 
     function resetSocket() {
