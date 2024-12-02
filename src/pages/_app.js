@@ -10,7 +10,7 @@ import UtilityContext from "../contexts/UtilityContext";
 import Modal from "../components/Modal";
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css";
-import "react-peer-chat/dist/styles.css";
+import "react-peer-chat/styles.css";
 import { removeStorage } from "../modules/storage";
 
 function MyApp({ Component, pageProps }) {
