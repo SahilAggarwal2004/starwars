@@ -55,7 +55,7 @@ function MyApp({ Component, pageProps }) {
         <meta name="description" content="Star Wars is a strategy PvP game where 2 players build up their teams according to their strategy and tactics and then fight to defeat the opponent player using the abilities of their team members. The leader ability of players creates a big impact on the whole team. So choose your leader and team wisely and enjoy playing the game!" />
         <link rel="manifest" href="/manifest.json" />
 
-        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src *; worker-src 'self' blob:" />
+        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src *; frame-ancestors 'none'; worker-src 'self' blob:" />
 
         <meta name="mobile-web-app-capable" content="yes" />
         <link rel="apple-touch-icon" href="icons/apple-icon-180.png" />
