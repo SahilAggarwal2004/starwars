@@ -190,14 +190,14 @@ export default function Play({ router, isFullScreen }) {
                   return (
                     <div key={i} className={`${player.health <= 0 && "invisible"}`}>
                       <div
-                        className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${selectedPlayer ? "outline border-2 outline-green-500" : enemy === i && turnTeam !== index + 1 ? "outline border-2 outline-red-500" : "hover:border-2 hover:outline hover:outline-black"} border-transparent rounded-sm ${hasEffect("stealth", "buff", player) && "opacity-50"}`}
+                        className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${selectedPlayer ? "outline border-2 outline-green-500" : enemy === i && turnTeam !== index + 1 ? "outline border-2 outline-red-500" : "hover:border-2 hover:outline hover:outline-black"} border-transparent rounded-xs ${hasEffect("stealth", "buff", player) && "opacity-50"}`}
                         onPointerEnter={() => setHoverPlayer(player)}
                         onPointerLeave={() => setHoverPlayer()}
                         onClick={() => selectEnemy(i, index)}
                         onContextMenu={(e) => e.preventDefault()}
                       >
                         <div className="block bg-blue-400 rounded-lg mb-0.5 h-0.5" style={{ width: `${(turnmeter[playerIndex] / maximumNumber(turnmeter)) * 100}%` }} />
-                        <img src={`/images/players/${player.name}.webp`} alt={player.name} width={120} className="rounded-sm aspect-square" />
+                        <img src={`/images/players/${player.name}.webp`} alt={player.name} width={120} className="rounded-xs aspect-square" />
                         <div className="absolute bottom-0 left-0 right-0 flex justify-center space-x-0.5 z-10">{effects.map(({ name, condition, stack }) => condition(player, team1, team2) && <Effect key={name} name={name} num={stack(player)} />)}</div>
                       </div>
                       {(mode !== "computer" || turnTeam !== 2) && (!online || myTeam === turnTeam) && selectedPlayer && !isAttacking && (
@@ -243,7 +243,7 @@ export default function Play({ router, isFullScreen }) {
             </div>
           )}
           {hoverAbility && !isAttacking && (
-            <div className="bg-black text-white border-2 border-white fixed flex flex-col space-x-0 space-y-5 items-center justify-center p-10 rounded z-10 detail-heading center max-w-[calc(100vw-15rem)]">
+            <div className="bg-black text-white border-2 border-white fixed flex flex-col space-x-0 space-y-5 items-center justify-center p-10 rounded-sm z-10 detail-heading center max-w-[calc(100vw-15rem)]">
               <span className="capitalize">{hoverAbility}:</span>
               <div>
                 {features.map(

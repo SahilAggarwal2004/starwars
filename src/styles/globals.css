@@ -1,75 +1,108 @@
-@tailwind base;
-@tailwind components;
+@import "tailwindcss";
 
-.center {
-    @apply top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+@theme {
+  --breakpoint-*: initial;
+  --breakpoint-xs: 320px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  --animate-spin-fast: spin 0.6s ease infinite;
+
+  --text-2xs: 0.5rem;
+  --text-2xs--line-height: 0.75rem;
+
+  --background-image-custom-gradient: linear-gradient(120deg, var(--tw-gradient-stops));
 }
 
-.x-center {
-    @apply left-1/2 -translate-x-1/2
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
 }
 
-.detail-container {
-    @apply bg-black text-white border-2 border-white fixed flex space-x-8 items-center justify-center rounded z-10 min-h-[60vh] max-h-[calc(100vh-4rem)]
-}
+@layer components {
+  .center {
+    @apply top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
+  }
 
-.detail-heading {
-    @apply text-[2.25vh] sm:text-[2.5vh] md:text-[2.75vh] lg:text-[3vh]
-}
+  .x-center {
+    @apply left-1/2 -translate-x-1/2;
+  }
 
-.detail-text {
-    @apply text-[2vh] sm:text-[2.25vh] md:text-[2.5vh] lg:text-[2.75vh]
-}
+  .detail-container {
+    @apply bg-black text-white border-2 border-white fixed flex space-x-8 items-center justify-center rounded-sm z-10 min-h-[60vh] max-h-[calc(100vh-4rem)];
+  }
 
-.main-heading {
-    @apply md:text-lg lg:text-xl xl:text-2xl fixed font-semibold
-}
+  .detail-heading {
+    @apply text-[2.25vh] sm:text-[2.5vh] md:text-[2.75vh] lg:text-[3vh];
+  }
 
-.primary-button {
-    @apply inline-block rounded bg-custom-gradient from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 px-3 py-1 w-fit text-white text-sm sm:text-base md:text-xl font-semibold mx-2.5
-}
+  .detail-text {
+    @apply text-[2vh] sm:text-[2.25vh] md:text-[2.5vh] lg:text-[2.75vh];
+  }
 
-.secondary-button {
-    @apply rounded text-white bg-green-500 border border-white hover:bg-green-600
-}
+  .main-heading {
+    @apply md:text-lg lg:text-xl xl:text-2xl fixed font-semibold;
+  }
 
-.tertiary-button {
-    @apply rounded text-green-500 bg-white border border-green-500 hover:text-white hover:bg-green-500 hover:border-white
-}
+  .primary-button {
+    @apply inline-block rounded-sm bg-linear-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 px-3 py-1 w-fit text-white text-sm sm:text-base md:text-xl font-semibold mx-2.5 cursor-pointer;
+  }
 
-.ability {
-    @apply bg-black text-white px-3 py-1 cursor-pointer capitalize
-}
+  .secondary-button {
+    @apply rounded-sm text-white bg-green-500 border border-white hover:bg-green-600 cursor-pointer;
+  }
 
-.bullet {
-    @apply fixed bg-red-500 -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 transition-all ease-linear duration-[1900ms]
-}
+  .tertiary-button {
+    @apply rounded-sm text-green-500 bg-white border border-green-500 hover:text-white hover:bg-green-500 hover:border-white cursor-pointer;
+  }
 
-@font-face {
+  .ability {
+    @apply bg-black text-white px-3 py-1 cursor-pointer capitalize;
+  }
+
+  .bullet {
+    @apply fixed bg-red-500 -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 transition-all ease-linear duration-[1900ms];
+  }
+
+  @font-face {
     font-family: starwars;
     src: url(../fonts/Starjedi.woff);
+  }
 }
 
-@tailwind utilities;
-
 * {
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 :fullscreen,
 ::backdrop {
-    background-color: rgba(255, 255, 255, 0);
+  background-color: rgba(255, 255, 255, 0);
 }
 
 ::-webkit-scrollbar {
-    width: 2.5px;
+  width: 2.5px;
 }
 
 ::-webkit-scrollbar-track {
-    background: transparent;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: rgb(128, 128, 128, 0.75);
+  background-color: rgb(128, 128, 128, 0.75);
 }
