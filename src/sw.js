@@ -11,15 +11,15 @@ const serwist = new Serwist({
   fallbacks: { entries: [{ url: "/_offline", matcher }] },
   runtimeCaching: [
     {
-      matcher,
-      handler: new NetworkOnly(),
-    },
-    {
       matcher: ({ url }) => url.pathname === "/manifest.json",
       handler: new CacheFirst({
         cacheName: "manifest",
         plugins: [new ExpirationPlugin({ maxAgeSeconds: 60 })],
       }),
+    },
+    {
+      matcher,
+      handler: new NetworkOnly(),
     },
     {
       matcher: /\.(?:eot|otf|ttc|ttf|woff|woff2|font.css)$/i,

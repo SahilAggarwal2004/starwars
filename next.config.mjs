@@ -10,7 +10,7 @@ const revision = Date.now().toString();
 const withPWA = withSerwistInit({
   swSrc: "src/sw.js",
   swDest: "public/sw.js",
-  exclude: [/public\/sw.js/, /dynamic-css-manifest.json/],
+  exclude: [/public\/sw.js/],
   disable: process.env.NODE_ENV === "development",
   register: false,
   additionalPrecacheEntries: pages.concat(players, effects).map((url) => ({ url, revision })),

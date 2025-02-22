@@ -1,4 +1,4 @@
-const getStorageInstance = (local = true) => (local ? localStorage : sessionStorage);
+const getStorageInstance = (local = false) => (local ? localStorage : sessionStorage);
 
 export const setStorage = (key, value, local = false) => getStorageInstance(local).setItem(key, JSON.stringify(value));
 
