@@ -3,7 +3,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
-import "react-peer-chat/styles.css";
 import { ToastContainer } from "react-toastify";
 
 import Modal from "../components/Modal";
