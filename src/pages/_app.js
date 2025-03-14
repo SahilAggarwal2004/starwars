@@ -31,7 +31,10 @@ function MyApp({ Component, pageProps }) {
     document.addEventListener("fullscreenchange", () => setFullscreen(document.fullscreen));
     screen.orientation.addEventListener("change", () => setOrientation(screen.orientation.type));
     window.addEventListener("beforeunload", () => removeStorage("particles-init"));
-    if ("serviceWorker" in navigator) window.serwist.register().then(handleVersionUpdate);
+    if ("serviceWorker" in navigator && window.serwist) {
+      window.serwist.register().then(() => window.serwist.addEventListener("controlling", handleVersionUpdate));
+      return () => window.serwist.removeEventListener("controlling", handleVersionUpdate);
+    }
   }, []);
 
   async function enterFullscreen() {
