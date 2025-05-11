@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState } from "react";
 
 const Context = createContext();

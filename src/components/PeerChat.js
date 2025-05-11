@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import Chat from "react-peer-chat";
 import { toast } from "react-toastify";
 import { getStorage } from "../modules/storage";

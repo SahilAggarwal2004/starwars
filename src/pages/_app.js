@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Script from "next/script";
@@ -68,7 +67,13 @@ function MyApp({ Component, pageProps }) {
 
         <meta
           httpEquiv="Content-Security-Policy"
-          content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src *; worker-src 'self' blob:"
+          content="
+            default-src 'self';
+            script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://www.googleads.g.doubleclick.net https://www.google.co.in;
+            style-src 'self' 'unsafe-inline';
+            img-src * data:;
+            connect-src *;
+            worker-src 'self' blob:"
         />
 
         <meta name="mobile-web-app-capable" content="yes" />
@@ -224,8 +229,8 @@ function MyApp({ Component, pageProps }) {
       </Head>
 
       {/* Google tag (gtag.js) */}
-      <Script src="https://www.googletagmanager.com/gtag/js?id=G-ED6RPYHXQN" strategy="worker" />
-      <Script id="google-analytics" strategy="worker">
+      <Script src="https://www.googletagmanager.com/gtag/js?id=G-ED6RPYHXQN" strategy="afterInteractive" />
+      <Script id="google-analytics" strategy="afterInteractive">
         {`window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());

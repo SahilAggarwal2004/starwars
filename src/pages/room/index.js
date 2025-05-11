@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useRef, useState } from "react";
 import { FaQrcode } from "react-icons/fa";
 import { IoMdArrowRoundBack } from "react-icons/io";
@@ -61,8 +60,23 @@ export default function Room({ router }) {
       />
       <form className="flex flex-col items-center justify-center space-y-4 pt-3" onSubmit={(e) => e.preventDefault()}>
         <div className="flex flex-col space-y-1 w-full max-w-[16rem]">
-          <input className="text-center border px-2 py-0.5 rounded-t" type="text" ref={name} placeholder="Enter your name" defaultValue={getStorage("name", "", true)} required onInput={restrictNameInput} />
-          <input className="text-center border px-2 py-0.5 rounded-b" type="text" value={room} placeholder={`Enter room id${type === "public" ? " (optional)" : ""}`} autoComplete="new-password" onChange={restrictRoomInput} />
+          <input
+            className="text-center border px-2 py-0.5 rounded-t"
+            type="text"
+            ref={name}
+            placeholder="Enter your name"
+            defaultValue={getStorage("name", "", true)}
+            required
+            onInput={restrictNameInput}
+          />
+          <input
+            className="text-center border px-2 py-0.5 rounded-b"
+            type="text"
+            value={room}
+            placeholder={`Enter room id${type === "public" ? " (optional)" : ""}`}
+            autoComplete="new-password"
+            onChange={restrictRoomInput}
+          />
         </div>
         <div className="flex justify-center space-x-2 xs:space-x-5">
           <button type="submit" method="create-room" disabled={disabled} className="secondary-button px-3 py-1" onClick={handleClick}>
@@ -75,7 +89,10 @@ export default function Room({ router }) {
       </form>
       <div className="text-center">
         <div className="font-bold mb-2">OR</div>
-        <div className="cursor-pointer select-none font-medium text-gray-800 flex justify-center items-center space-x-1" onClick={() => setModal({ active: true, type: "qr-scanner" })}>
+        <div
+          className="cursor-pointer select-none font-medium text-gray-800 flex justify-center items-center space-x-1"
+          onClick={() => setModal({ active: true, type: "qr-scanner" })}
+        >
           <FaQrcode />
           <span>Scan a QR Code</span>
         </div>
