@@ -40,7 +40,7 @@ export default function Waiting({ router, enterFullscreen }) {
           <QRCode value={link} bgColor="#FFFFFF" fgColor="#000000" />
         </div>
       </div>
-      <div className="fixed flex items-center top-1 right-8 scale-125">
+      <div className="fixed flex items-center top-8 right-10 scale-125">
         <ImExit className="cursor-pointer" onClick={() => router.replace("/room")} title="Exit" />
       </div>
     </div>

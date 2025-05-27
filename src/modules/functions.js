@@ -21,11 +21,17 @@ export function calculateDamage(baseDamage, player, enemy, damageMultiplier = 1)
   return damage + bonus;
 }
 
+export const getFullscreenElement = () => document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+
 export function merge(player, description) {
   allAbilities.forEach((ability) => {
     if (player[ability]) player[ability] = { ...description[ability], ...player[ability] };
   });
   return player;
+}
+
+export async function requestFullScreen(element) {
+  await (element.requestFullscreen?.() || element.webkitRequestFullscreen?.() || element.mozRequestFullScreen?.() || element.msRequestFullscreen?.());
 }
 
 export function verifyUrl(value) {

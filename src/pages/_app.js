@@ -8,6 +8,7 @@ import Modal from "../components/Modal";
 import { notFullscreen, showModal } from "../constants";
 import GameContext from "../contexts/GameContext";
 import UtilityContext from "../contexts/UtilityContext";
+import { getFullscreenElement, requestFullScreen } from "../modules/functions";
 import { removeStorage } from "../modules/storage";
 import { handleVersionUpdate } from "../modules/update";
 import "../styles/globals.css";
@@ -16,8 +17,8 @@ function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isMobile, setMobile] = useState();
-  const [isFullscreen, setFullscreen] = useState();
-  const [orientation, setOrientation] = useState(typeof screen !== "undefined" && screen.orientation.type);
+  const [isFullscreen, setFullscreen] = useState(false);
+  const [orientation, setOrientation] = useState(typeof screen !== "undefined" && screen.orientation?.type);
   const fullscreenElement = useRef();
   const landscape = orientation && orientation.includes("landscape");
   pageProps.router = router;
@@ -26,21 +27,42 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     setLoading(false);
     setMobile(navigator.userAgentData?.mobile);
-    setFullscreen(document.fullscreen);
-    document.addEventListener("fullscreenchange", () => setFullscreen(document.fullscreen));
-    screen.orientation.addEventListener("change", () => setOrientation(screen.orientation.type));
-    window.addEventListener("beforeunload", () => removeStorage("particles-init"));
+    setFullscreen(!!getFullscreenElement());
+    setOrientation(screen.orientation?.type);
+
+    const handleFullscreenChange = () => setFullscreen(!!getFullscreenElement());
+    const handleOrientationChange = () => setOrientation(screen.orientation?.type);
+    const handleBeforeUnload = () => removeStorage("particles-init");
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    screen.orientation?.addEventListener("change", handleOrientationChange);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
     if ("serviceWorker" in navigator && window.serwist) {
       window.serwist.register().then(() => window.serwist.addEventListener("controlling", handleVersionUpdate));
-      return () => window.serwist.removeEventListener("controlling", handleVersionUpdate);
+      return () => {
+        window.serwist.removeEventListener("controlling", handleVersionUpdate);
+        document.removeEventListener("fullscreenchange", handleFullscreenChange);
+        screen.orientation?.removeEventListener("change", handleOrientationChange);
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+      };
     }
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      screen.orientation?.removeEventListener("change", handleOrientationChange);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   }, []);
 
   async function enterFullscreen() {
-    setTimeout(() => {
-      fullscreenElement.current?.requestFullscreen?.();
-      fullscreenElement.current?.webkitRequestFullScreen?.();
-      screen.orientation.lock("landscape");
+    setTimeout(async () => {
+      try {
+        await requestFullScreen(fullscreenElement.current);
+        await screen.orientation?.lock?.("landscape");
+      } catch (error) {
+        console.warn("Fullscreen or orientation lock failed:", error);
+      }
     }, 1);
   }
 
@@ -64,7 +86,7 @@ function MyApp({ Component, pageProps }) {
           content="Star Wars is a strategy PvP game where 2 players build up their teams according to their strategy and tactics and then fight to defeat the opponent player using the abilities of their team members. The leader ability of players creates a big impact on the whole team. So choose your leader and team wisely and enjoy playing the game!"
         />
         <link rel="manifest" href="/manifest.json" />
-
+        <meta name="google-site-verification" content="5_rdfkDpTLo7tXDzIkEfmQb1wH_0AmpbcQOAPhLNBLQ" />
         <meta
           httpEquiv="Content-Security-Policy"
           content="
@@ -228,13 +250,13 @@ function MyApp({ Component, pageProps }) {
         />
       </Head>
 
-      {/* Google tag (gtag.js) */}
+      {/* Google Analytics */}
       <Script src="https://www.googletagmanager.com/gtag/js?id=G-ED6RPYHXQN" strategy="afterInteractive" />
       <Script id="google-analytics" strategy="afterInteractive">
         {`window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-ED6RPYHXQN');`}
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-ED6RPYHXQN');`}
       </Script>
 
       <UtilityContext>
