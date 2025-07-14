@@ -1,6 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import React from "react";
-
 export default function Effect({ name, num }) {
   return (
     <div className="relative w-fit max-w-[2vw]">

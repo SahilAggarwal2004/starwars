@@ -1,17 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useState, useEffect, useContext } from "react";
-import { maximumNumber, randomElement, probability } from "utility-kit";
-import { io } from "socket.io-client";
 import { toast } from "react-toastify";
 import { clearChat } from "react-peer-chat";
+import { io } from "socket.io-client";
+import { randomElement, probability } from "utility-kit";
+
+import { infinity, multiAttackers, noMode, onlineConnected, persistConnection, preserveGame, server } from "../constants";
 import useStorage from "../hooks/useStorage";
 import { assist, block, revive, kill, apply, remove } from "../modules/abilities";
 import { animateBullet } from "../modules/animation";
 import { hasEffect, hasStealth, hasTaunt, stackCount } from "../modules/effects";
+import { calculateDamage, calculateSpeed, oppositeTeam, reduce, verify } from "../modules/functions";
+import { maximumNumber } from "../modules/math";
 import { getStorage, removeStorage, setStorage } from "../modules/storage";
-import { calculateDamage, oppositeTeam, reduce, verify } from "../modules/functions";
-import { multiAttackers, noMode, onlineConnected, persistConnection, preserveGame, server } from "../constants";
-import { getPlayers, indexes, leaderAbilities, playersPerTeam, speedVariation, version } from "../../public/players";
+import { getPlayers, indexes, leaderAbilities, playersPerTeam } from "../../public/players";
+
+import { version } from "../../package.json";
 
 const Context = createContext();
 export const useGameContext = () => useContext(Context);
@@ -112,7 +116,7 @@ const GameContext = ({ router, children }) => {
         const randomPlayer = randomElement(randomPlayers);
         if (randomPlayer)
           setTurnmeter((old) => {
-            old[(turnTeam - 1) * playersPerTeam + randomPlayer] = maximumNumber(old) + speedVariation + 1;
+            old[(turnTeam - 1) * playersPerTeam + randomPlayer] = infinity;
             return old;
           });
       },
@@ -175,7 +179,10 @@ const GameContext = ({ router, children }) => {
     },
     "Darth Vader": {
       basic: ({ enemy, enemyTeam }) => apply({ effect: "offense", type: "debuff", enemy, enemyTeam }),
-      special: ({ enemyTeam }) => apply({ effect: "health", type: "debuff", enemyTeam, stack: 2, all: true }),
+      special: ({ enemyTeam }) => {
+        apply({ effect: "health", type: "debuff", enemyTeam, stack: 2, all: true });
+        apply({ effect: "speed", type: "debuff", enemyTeam, all: true });
+      },
       leader: leaderAbilities["Darth Vader"],
       unique: ({ player, enemy, allyTeam, enemyTeam, animation, multi }) => {
         if (!animation) return;
@@ -195,7 +202,7 @@ const GameContext = ({ router, children }) => {
         const { result: memberResult, index } = verify("Hermit Yoda", allyTeam, { alive: true });
         if (memberResult)
           setTurnmeter((old) => {
-            old[(turnTeam - 1) * playersPerTeam + index] += maximumNumber(old) * 0.05;
+            old[(turnTeam - 1) * playersPerTeam + index] += maximumNumber(old, true) * 0.05;
             return old;
           });
       },
@@ -220,7 +227,7 @@ const GameContext = ({ router, children }) => {
         if (!result) return;
         if (enemy === index || multi)
           setTurnmeter((old) => {
-            const bonus = maximumNumber(old) * 0.05;
+            const bonus = maximumNumber(old, true) * 0.05;
             const baseIndex = (oppositeTeam(turnTeam) - 1) * playersPerTeam;
             old[baseIndex + index] += bonus;
             const { result, index: gmyIndex } = verify("Grand Master Yoda", enemyTeam, { alive: true });
@@ -338,7 +345,7 @@ const GameContext = ({ router, children }) => {
     if (oldTurn !== undefined) turnmeter[oldTurn] = 0;
     if (turn >= 0 || isGameStart())
       teams.forEach((player, index) => {
-        if (player.health > 0) turnmeter[index] += player.speed;
+        if (player.health > 0) turnmeter[index] += calculateSpeed(player);
         else turnmeter[index] = -1;
       });
     setTurnmeter(turnmeter);
@@ -416,7 +423,7 @@ const GameContext = ({ router, children }) => {
       teams.forEach((team, teamIndex) =>
         team.forEach((data, index) => {
           const { name, unique = {} } = data;
-          if (unique.type !== type || (teamIndex && foresightArr[index] && unique.foresight)) return;
+          if (unique.type !== type || (teamIndex && foresightArr[index] && !unique.foresight)) return;
           const uniqueData = abilities[name].unique?.(abilityObj) || {};
           returnUnique = { ...returnUnique, ...uniqueData };
         })
@@ -464,7 +471,40 @@ const GameContext = ({ router, children }) => {
     );
   }
 
-  return <Context.Provider value={{ team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, turnTeam, attack, isAttacking, abilities, turnmeter, setTurnmeter, healthSteal, setHealthSteal, initialData, setInitialData, mode, setMode, socket, myTeam, setTeam, players, setPlayers, rooms }}>{children}</Context.Provider>;
+  return (
+    <Context.Provider
+      value={{
+        team1,
+        team2,
+        setTeam1,
+        setTeam2,
+        newTurn,
+        teams,
+        turn,
+        setTurn,
+        turnTeam,
+        attack,
+        isAttacking,
+        abilities,
+        turnmeter,
+        setTurnmeter,
+        healthSteal,
+        setHealthSteal,
+        initialData,
+        setInitialData,
+        mode,
+        setMode,
+        socket,
+        myTeam,
+        setTeam,
+        players,
+        setPlayers,
+        rooms,
+      }}
+    >
+      {children}
+    </Context.Provider>
+  );
 };
 
 export default GameContext;

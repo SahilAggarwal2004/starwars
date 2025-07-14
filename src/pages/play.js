@@ -2,23 +2,46 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { maximumNumber, randomElement } from "utility-kit";
 import { ImExit } from "react-icons/im";
+import { randomElement } from "utility-kit";
+
+import Effect from "../components/Effect";
+import Loader from "../components/Loader";
+import PeerChat from "../components/PeerChat";
+import { details, features, gameAbilities, modes, usableAbilities } from "../constants";
 import { useGameContext } from "../contexts/GameContext";
 import { useUtilityContext } from "../contexts/UtilityContext";
 import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules/effects";
+import { findPlayer, merge, normalizeTurnValue, oppositeTeam } from "../modules/functions";
 import { getStorage, setStorage } from "../modules/storage";
-import { details, features, gameAbilities, modes, usableAbilities } from "../constants";
-import { findPlayer, merge, oppositeTeam } from "../modules/functions";
 import { indexes, playersPerTeam } from "../../public/players";
-import Loader from "../components/Loader";
-import Effect from "../components/Effect";
-import PeerChat from "../components/PeerChat";
 
 const maxPlayers = playersPerTeam * 2;
 
 export default function Play({ router, isFullScreen }) {
-  const { team1, team2, setTeam1, setTeam2, newTurn, teams, turn, setTurn, attack, isAttacking, turnTeam, turnmeter, healthSteal, setHealthSteal, setInitialData, mode, setTurnmeter, socket, myTeam, setTeam, players } = useGameContext();
+  const {
+    team1,
+    team2,
+    setTeam1,
+    setTeam2,
+    newTurn,
+    teams,
+    turn,
+    setTurn,
+    attack,
+    isAttacking,
+    turnTeam,
+    turnmeter,
+    healthSteal,
+    setHealthSteal,
+    setInitialData,
+    mode,
+    setTurnmeter,
+    socket,
+    myTeam,
+    setTeam,
+    players,
+  } = useGameContext();
   const { setModal } = useUtilityContext();
   const online = mode === "online";
   const id = getStorage("roomId");
@@ -178,9 +201,19 @@ export default function Play({ router, isFullScreen }) {
             <ImExit className="cursor-pointer scale-125" onClick={exit} title="Exit" />
           </div>
           {[team1, team2].map((team, index) => {
-            const displayName = online ? (myTeam === index + 1 ? getStorage("name", "", true) : getStorage("opponent", "")) : mode === "computer" && index ? "Computer" : `Team ${index + 1}`;
+            const displayName = online
+              ? myTeam === index + 1
+                ? getStorage("name", "", true)
+                : getStorage("opponent", "")
+              : mode === "computer" && index
+                ? "Computer"
+                : `Team ${index + 1}`;
             return (
-              <div id={`team${index + 1}`} key={index} className={`fixed top-0 px-1 max-w-[5.75rem] overflow-hidden ${index ? "right-4" : "left-4"} space-y-4 flex flex-col items-center justify-center h-full`}>
+              <div
+                id={`team${index + 1}`}
+                key={index}
+                className={`fixed top-0 px-1 max-w-[5.75rem] overflow-hidden ${index ? "right-4" : "left-4"} space-y-4 flex flex-col items-center justify-center h-full`}
+              >
                 <span className="detail-heading font-semibold mx-auto whitespace-nowrap" title={displayName}>
                   {displayName}
                 </span>
@@ -190,15 +223,23 @@ export default function Play({ router, isFullScreen }) {
                   return (
                     <div key={i} className={`${player.health <= 0 && "invisible"}`}>
                       <div
-                        className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${selectedPlayer ? "outline border-2 outline-green-500" : enemy === i && turnTeam !== index + 1 ? "outline border-2 outline-red-500" : "hover:border-2 hover:outline hover:outline-black"} border-transparent rounded-xs ${hasEffect("stealth", "buff", player) && "opacity-50"}`}
+                        className={`relative max-w-[6vw] max-h-[14vh] aspect-square flex flex-col justify-center ${
+                          selectedPlayer
+                            ? "outline border-2 outline-green-500"
+                            : enemy === i && turnTeam !== index + 1
+                              ? "outline border-2 outline-red-500"
+                              : "hover:border-2 hover:outline hover:outline-black"
+                        } border-transparent rounded-xs ${hasEffect("stealth", "buff", player) && "opacity-50"}`}
                         onPointerEnter={() => setHoverPlayer(player)}
                         onPointerLeave={() => setHoverPlayer()}
                         onClick={() => selectEnemy(i, index)}
                         onContextMenu={(e) => e.preventDefault()}
                       >
-                        <div className="block bg-blue-400 rounded-lg mb-0.5 h-0.5" style={{ width: `${(turnmeter[playerIndex] / maximumNumber(turnmeter)) * 100}%` }} />
+                        <div className="block bg-blue-400 rounded-lg mb-0.5 h-0.5" style={{ width: `${normalizeTurnValue(turnmeter, playerIndex) * 100}%` }} />
                         <img src={`/images/players/${player.name}.webp`} alt={player.name} width={120} className="rounded-xs aspect-square" />
-                        <div className="absolute bottom-0 left-0 right-0 flex justify-center space-x-0.5 z-10">{effects.map(({ name, condition, stack }) => condition(player, team1, team2) && <Effect key={name} name={name} num={stack(player)} />)}</div>
+                        <div className="absolute bottom-0 left-0 right-0 flex justify-center space-x-0.5 z-10">
+                          {effects.map(({ name, condition, stack }) => condition(player, team1, team2) && <Effect key={name} name={name} num={stack(player)} />)}
+                        </div>
                       </div>
                       {(mode !== "computer" || turnTeam !== 2) && (!online || myTeam === turnTeam) && selectedPlayer && !isAttacking && (
                         <div className="fixed flex x-center bottom-3 space-x-2">
@@ -207,7 +248,13 @@ export default function Play({ router, isFullScreen }) {
                             if (!abilityData) return;
                             const usable = usableAbilities.includes(ability) && !abilityData.cooldown;
                             return (
-                              <div key={ability} className={`ability detail-heading ${!usable && "opacity-50"}`} onPointerEnter={() => setHoverAbility(ability)} onPointerLeave={() => setHoverAbility()} onClick={() => usable && handleAttack(ability, i)}>
+                              <div
+                                key={ability}
+                                className={`ability detail-heading ${!usable && "opacity-50"}`}
+                                onPointerEnter={() => setHoverAbility(ability)}
+                                onPointerLeave={() => setHoverAbility()}
+                                onClick={() => usable && handleAttack(ability, i)}
+                              >
                                 {ability[0]}
                               </div>
                             );

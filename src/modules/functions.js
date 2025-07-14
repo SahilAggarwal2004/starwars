@@ -1,5 +1,6 @@
-import { hasEffect } from "./effects";
 import { allAbilities } from "../constants";
+import { hasEffect } from "./effects";
+import { maximumNumber } from "./math";
 import { indexes } from "../../public/players";
 
 export const oppositeTeam = (team) => (team % 2) + 1;
@@ -21,6 +22,14 @@ export function calculateDamage(baseDamage, player, enemy, damageMultiplier = 1)
   return damage + bonus;
 }
 
+export function calculateSpeed(player) {
+  const { speed } = player;
+  let bonus = 0;
+  if (hasEffect("speed", "buff", player)) bonus += speed * 0.25;
+  if (hasEffect("speed", "debuff", player)) bonus -= speed * 0.25;
+  return speed + bonus;
+}
+
 export const getFullscreenElement = () => document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
 
 export function merge(player, description) {
@@ -29,6 +38,8 @@ export function merge(player, description) {
   });
   return player;
 }
+
+export const normalizeTurnValue = (turnmeter, playerIndex) => turnmeter[playerIndex] / maximumNumber(turnmeter);
 
 export async function requestFullScreen(element) {
   await (element.requestFullscreen?.() || element.webkitRequestFullscreen?.() || element.mozRequestFullScreen?.() || element.msRequestFullscreen?.());

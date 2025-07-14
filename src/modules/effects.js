@@ -1,16 +1,18 @@
 import { verify } from "./functions";
 
 const effectObj = {
-  foresight: ["foresight", "buff", "Evades the next attack (if possible)"],
-  "offense up": ["offense", "buff", "+25% offense"],
-  "defense up": ["defense", "buff", "+25% defense"],
   "debuff immunity": ["immunity", "buff", "Immune to debuffs"],
+  "defense up": ["defense", "buff", "+25% defense"],
+  foresight: ["foresight", "buff", "Evades the next attack (if possible)"],
   "heal over turn": ["health", "buff", "+25 health for each stack in each turn"],
-  stun: ["stun", "debuff", "Cannot counter attack and miss the next turn"],
-  "offense down": ["offense", "debuff", "-25% offense"],
-  "defense down": ["defense", "debuff", "-25% defense"],
+  "offense up": ["offense", "buff", "+25% offense"],
+  "speed up": ["speed", "buff", "+25% speed"],
   "buff immunity": ["immunity", "debuff", "Immune to buffs"],
   "damage over turn": ["health", "debuff", "-25 health for each stack in each turn"],
+  "defense down": ["defense", "debuff", "-25% defense"],
+  "offense down": ["offense", "debuff", "-25% offense"],
+  "speed down": ["speed", "debuff", "-25% speed"],
+  stun: ["stun", "debuff", "Cannot counter attack and miss the next turn"],
 };
 const effectArr = Object.keys(effectObj);
 

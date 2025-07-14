@@ -104,10 +104,19 @@ export default function TeamSelection({ router }) {
           <span className="main-heading center -translate-y-[calc(3vw+0.5rem+50%)]">{instruction}</span>
           <div className={`grid fixed x-center bottom-4 gap-x-2.5 min-w-max`} style={{ gridTemplateColumns: `repeat(${players.length}, minmax(0, 1fr))` }}>
             {players.map((player) => (
-              <div className="relative size-[6vw] flex justify-center hover:border-2 hover:outline border-transparent rounded-xs" key={player.name} onPointerEnter={() => setHoverPlayer(player)} onPointerLeave={() => setHoverPlayer()} onClick={() => selectPlayer(player)} onContextMenu={(e) => e.preventDefault()}>
+              <div
+                className="relative size-[6vw] flex justify-center hover:border-2 hover:outline border-transparent rounded-xs"
+                key={player.name}
+                onPointerEnter={() => setHoverPlayer(player)}
+                onPointerLeave={() => setHoverPlayer()}
+                onClick={() => selectPlayer(player)}
+                onContextMenu={(e) => e.preventDefault()}
+              >
                 <img src={`/images/players/${player.name}.webp`} alt={player.name} width="120" className="rounded-xs aspect-square" />
                 {team1.map(mapName).includes(player.name) && <div className="absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-blue-500 z-10">1</div>}
-                {team2.map(mapName).includes(player.name) && <div className="absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10">{mode === "computer" ? "C" : 2}</div>}
+                {team2.map(mapName).includes(player.name) && (
+                  <div className="absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10">{mode === "computer" ? "C" : 2}</div>
+                )}
               </div>
             ))}
           </div>
@@ -141,7 +150,15 @@ export default function TeamSelection({ router }) {
             </div>
           )}
           <div className="fixed flex items-center top-8 right-10 space-x-4">
-            {online ? <>{Boolean(myTeam) && id && <PeerChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${oppositeTeam(myTeam)}`} dialogOptions={{ style: { translate: "-72%" } }} />}</> : count ? <FaUndoAlt className="cursor-pointer scale-125" onClick={reset} title="Reset" /> : <FaRandom className="cursor-pointer scale-125" onClick={shuffle} title="Shuffle" />}
+            {online ? (
+              <>
+                {Boolean(myTeam) && id && <PeerChat peerId={`${id}-${myTeam}`} remotePeerId={`${id}-${oppositeTeam(myTeam)}`} dialogOptions={{ style: { translate: "-72%" } }} />}
+              </>
+            ) : count ? (
+              <FaUndoAlt className="cursor-pointer scale-125" onClick={reset} title="Reset" />
+            ) : (
+              <FaRandom className="cursor-pointer scale-125" onClick={shuffle} title="Shuffle" />
+            )}
             <ImExit className="cursor-pointer scale-125" onClick={() => router.back()} title="Exit" />
           </div>
         </>

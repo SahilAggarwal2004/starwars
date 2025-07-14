@@ -2,13 +2,14 @@ import { useRef, useState } from "react";
 import { FaQrcode } from "react-icons/fa";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { toast } from "react-toastify";
-import { useGameContext } from "../../contexts/GameContext";
-import { useUtilityContext } from "../../contexts/UtilityContext";
-import { getStorage, setStorage } from "../../modules/storage";
-import { generateRoomId } from "../../modules/random";
-import Select from "../../components/Select";
+
 import Loader from "../../components/Loader";
 import Offline from "../../components/Offline";
+import Select from "../../components/Select";
+import { useGameContext } from "../../contexts/GameContext";
+import { useUtilityContext } from "../../contexts/UtilityContext";
+import { generateRoomId } from "../../modules/math";
+import { getStorage, setStorage } from "../../modules/storage";
 
 export default function Room({ router }) {
   const { socket, setTeam } = useGameContext();
