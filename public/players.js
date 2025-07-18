@@ -60,7 +60,8 @@ export const getPlayers = () => [
     },
     unique: {
       description: "This player has double health. He gains taunt whenever an ally falls below 100 health and gains stealth whenever this player falls below 100 health",
-      type: "before",
+      type: "succeeding",
+      foresight: true,
     },
   }),
   new Player({
@@ -167,7 +168,7 @@ export const getPlayers = () => [
     basic: { damage: randomNumber(60, 100), description: "Dispell all buffs from target enemy.", animation: true, auto: true },
     special: {
       damage: randomNumber(100, 150),
-      description: "Dispell debuffs from all allies and grant them offense up for 1 turn.",
+      description: "Dispell debuffs from all allies and grant them offense up and speed up for 1 turn.",
       cooldown: 2,
       animation: true,
       foresight: true,

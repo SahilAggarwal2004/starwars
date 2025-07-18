@@ -7,6 +7,8 @@ const effectObj = {
   "heal over turn": ["health", "buff", "+25 health for each stack in each turn"],
   "offense up": ["offense", "buff", "+25% offense"],
   "speed up": ["speed", "buff", "+25% speed"],
+  stealth: ["stealth", "buff", "Cannot be targetted for attack"],
+  taunt: ["taunt", "buff", "Takes target attacks on self"],
   "buff immunity": ["immunity", "debuff", "Immune to buffs"],
   "damage over turn": ["health", "debuff", "-25 health for each stack in each turn"],
   "defense down": ["defense", "debuff", "-25% defense"],
@@ -23,40 +25,14 @@ export const stackCount = (effect, type, player) => {
 
 export const hasEffect = (effect, type, player) => stackCount(effect, type, player) > 0;
 
-export const hasStealth = ({ name, health, buffs, debuffs }) => (health > 0 && buffs.stealth.length > 0) || (name === "Chewbecca" && health < 100 && !debuffs.immunity.length);
-
-export const hasTaunt = ({ name, health, buffs, debuffs }, team1, team2) => {
-  if (buffs.taunt.length > 0) return true;
-  if (name !== "Chewbecca" || health <= 100 || debuffs.immunity.length) return false;
-  if (verify("Chewbecca", team1).result) return team1.map(({ health }) => health > 0 && health < 100).includes(true);
-  if (verify("Chewbecca", team2).result) return team2.map(({ health }) => health > 0 && health < 100).includes(true);
-  return false;
-};
-
-const effects = effectArr.reduce(
-  (arr, name) => {
-    const [effect, type, description] = effectObj[name];
-    return arr.concat({
-      name,
-      description,
-      condition: (player) => hasEffect(effect, type, player),
-      stack: (player) => stackCount(effect, type, player),
-    });
-  },
-  [
-    {
-      name: "taunt",
-      description: "Takes target attacks on self",
-      condition: hasTaunt,
-      stack: (player) => stackCount("taunt", "buff", player),
-    },
-    {
-      name: "stealth",
-      description: "Cannot be targetted for attack",
-      condition: hasStealth,
-      stack: (player) => stackCount("stealth", "buff", player),
-    },
-  ]
-);
+const effects = effectArr.reduce((arr, name) => {
+  const [effect, type, description] = effectObj[name];
+  return arr.concat({
+    name,
+    description,
+    condition: (player) => hasEffect(effect, type, player),
+    stack: (player) => stackCount(effect, type, player),
+  });
+}, []);
 
 export default effects;

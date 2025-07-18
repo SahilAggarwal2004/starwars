@@ -11,7 +11,7 @@ import PeerChat from "../components/PeerChat";
 import { details, features, gameAbilities, modes, usableAbilities } from "../constants";
 import { useGameContext } from "../contexts/GameContext";
 import { useUtilityContext } from "../contexts/UtilityContext";
-import effects, { hasEffect, hasTaunt, hasStealth, stackCount } from "../modules/effects";
+import effects, { hasEffect, stackCount } from "../modules/effects";
 import { findPlayer, merge, normalizeTurnValue, oppositeTeam } from "../modules/functions";
 import { getStorage, setStorage } from "../modules/storage";
 import { indexes, playersPerTeam } from "../../public/players";
@@ -136,10 +136,10 @@ export default function Play({ router, isFullScreen }) {
 
   function selectEnemy(enemy, index) {
     const enemyTeam = turnTeam === 1 ? team2 : team1;
-    const possibleEnemies = enemyTeam.flatMap((enemy, i) => (hasTaunt(enemy, team1, team2) ? [i] : []));
+    const possibleEnemies = enemyTeam.flatMap((enemy, i) => (hasEffect("taunt", "buff", enemy) ? [i] : []));
     if (!possibleEnemies.length)
       enemyTeam.forEach((enemy, i) => {
-        if (enemy.health > 0 && !hasStealth(enemy)) possibleEnemies.push(i);
+        if (enemy.health > 0 && !hasEffect("stealth", "buff", enemy)) possibleEnemies.push(i);
       });
     if (!possibleEnemies.length)
       enemyTeam.forEach(({ health }, i) => {
