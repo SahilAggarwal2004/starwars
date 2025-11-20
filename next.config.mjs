@@ -42,13 +42,14 @@ const withPWA = withSerwistInit({
   swSrc: "src/sw.js",
   swDest: "public/sw.js",
   exclude: [/public\/sw.js/],
-  disable: process.env.NODE_ENV === "development",
+  disable: process.env.NODE_ENV !== "production",
   register: false,
   additionalPrecacheEntries: pages.concat(players, effects).map((url) => ({ url, revision })),
 });
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactCompiler: true,
   experimental: {
     nextScriptWorkers: true,
   },
