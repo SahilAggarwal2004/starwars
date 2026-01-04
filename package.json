@@ -17,11 +17,11 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-icons": "^5.5.0",
-    "react-peer-chat": "^0.8.3",
+    "react-peer-chat": "^0.9.0",
     "react-qr-code": "^2.0.18",
     "react-toastify": "^11.0.5",
     "socket.io-client": "^4.8.3",
-    "utility-kit": "^0.9.0"
+    "utility-kit": "^0.9.1"
   },
   "devDependencies": {
     "@builder.io/partytown": "^0.10.3",

@@ -30,8 +30,8 @@ importers:
         specifier: ^5.5.0
         version: 5.5.0(react@19.2.3)
       react-peer-chat:
-        specifier: ^0.8.3
-        version: 0.8.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: ^0.9.0
+        version: 0.9.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react-qr-code:
         specifier: ^2.0.18
         version: 2.0.18(react@19.2.3)
@@ -42,8 +42,8 @@ importers:
         specifier: ^4.8.3
         version: 4.8.3
       utility-kit:
-        specifier: ^0.9.0
-        version: 0.9.0
+        specifier: ^0.9.1
+        version: 0.9.1
     devDependencies:
       '@builder.io/partytown':
         specifier: ^0.10.3
@@ -1944,8 +1944,8 @@ packages:
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
-  react-peer-chat@0.8.3:
-    resolution: {integrity: sha512-7eDhGAUd60+rG2HpYJa3yafGSK0QFWgHuA+e1q7/UBqceHVBdh9c8V5kyG0Zfaxs/7EWPT/yMby7xAr4lOPcNA==}
+  react-peer-chat@0.9.0:
+    resolution: {integrity: sha512-7G3HKprRJKnTEDM3UE/bCfYhK6LAr4IlX4y1UGENbnsjEHbEwPmBKDNuXchcj6j62dncc22M2/3GUqdzBSlxjg==}
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -2245,8 +2245,8 @@ packages:
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
-  utility-kit@0.9.0:
-    resolution: {integrity: sha512-bQpyF+a8HYozLqnwy9g+fIeKmbr/tuN2MTpzYq3KmNWTBtXgsaype53mpaSmqwJyiPc1rLLvSjWUM5fwys5t7g==}
+  utility-kit@0.9.1:
+    resolution: {integrity: sha512-/DjBvVBA06b+qtxc0YU+GdLs1lqDyIt/VF9RriP6ObfsDcw8VkQPgArmEuq9PHdAb8ZXO8AMwVrAc9gusa8arg==}
 
   webidl-conversions@4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
@@ -4357,7 +4357,7 @@ snapshots:
 
   react-is@16.13.1: {}
 
-  react-peer-chat@0.8.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+  react-peer-chat@0.9.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       peerjs: 1.5.5
       react: 19.2.3
@@ -4781,7 +4781,7 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  utility-kit@0.9.0: {}
+  utility-kit@0.9.1: {}
 
   webidl-conversions@4.0.2: {}
 
