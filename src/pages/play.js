@@ -212,7 +212,7 @@ export default function Play({ router, isFullScreen }) {
               <div
                 id={`team${index + 1}`}
                 key={index}
-                className={`fixed top-0 px-1 max-w-[5.75rem] overflow-hidden ${index ? "right-4" : "left-4"} space-y-4 flex flex-col items-center justify-center h-full`}
+                className={`fixed top-0 px-1 max-w-23 overflow-hidden ${index ? "right-4" : "left-4"} space-y-4 flex flex-col items-center justify-center h-full`}
               >
                 <span className="detail-heading font-semibold mx-auto whitespace-nowrap" title={displayName}>
                   {displayName}
