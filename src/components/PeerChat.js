@@ -10,8 +10,7 @@ export default function PeerChat({ peerId, remotePeerId, dialogOptions }) {
       peerId={peerId}
       remotePeerId={remotePeerId}
       peerOptions={peerOptions}
-      onError={() => toast.error("Browser not supported! Try some other browser.")}
-      onMicError={() => toast.error("Microphone not accessible!")}
+      onError={(error) => toast.error(error.message)}
       dialogOptions={dialogOptions}
     />
   );
