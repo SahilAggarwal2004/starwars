@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { clearChat } from "react-peer-chat";
 import { useGameContext } from "../contexts/GameContext";
-import { getStorage, removeStorage, setStorage } from "../modules/storage";
+import { getStorage, removeStorage, setStorage } from "../lib/storage";
 
 export default function Result({ router }) {
   const { myTeam, mode, socket } = useGameContext();

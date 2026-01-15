@@ -2,9 +2,9 @@ import { toast } from "react-toastify";
 
 import { useGameContext } from "../contexts/GameContext";
 import { useUtilityContext } from "../contexts/UtilityContext";
-import { oppositeTeam } from "../modules/functions";
-import { setStorage } from "../modules/storage";
-import { showConnectivityWarning } from "../modules/toast";
+import { oppositeTeam } from "../lib/functions";
+import { setStorage } from "../lib/storage";
+import { showConnectivityWarning } from "../lib/toast";
 import Scanner from "./Scanner";
 
 export default function Modal({ router }) {

@@ -7,15 +7,14 @@ import { randomElement, probability } from "utility-kit";
 
 import { infinity, multiAttackers, noMode, onlineConnected, persistConnection, preserveGame, server } from "../constants";
 import useStorage from "../hooks/useStorage";
-import { assist, block, revive, kill, apply, remove } from "../modules/abilities";
-import { animateBullet } from "../modules/animation";
-import { hasEffect, stackCount } from "../modules/effects";
-import { calculateDamage, calculateSpeed, oppositeTeam, reduce, verify } from "../modules/functions";
-import { maximumNumber } from "../modules/math";
-import { getStorage, removeStorage, setStorage } from "../modules/storage";
-import { getPlayers, indexes, leaderAbilities, playersPerTeam } from "../../public/players";
-
+import { assist, block, revive, kill, apply, remove } from "../lib/abilities";
+import { animateBullet } from "../lib/animation";
+import { hasEffect, stackCount } from "../lib/effects";
+import { calculateDamage, calculateSpeed, oppositeTeam, reduce, verify } from "../lib/functions";
+import { maximumNumber } from "../lib/math";
+import { getStorage, removeStorage, setStorage } from "../lib/storage";
 import { version } from "../../package.json";
+import { getPlayers, indexes, leaderAbilities, playersPerTeam } from "../../public/players";
 
 const Context = createContext();
 export const useGameContext = () => useContext(Context);
@@ -48,7 +47,7 @@ const GameContext = ({ router, children }) => {
   useEffect(() => {
     if (!online) return;
 
-    const newSocket = io(server, { query: { userId: getStorage("userId", Date.now()), userVersion: version }, ackTimeout: 10000 });
+    const newSocket = io(server, { query: { userId: getStorage("userId", Date.now()), userVersion: version } });
 
     function resetSocket() {
       setSocket(null);

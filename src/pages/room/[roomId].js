@@ -1,10 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
-import { useGameContext } from "../../contexts/GameContext";
-import { getStorage, setStorage } from "../../modules/storage";
+
 import Loader from "../../components/Loader";
 import Offline from "../../components/Offline";
+import { useGameContext } from "../../contexts/GameContext";
+import { getStorage, setStorage } from "../../lib/storage";
 
 export default function Room({ router }) {
   const { setMode, socket, setTeam } = useGameContext();

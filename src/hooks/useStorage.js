@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { getStorage, setStorage } from "../modules/storage";
+
+import { getStorage, setStorage } from "../lib/storage";
 
 export default function useStorage(key, initialValue, { local = false, save = false } = {}) {
   save ||= getStorage("mode") !== "online";

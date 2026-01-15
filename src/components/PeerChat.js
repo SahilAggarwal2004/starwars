@@ -1,7 +1,8 @@
 import Chat from "react-peer-chat";
 import { toast } from "react-toastify";
-import { getStorage } from "../modules/storage";
+
 import { peerOptions } from "../constants";
+import { getStorage } from "../lib/storage";
 
 export default function PeerChat({ peerId, remotePeerId, dialogOptions }) {
   return (

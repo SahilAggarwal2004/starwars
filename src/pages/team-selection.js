@@ -10,9 +10,9 @@ import Loader from "../components/Loader";
 import PeerChat from "../components/PeerChat";
 import { allAbilities, details, features, modes } from "../constants";
 import { useGameContext } from "../contexts/GameContext";
-import { mapName, oppositeTeam } from "../modules/functions";
-import { getStorage } from "../modules/storage";
-import { showConnectivityWarning } from "../modules/toast";
+import { mapName, oppositeTeam } from "../lib/functions";
+import { getStorage } from "../lib/storage";
+import { showConnectivityWarning } from "../lib/toast";
 import { playersPerTeam } from "../../public/players";
 
 const maxPlayers = playersPerTeam * 2;

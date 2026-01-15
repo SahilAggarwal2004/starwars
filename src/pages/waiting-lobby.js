@@ -4,8 +4,9 @@ import { ImExit } from "react-icons/im";
 import { FaShareSquare } from "react-icons/fa";
 import QRCode from "react-qr-code";
 import { toast } from "react-toastify";
+
 import { useGameContext } from "../contexts/GameContext";
-import { getStorage } from "../modules/storage";
+import { getStorage } from "../lib/storage";
 
 export default function Waiting({ router, enterFullscreen }) {
   const { myTeam } = useGameContext();

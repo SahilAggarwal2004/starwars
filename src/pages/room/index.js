@@ -8,8 +8,8 @@ import Offline from "../../components/Offline";
 import Select from "../../components/Select";
 import { useGameContext } from "../../contexts/GameContext";
 import { useUtilityContext } from "../../contexts/UtilityContext";
-import { generateRoomId } from "../../modules/math";
-import { getStorage, setStorage } from "../../modules/storage";
+import { generateRoomId } from "../../lib/math";
+import { getStorage, setStorage } from "../../lib/storage";
 
 export default function Room({ router }) {
   const { socket, setTeam } = useGameContext();

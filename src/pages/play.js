@@ -11,10 +11,10 @@ import PeerChat from "../components/PeerChat";
 import { details, features, gameAbilities, modes, usableAbilities } from "../constants";
 import { useGameContext } from "../contexts/GameContext";
 import { useUtilityContext } from "../contexts/UtilityContext";
-import effects, { hasEffect, stackCount } from "../modules/effects";
-import { findPlayer, merge, normalizeTurnValue, oppositeTeam } from "../modules/functions";
-import { getStorage, setStorage } from "../modules/storage";
-import { showConnectivityWarning } from "../modules/toast";
+import effects, { hasEffect, stackCount } from "../lib/effects";
+import { findPlayer, merge, normalizeTurnValue, oppositeTeam } from "../lib/functions";
+import { getStorage, setStorage } from "../lib/storage";
+import { showConnectivityWarning } from "../lib/toast";
 import { indexes, playersPerTeam } from "../../public/players";
 
 const maxPlayers = playersPerTeam * 2;

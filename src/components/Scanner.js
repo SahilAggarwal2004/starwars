@@ -2,8 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
 import { toast } from "react-toastify";
+
 import { useUtilityContext } from "../contexts/UtilityContext";
-import { verifyUrl } from "../modules/functions";
+import { verifyUrl } from "../lib/functions";
 
 export default function Scanner({ router }) {
   const { setModal } = useUtilityContext();

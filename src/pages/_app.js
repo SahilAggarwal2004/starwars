@@ -8,9 +8,9 @@ import Modal from "../components/Modal";
 import { notFullscreen, showModal } from "../constants";
 import GameContext from "../contexts/GameContext";
 import UtilityContext from "../contexts/UtilityContext";
-import { getFullscreenElement, requestFullScreen } from "../modules/functions";
-import { removeStorage } from "../modules/storage";
-import { handleVersionUpdate } from "../modules/update";
+import { getFullscreenElement, requestFullScreen } from "../lib/functions";
+import { removeStorage } from "../lib/storage";
+import { handleVersionUpdate } from "../lib/update";
 import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }) {
@@ -260,14 +260,14 @@ function MyApp({ Component, pageProps }) {
           {!loading && router.isReady && (
             <div ref={fullscreenElement} className="font-mono">
               {isMobile && !notFullscreen.includes(router.pathname) && (
-                <div className="z-50">
+                <div className="bg-black text-white fixed inset-0 z-50 flex flex-col items-center justify-center space-y-4">
                   {!isFullscreen ? (
-                    <div className="bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4">
+                    <>
                       <div>Please enter full screen mode</div>
                       <button onClick={enterFullscreen}>Click Here</button>
-                    </div>
+                    </>
                   ) : (
-                    !landscape && <div className="bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4">Please rotate the device</div>
+                    !landscape && <div>Please rotate the device</div>
                   )}
                 </div>
               )}
