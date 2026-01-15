@@ -44,6 +44,7 @@ const withPWA = withSerwistInit({
   exclude: [/public\/sw.js/],
   disable: process.env.NODE_ENV !== "production",
   register: false,
+  reloadOnOnline: false,
   additionalPrecacheEntries: pages.concat(players, effects).map((url) => ({ url, revision })),
 });
 

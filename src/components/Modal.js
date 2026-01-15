@@ -18,8 +18,7 @@ export default function Modal({ router }) {
   function handleJoin(room) {
     const name = props.tempName;
     setStorage("name", name, true);
-    emitAck({ event: "join-room", payload: { name, room, type } }, ({ message, opponent }) => {
-      toast.success(message);
+    emitAck({ event: "join-room", payload: { name, room, type } }, ({ opponent }) => {
       setModal({ active: false });
       setStorage("connection", true);
       setStorage("roomId", room);

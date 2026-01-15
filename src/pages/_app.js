@@ -273,7 +273,7 @@ function MyApp({ Component, pageProps }) {
               )}
               <Component {...pageProps} router={router} isFullscreen={isFullscreen} enterFullscreen={enterFullscreen} />
               {showModal.includes(router.pathname) && <Modal router={router} />}
-              <ToastContainer stacked pauseOnFocusLoss={false} position="top-left" />
+              <ToastContainer stacked pauseOnFocusLoss={false} position="top-left" autoClose={3000} />
             </div>
           )}
         </GameContext>

@@ -18,7 +18,7 @@ import { playersPerTeam } from "../../public/players";
 const maxPlayers = playersPerTeam * 2;
 
 export default function TeamSelection({ router }) {
-  const { team1, team2, teams, setTeam1, setTeam2, abilities, setInitialData, mode, socket, emitAck, myTeam, players, setPlayers } = useGameContext();
+  const { team1, team2, teams, setTeam1, setTeam2, abilities, setInitialData, mode, socket, emitAck, myTeam, setTeam, players, setPlayers } = useGameContext();
   const online = mode === "online";
   const id = getStorage("roomId");
   const [first, setFirst] = useState(1);
@@ -31,10 +31,11 @@ export default function TeamSelection({ router }) {
 
   useEffect(() => {
     if (online && socket)
-      emitAck({ event: "get-players" }, ({ players, team1, team2, first }) => {
-        setPlayers(players);
+      emitAck({ event: "get-players" }, ({ team, team1, team2, players, first }) => {
+        setTeam(team);
         setTeam1(team1);
         setTeam2(team2);
+        setPlayers(players);
         setFirst(first);
         setLoading(false);
       });

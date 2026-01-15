@@ -41,14 +41,15 @@ const GameContext = ({ router, children }) => {
     if (!mode && !noMode.includes(router.pathname)) router.replace("/");
     if (!preserveGame.includes(router.pathname)) resetGame();
     if (router.pathname !== "/result") removeStorage("winner");
-    if (online && !persistConnection.includes(router.pathname)) return resetConnection(socket);
+    if (online && !persistConnection.includes(router.pathname)) return resetConnection();
     if (online && !getStorage("connection") && onlineConnected.includes(router.pathname)) router.replace("/room");
   }, [router.pathname]);
 
   useEffect(() => {
     if (!online) return;
 
-    const newSocket = io(server, { query: { userId: getStorage("userId", Date.now()), userVersion: version } });
+    const newSocket = io(server, { query: { userId: getStorage("userId", crypto.randomUUID()), userVersion: version } });
+    let reconnectWarningShown = false;
 
     // Default event handlers
     newSocket.on("connect", () => setSocket(newSocket));
@@ -59,14 +60,20 @@ const GameContext = ({ router, children }) => {
       }
       setSocket(null);
       if (!newSocket.active) newSocket.connect();
+      if (reconnectWarningShown) return;
       toast.warning("Connection lost, reconnecting...");
+      reconnectWarningShown = true;
     });
     newSocket.on("connect_error", () => {
       setSocket(null);
       if (!newSocket.active) newSocket.connect();
       toast.warning("Unable to connect, reconnecting...");
+      reconnectWarningShown = true;
     });
-    newSocket.io.on("reconnect", () => toast.success("Reconnected to the server."));
+    newSocket.io.on("reconnect", () => {
+      toast.success("Reconnected to the server.");
+      reconnectWarningShown = false;
+    });
 
     // Custom event handlers
     newSocket.on("error", ({ message, type }) => {
@@ -349,9 +356,9 @@ const GameContext = ({ router, children }) => {
   }
 
   function resetSocket(socketInstance = socket) {
+    socketInstance?.removeAllListeners();
+    socketInstance?.disconnect();
     setSocket(null);
-    socketInstance.removeAllListeners();
-    socketInstance.disconnect();
   }
 
   function resetConnection(socketInstance = socket) {
