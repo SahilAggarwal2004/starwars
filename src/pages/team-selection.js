@@ -2,16 +2,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { randomElement } from "utility-kit";
 import { FaRandom, FaUndoAlt } from "react-icons/fa";
 import { ImExit } from "react-icons/im";
-import { useGameContext } from "../contexts/GameContext";
-import { allAbilities, details, features, modes } from "../constants";
-import { getStorage } from "../modules/storage";
-import { mapName, oppositeTeam } from "../modules/functions";
-import { playersPerTeam } from "../../public/players";
+import { randomElement } from "utility-kit";
+
 import Loader from "../components/Loader";
 import PeerChat from "../components/PeerChat";
+import { allAbilities, details, features, modes } from "../constants";
+import { useGameContext } from "../contexts/GameContext";
+import { mapName, oppositeTeam } from "../modules/functions";
+import { getStorage } from "../modules/storage";
+import { showConnectivityWarning } from "../modules/toast";
+import { playersPerTeam } from "../../public/players";
 
 const maxPlayers = playersPerTeam * 2;
 
@@ -51,7 +53,7 @@ export default function TeamSelection({ router }) {
         }, {});
         setInitialData(initialData);
         router.replace("/play");
-      } else if (myTeam === 1) socket.emit("initiate-game", () => router.replace("/play"));
+      } else if (myTeam === 1) socket?.emit("initiate-game", () => router.replace("/play"));
     } else if (mode === "computer" && currentTeam === 2) {
       do {
         var player = randomElement(players);
@@ -61,16 +63,16 @@ export default function TeamSelection({ router }) {
   }, [count]);
 
   function addPlayer(player) {
-    if (!teams.includes(player) && count < maxPlayers) {
-      if (currentTeam === 1) setTeam1((team) => team.concat(player));
-      else setTeam2((team) => team.concat(player));
-      return true;
-    }
+    if (teams.includes(player) || count >= maxPlayers) return false;
+    if (currentTeam === 1) setTeam1((team) => team.concat(player));
+    else setTeam2((team) => team.concat(player));
+    return true;
   }
 
   function selectPlayer(player) {
     if (online) {
       if (currentTeam !== myTeam) return;
+      if (!socket) return showConnectivityWarning();
       if (addPlayer(player.name)) socket.emit("select-player", player.name);
     } else addPlayer(player);
   }

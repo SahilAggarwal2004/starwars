@@ -21,8 +21,6 @@ function MyApp({ Component, pageProps }) {
   const [orientation, setOrientation] = useState(typeof screen !== "undefined" && screen.orientation?.type);
   const fullscreenElement = useRef();
   const landscape = orientation && orientation.includes("landscape");
-  pageProps.router = router;
-  pageProps.enterFullscreen = enterFullscreen;
 
   useEffect(() => {
     setLoading(false);
@@ -65,8 +63,6 @@ function MyApp({ Component, pageProps }) {
       }
     }, 1);
   }
-
-  if (router.pathname === "/play") pageProps.isFullscreen = isFullscreen;
 
   return (
     <>
@@ -263,18 +259,19 @@ function MyApp({ Component, pageProps }) {
         <GameContext router={router} enterFullscreen={enterFullscreen}>
           {!loading && router.isReady && (
             <div ref={fullscreenElement} className="font-mono">
-              {!isMobile || notFullscreen.includes(router.pathname) ? (
-                <Component {...pageProps} />
-              ) : !isFullscreen ? (
-                <div className="bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4">
-                  <div>Please enter full screen mode</div>
-                  <button onClick={enterFullscreen}>Click Here</button>
+              {isMobile && !notFullscreen.includes(router.pathname) && (
+                <div className="z-50">
+                  {!isFullscreen ? (
+                    <div className="bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4">
+                      <div>Please enter full screen mode</div>
+                      <button onClick={enterFullscreen}>Click Here</button>
+                    </div>
+                  ) : (
+                    !landscape && <div className="bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4">Please rotate the device</div>
+                  )}
                 </div>
-              ) : landscape ? (
-                <Component {...pageProps} />
-              ) : (
-                <div className="bg-black text-white fixed inset-0 flex flex-col items-center justify-center space-y-4">Please rotate the device</div>
               )}
+              <Component {...pageProps} router={router} isFullscreen={isFullscreen} enterFullscreen={enterFullscreen} />
               {showModal.includes(router.pathname) && <Modal router={router} />}
               <ToastContainer stacked pauseOnFocusLoss={false} position="top-left" />
             </div>

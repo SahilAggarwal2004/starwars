@@ -33,7 +33,7 @@ const GameContext = ({ router, children }) => {
   const teams = team1.concat(team2);
   const [turn, setTurn] = useState(-1);
   const [isAttacking, setAttacking] = useState(false);
-  const [socket, setSocket] = useState();
+  const [socket, setSocket] = useState(null);
   const turnTeam = Math.ceil((turn + 1) / playersPerTeam);
   const online = mode === "online";
 
@@ -41,69 +41,95 @@ const GameContext = ({ router, children }) => {
     if (!mode && !noMode.includes(router.pathname)) router.replace("/");
     if (!preserveGame.includes(router.pathname)) resetGame();
     if (router.pathname !== "/result") removeStorage("winner");
-    if (online && !persistConnection.includes(router.pathname)) return resetConnection();
+    if (online && !persistConnection.includes(router.pathname)) return resetConnection(socket);
     if (online && !getStorage("connection") && onlineConnected.includes(router.pathname)) router.replace("/room");
   }, [router.pathname]);
 
   useEffect(() => {
     if (!online) return;
-    const newSocket = io(server, { query: { userId: getStorage("userId", Date.now()), userVersion: version } });
+
+    const newSocket = io(server, { query: { userId: getStorage("userId", Date.now()), userVersion: version }, ackTimeout: 10000 });
 
     function resetSocket() {
-      setSocket();
+      setSocket(null);
       newSocket.removeAllListeners();
       newSocket.disconnect();
     }
 
-    newSocket.on("connect", () => {
-      setSocket(newSocket);
-      newSocket.on("error", (error, type) => {
-        toast.error(error);
-        if (type === "redirect") router.replace("/room");
-        else if (type === "version") resetSocket();
-      });
-      newSocket.on("public-rooms", (rooms) => setRooms(rooms));
-      newSocket.on("new-user", (opponent) => {
-        toast.success(`${opponent} joined the room!`);
-        setTeam(1);
-        setStorage("opponent", opponent);
-      });
-      newSocket.on("left", ({ name, started, team }) => {
-        toast.error(`${name} left the lobby.`);
-        removeStorage("opponent");
-        clearChat();
-        if (started) {
-          setStorage("winner", team);
-          router.replace("/result");
-        } else {
-          setTeam(0);
-          router.replace("/waiting-lobby");
-        }
-      });
-      newSocket.on("selected-player", (team, players) => {
-        if (team === 1) setTeam1(players);
-        else setTeam2(players);
-      });
-      newSocket.on("ready", () => router.replace("/play"));
-      newSocket.on("sync-data", ({ team1, team2, turn, turnmeter, healthSteal }) => {
-        setTeam1(team1);
-        setTeam2(team2);
-        setTurn(turn);
-        setTurnmeter(turnmeter);
-        setHealthSteal(healthSteal);
-      });
-      newSocket.on("rejoin", (opponent, team) => {
-        setStorage("connection", true);
-        setStorage("opponent", opponent);
-        if (team) {
-          setTeam(team);
-          router.replace("/team-selection");
-        } else router.replace("/play");
-      });
-      newSocket.on("animation", animateBullet);
+    // Default event handlers
+    newSocket.on("connect", () => setSocket(newSocket));
+    newSocket.on("disconnect", (reason) => {
+      if (reason === "io server disconnect") {
+        toast.error("Disconnected from the server.");
+        return router.replace("/");
+      }
+      setSocket(null);
+      if (!newSocket.active) newSocket.connect();
+      toast.warning("Connection lost, reconnecting...");
     });
+    newSocket.on("connect_error", () => {
+      setSocket(null);
+      if (!newSocket.active) newSocket.connect();
+      toast.warning("Unable to connect, reconnecting...");
+    });
+    newSocket.io.on("reconnect", () => toast.success("Reconnected to the server."));
+
+    // Custom event handlers
+    newSocket.on("error", (error, type) => {
+      toast.error(error);
+      if (type === "redirect") router.replace("/room");
+      else if (type === "version") resetSocket();
+    });
+
+    newSocket.on("public-rooms", (rooms) => setRooms(rooms));
+
+    newSocket.on("new-user", (opponent) => {
+      toast.success(`${opponent} joined the room!`);
+      setTeam(1);
+      setStorage("opponent", opponent);
+    });
+
+    newSocket.on("left", ({ name, started, team }) => {
+      toast.error(`${name} left the lobby.`);
+      removeStorage("opponent");
+      clearChat();
+      if (started) {
+        setStorage("winner", team);
+        router.replace("/result");
+      } else {
+        setTeam(0);
+        router.replace("/waiting-lobby");
+      }
+    });
+
+    newSocket.on("selected-player", (team, players) => {
+      if (team === 1) setTeam1(players);
+      else setTeam2(players);
+    });
+
+    newSocket.on("ready", () => router.replace("/play"));
+
+    newSocket.on("sync-data", ({ team1, team2, turn, turnmeter, healthSteal }) => {
+      setTeam1(team1);
+      setTeam2(team2);
+      setTurn(turn);
+      setTurnmeter(turnmeter);
+      setHealthSteal(healthSteal);
+    });
+
+    newSocket.on("rejoin", (opponent, team) => {
+      setStorage("connection", true);
+      setStorage("opponent", opponent);
+      if (team) {
+        setTeam(team);
+        router.replace("/team-selection");
+      } else router.replace("/play");
+    });
+
+    newSocket.on("animation", animateBullet);
+
     return () => {
-      resetConnection();
+      resetConnection(newSocket);
       resetSocket();
     };
   }, [online]);
@@ -302,7 +328,7 @@ const GameContext = ({ router, children }) => {
 
   const isGameStart = () => turnmeter.reduce((sum, speed) => sum + speed, 0) === 0;
 
-  function resetConnection() {
+  function resetConnection(socket) {
     socket?.emit("leave-room");
     setTeam(0);
     setStorage("connection", false);
@@ -385,6 +411,7 @@ const GameContext = ({ router, children }) => {
 
   function attack({ player, enemy, ability = "basic", isAssisting = false, isCountering = false, damageMultiplier = 1 }) {
     if (player < 0 || player > 4 || isAttacking) return;
+
     let returnUnique = {};
     const teams = getTeams(isCountering);
     const allyTeam = teams[0];

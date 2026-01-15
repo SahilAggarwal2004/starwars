@@ -1,8 +1,10 @@
 import { toast } from "react-toastify";
+
 import { useGameContext } from "../contexts/GameContext";
 import { useUtilityContext } from "../contexts/UtilityContext";
-import { setStorage } from "../modules/storage";
 import { oppositeTeam } from "../modules/functions";
+import { setStorage } from "../modules/storage";
+import { showConnectivityWarning } from "../modules/toast";
 import Scanner from "./Scanner";
 
 export default function Modal({ router }) {
@@ -17,7 +19,7 @@ export default function Modal({ router }) {
   function handleJoin(room) {
     const name = props.tempName;
     setStorage("name", name, true);
-    if (!socket.connected) return toast.error("Please check your internet connectivity");
+    if (!socket) return showConnectivityWarning();
     socket.emit("join-room", { name, room, type }, ({ message, opponent }) => {
       toast.success(message);
       setModal({ active: false });
@@ -39,9 +41,9 @@ export default function Modal({ router }) {
 
   return (
     <>
-      <div className={`${active ? "bg-black/50" : "invisible bg-black/0"} fixed inset-0 transition-all duration-700 z-40`} onClick={handleCancel} />
+      <div className={`${active ? "bg-black/50" : "invisible bg-black/0"} fixed inset-0 transition-all duration-700 z-30`} onClick={handleCancel} />
       <div
-        className={`z-50 w-max max-w-[90vw] max-h-[98vh] overflow-y-auto fixed center text-center bg-white rounded-md py-4 ${type === "qr-scanner" ? "px-0" : "px-4"} ${
+        className={`z-40 w-max max-w-[90vw] max-h-[98vh] overflow-y-auto fixed center text-center bg-white rounded-md py-4 ${type === "qr-scanner" ? "px-0" : "px-4"} ${
           active ? "opacity-100" : "hidden"
         }`}
       >

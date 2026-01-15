@@ -14,6 +14,7 @@ import { useUtilityContext } from "../contexts/UtilityContext";
 import effects, { hasEffect, stackCount } from "../modules/effects";
 import { findPlayer, merge, normalizeTurnValue, oppositeTeam } from "../modules/functions";
 import { getStorage, setStorage } from "../modules/storage";
+import { showConnectivityWarning } from "../modules/toast";
 import { indexes, playersPerTeam } from "../../public/players";
 
 const maxPlayers = playersPerTeam * 2;
@@ -167,6 +168,7 @@ export default function Play({ router, isFullScreen }) {
     if (ability === "basic" || ability === "special") {
       setHoverPlayer();
       setHoverAbility();
+      if (online && !socket) return showConnectivityWarning();
       attack({ player: index, enemy, ability });
     }
   }
