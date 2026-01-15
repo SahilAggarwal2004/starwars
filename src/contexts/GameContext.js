@@ -13,6 +13,7 @@ import { hasEffect, stackCount } from "../lib/effects";
 import { calculateDamage, calculateSpeed, oppositeTeam, reduce, verify } from "../lib/functions";
 import { maximumNumber } from "../lib/math";
 import { getStorage, removeStorage, setStorage } from "../lib/storage";
+import { showConnectivityWarning } from "../lib/toast";
 import { version } from "../../package.json";
 import { getPlayers, indexes, leaderAbilities, playersPerTeam } from "../../public/players";
 
@@ -49,12 +50,6 @@ const GameContext = ({ router, children }) => {
 
     const newSocket = io(server, { query: { userId: getStorage("userId", Date.now()), userVersion: version } });
 
-    function resetSocket() {
-      setSocket(null);
-      newSocket.removeAllListeners();
-      newSocket.disconnect();
-    }
-
     // Default event handlers
     newSocket.on("connect", () => setSocket(newSocket));
     newSocket.on("disconnect", (reason) => {
@@ -74,10 +69,12 @@ const GameContext = ({ router, children }) => {
     newSocket.io.on("reconnect", () => toast.success("Reconnected to the server."));
 
     // Custom event handlers
-    newSocket.on("error", (error, type) => {
-      toast.error(error);
-      if (type === "redirect") router.replace("/room");
-      else if (type === "version") resetSocket();
+    newSocket.on("error", ({ message, type }) => {
+      toast.error(message);
+      if (type === "version") {
+        resetSocket();
+        setTimeout(() => router.reload(), 2000);
+      }
     });
 
     newSocket.on("public-rooms", (rooms) => setRooms(rooms));
@@ -129,7 +126,7 @@ const GameContext = ({ router, children }) => {
 
     return () => {
       resetConnection(newSocket);
-      resetSocket();
+      resetSocket(newSocket);
     };
   }, [online]);
 
@@ -327,8 +324,38 @@ const GameContext = ({ router, children }) => {
 
   const isGameStart = () => turnmeter.reduce((sum, speed) => sum + speed, 0) === 0;
 
-  function resetConnection(socket) {
-    socket?.emit("leave-room");
+  function emitAck({ socketInstance = socket, event, payload }, ack) {
+    if (!socketInstance) return showConnectivityWarning();
+
+    const handler = (res) => {
+      if (!res) {
+        console.warn(`Ack timeout or server error: ${event}\nPayload: ${JSON.stringify(payload)}`);
+        return showConnectivityWarning();
+      }
+
+      if (res.success) {
+        const { message } = res.data || {};
+        if (message) toast.success(message);
+        return ack?.(res.data);
+      }
+
+      const { message, type } = res.error || {};
+      if (message) toast.error(message);
+      if (type === "redirect") router.replace("/room");
+    };
+
+    if (payload === undefined) socketInstance.emit(event, handler);
+    else socketInstance.emit(event, payload, handler);
+  }
+
+  function resetSocket(socketInstance = socket) {
+    setSocket(null);
+    socketInstance.removeAllListeners();
+    socketInstance.disconnect();
+  }
+
+  function resetConnection(socketInstance = socket) {
+    if (socketInstance) emitAck({ socketInstance, event: "leave-room" });
     setTeam(0);
     setStorage("connection", false);
     removeStorage("opponent");
@@ -455,7 +482,7 @@ const GameContext = ({ router, children }) => {
     const animationObj = { player, enemy, turnTeam, enemyTeam: multi ? enemyTeam : [enemyData], multi, isCountering };
     if (animation) {
       animateBullet(animationObj);
-      if (online) socket.emit("animation", animationObj);
+      if (online) emitAck({ event: "animation", payload: animationObj });
     }
 
     const abilityObj = { player, enemy, allyTeam, enemyTeam, damage, foresight, ability, multi, animation, isAssisting, isCountering };
@@ -535,6 +562,7 @@ const GameContext = ({ router, children }) => {
         mode,
         setMode,
         socket,
+        emitAck,
         myTeam,
         setTeam,
         players,

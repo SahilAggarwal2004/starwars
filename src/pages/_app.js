@@ -260,16 +260,16 @@ function MyApp({ Component, pageProps }) {
           {!loading && router.isReady && (
             <div ref={fullscreenElement} className="font-mono">
               {isMobile && !notFullscreen.includes(router.pathname) && (
-                <div className="bg-black text-white fixed inset-0 z-50 flex flex-col items-center justify-center space-y-4">
+                <>
                   {!isFullscreen ? (
-                    <>
+                    <div className="screen-blocker">
                       <div>Please enter full screen mode</div>
                       <button onClick={enterFullscreen}>Click Here</button>
-                    </>
+                    </div>
                   ) : (
-                    !landscape && <div>Please rotate the device</div>
+                    !landscape && <div className="screen-blocker">Please rotate the device</div>
                   )}
-                </div>
+                </>
               )}
               <Component {...pageProps} router={router} isFullscreen={isFullscreen} enterFullscreen={enterFullscreen} />
               {showModal.includes(router.pathname) && <Modal router={router} />}

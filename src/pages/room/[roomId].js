@@ -8,7 +8,7 @@ import { useGameContext } from "../../contexts/GameContext";
 import { getStorage, setStorage } from "../../lib/storage";
 
 export default function Room({ router }) {
-  const { setMode, socket, setTeam } = useGameContext();
+  const { setMode, socket, emitAck, setTeam } = useGameContext();
   const { roomId } = router.query;
   const name = useRef();
 
@@ -19,8 +19,7 @@ export default function Room({ router }) {
   function handleClick() {
     const tempName = name.current.value;
     setStorage("name", tempName, true);
-    socket.emit("join-room", { name: tempName, room: roomId }, ({ message, opponent }) => {
-      toast.success(message);
+    emitAck({ event: "join-room", payload: { name: tempName, room: roomId } }, ({ opponent }) => {
       setStorage("connection", true);
       setStorage("roomId", roomId);
       if (opponent) {

@@ -4,11 +4,10 @@ import { useGameContext } from "../contexts/GameContext";
 import { useUtilityContext } from "../contexts/UtilityContext";
 import { oppositeTeam } from "../lib/functions";
 import { setStorage } from "../lib/storage";
-import { showConnectivityWarning } from "../lib/toast";
 import Scanner from "./Scanner";
 
 export default function Modal({ router }) {
-  const { socket, myTeam, setTeam, rooms } = useGameContext();
+  const { emitAck, myTeam, setTeam, rooms } = useGameContext();
   const {
     modal: { active, type, props },
     setModal,
@@ -19,8 +18,7 @@ export default function Modal({ router }) {
   function handleJoin(room) {
     const name = props.tempName;
     setStorage("name", name, true);
-    if (!socket) return showConnectivityWarning();
-    socket.emit("join-room", { name, room, type }, ({ message, opponent }) => {
+    emitAck({ event: "join-room", payload: { name, room, type } }, ({ message, opponent }) => {
       toast.success(message);
       setModal({ active: false });
       setStorage("connection", true);

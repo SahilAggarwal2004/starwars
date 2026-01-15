@@ -18,7 +18,7 @@ import { playersPerTeam } from "../../public/players";
 const maxPlayers = playersPerTeam * 2;
 
 export default function TeamSelection({ router }) {
-  const { team1, team2, teams, setTeam1, setTeam2, abilities, setInitialData, mode, socket, myTeam, players, setPlayers } = useGameContext();
+  const { team1, team2, teams, setTeam1, setTeam2, abilities, setInitialData, mode, socket, emitAck, myTeam, players, setPlayers } = useGameContext();
   const online = mode === "online";
   const id = getStorage("roomId");
   const [first, setFirst] = useState(1);
@@ -30,8 +30,8 @@ export default function TeamSelection({ router }) {
   const instruction = online ? (currentTeam === myTeam ? "Select your " : "Opponent's turn to select ") + role : `Select ${role} for Team ${currentTeam}`;
 
   useEffect(() => {
-    if (online)
-      socket?.emit("get-players", (players, team1, team2, first) => {
+    if (online && socket)
+      emitAck({ event: "get-players" }, ({ players, team1, team2, first }) => {
         setPlayers(players);
         setTeam1(team1);
         setTeam2(team2);
@@ -53,7 +53,7 @@ export default function TeamSelection({ router }) {
         }, {});
         setInitialData(initialData);
         router.replace("/play");
-      } else if (myTeam === 1) socket?.emit("initiate-game", () => router.replace("/play"));
+      } else if (myTeam === 1) emitAck({ event: "initiate-game" }, () => router.replace("/play"));
     } else if (mode === "computer" && currentTeam === 2) {
       do {
         var player = randomElement(players);
@@ -73,7 +73,7 @@ export default function TeamSelection({ router }) {
     if (online) {
       if (currentTeam !== myTeam) return;
       if (!socket) return showConnectivityWarning();
-      if (addPlayer(player.name)) socket.emit("select-player", player.name);
+      if (addPlayer(player.name)) emitAck({ event: "select-player", payload: player.name });
     } else addPlayer(player);
   }
 

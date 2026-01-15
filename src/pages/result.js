@@ -6,14 +6,14 @@ import { useGameContext } from "../contexts/GameContext";
 import { getStorage, removeStorage, setStorage } from "../lib/storage";
 
 export default function Result({ router }) {
-  const { myTeam, mode, socket } = useGameContext();
+  const { myTeam, mode, emitAck } = useGameContext();
   const [winner, setWinner] = useState();
 
   useEffect(() => {
     const winner = getStorage("winner");
     if (winner) {
       setWinner(winner);
-      socket?.emit("leave-room");
+      emitAck({ event: "leave-room" });
       setStorage("connection", false);
       removeStorage("opponent");
       clearChat();
@@ -30,8 +30,8 @@ export default function Result({ router }) {
               ? "Congratulations! You won"
               : "Uh oh! You lost"
             : mode === "computer" && winner === 2
-            ? "Computer won"
-            : `Congratulations! Team ${winner} won`}{" "}
+              ? "Computer won"
+              : `Congratulations! Team ${winner} won`}{" "}
           the game.
         </div>
         <Link href="/" replace className="primary-button">

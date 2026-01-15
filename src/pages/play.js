@@ -39,6 +39,7 @@ export default function Play({ router, isFullScreen }) {
     mode,
     setTurnmeter,
     socket,
+    emitAck,
     myTeam,
     setTeam,
     players,
@@ -67,8 +68,8 @@ export default function Play({ router, isFullScreen }) {
   }, []);
 
   useEffect(() => {
-    if (online)
-      socket?.emit("get-data", ({ team, team1, team2, turn, initialData, turnmeter, healthSteal }) => {
+    if (online && socket)
+      emitAck({ event: "get-data" }, ({ team, team1, team2, turn, initialData, turnmeter, healthSteal }) => {
         setTeam(team);
         setTeam1(team1);
         setTeam2(team2);
@@ -125,7 +126,7 @@ export default function Play({ router, isFullScreen }) {
         setTeam2(team2);
         newTurn();
       }, 500);
-    if (online) setTimeout(() => socket.emit("sync-data", { team1, team2, turn, turnmeter, healthSteal }), +(player.health <= 0 && 600));
+    if (online) setTimeout(() => emitAck({ event: "sync-data", payload: { team1, team2, turn, turnmeter, healthSteal } }), +(player.health <= 0 && 600));
   }, [isAttacking, turn]);
 
   function confirmBack() {

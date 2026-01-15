@@ -79,6 +79,10 @@
     @apply fixed bg-red-500 -translate-x-1/2 -translate-y-1/2 p-1 rounded-full z-20 transition-all ease-linear duration-[1900ms];
   }
 
+  .screen-blocker {
+    @apply bg-black text-white fixed inset-0 z-50 flex flex-col items-center justify-center space-y-4;
+  }
+
   @font-face {
     font-family: starwars;
     src: url(../fonts/Starjedi.woff);

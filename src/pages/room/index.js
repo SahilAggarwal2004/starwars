@@ -12,7 +12,7 @@ import { generateRoomId } from "../../lib/math";
 import { getStorage, setStorage } from "../../lib/storage";
 
 export default function Room({ router }) {
-  const { socket, setTeam } = useGameContext();
+  const { socket, emitAck, setTeam } = useGameContext();
   const { setModal } = useUtilityContext();
   const { type = "public" } = router.query;
   const [room, setRoom] = useState("");
@@ -35,8 +35,7 @@ export default function Room({ router }) {
     }
     setDisabled(true);
     setTimeout(() => setDisabled(false), 1000);
-    socket.emit(method, { name: tempName, room: tempRoom, type }, ({ message, opponent }) => {
-      toast.success(message);
+    emitAck({ event: method, payload: { name: tempName, room: tempRoom, type } }, ({ opponent }) => {
       setStorage("connection", true);
       setStorage("roomId", tempRoom);
       if (opponent) {
