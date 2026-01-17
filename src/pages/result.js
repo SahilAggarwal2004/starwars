@@ -18,7 +18,6 @@ export default function Result({ router }) {
       removeStorage("opponent");
       clearChat();
     } else router.replace("/");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
