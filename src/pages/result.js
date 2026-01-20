@@ -7,24 +7,27 @@ import { getStorage, removeStorage, setStorage } from "../lib/storage";
 
 export default function Result({ router }) {
   const { myTeam, mode, emitAck } = useGameContext();
+  const online = mode === "online";
   const [winner, setWinner] = useState();
 
   useEffect(() => {
     const winner = getStorage("winner");
-    if (winner) {
-      setWinner(winner);
-      emitAck({ event: "leave-room" });
-      setStorage("connection", false);
-      removeStorage("opponent");
-      clearChat();
-    } else router.replace("/");
+    if (!winner) return router.replace("/");
+
+    setWinner(winner);
+    if (!online) return;
+
+    emitAck({ event: "leave-room" });
+    setStorage("connection", false);
+    removeStorage("opponent");
+    clearChat();
   }, []);
 
   return (
     winner && (
       <div className="fixed center text-center space-y-8">
         <div className="main-heading static">
-          {mode === "online"
+          {online
             ? winner === myTeam
               ? "Congratulations! You won"
               : "Uh oh! You lost"
