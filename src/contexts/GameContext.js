@@ -76,12 +76,17 @@ const GameContext = ({ router, children }) => {
     });
 
     // Custom event handlers
-    newSocket.on("error", ({ message, type }) => {
-      toast.error(message);
+    newSocket.on("error", ({ message, type, version }) => {
       if (type === "version") {
         resetSocket();
-        setTimeout(() => router.reload(), 2000);
-      }
+        const interval = setInterval(() => {
+          const newUserVersion = getStorage("version", undefined, true);
+          if (newUserVersion !== version) return;
+          clearInterval(interval);
+          alert(message);
+          window.location.reload();
+        }, 1000);
+      } else toast.error(message);
     });
 
     newSocket.on("public-rooms", (rooms) => setRooms(rooms));
