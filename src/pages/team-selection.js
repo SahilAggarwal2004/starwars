@@ -54,7 +54,7 @@ export default function TeamSelection({ router }) {
         }, {});
         setInitialData(initialData);
         router.replace("/play");
-      } else if (myTeam === 1) emitAck({ event: "initiate-game" }, () => router.replace("/play"));
+      } else if (myTeam === 1) emitAck({ event: "start-game" }, () => router.replace("/play"));
     } else if (mode === "computer" && currentTeam === 2) {
       do {
         var player = randomElement(players);
@@ -144,10 +144,10 @@ export default function TeamSelection({ router }) {
                               <div key={feature} className="ml-3 detail-text">
                                 <span className="capitalize">{feature}</span>: {hoverPlayer[ability][feature]}
                               </div>
-                            )
+                            ),
                         )}
                       </div>
-                    )
+                    ),
                 )}
               </div>
             </div>

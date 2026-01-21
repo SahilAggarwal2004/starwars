@@ -124,9 +124,10 @@ export default function Play({ router, isFullScreen }) {
       setTimeout(() => {
         setTeam1(team1);
         setTeam2(team2);
-        newTurn();
+        const { turn, turnmeter } = newTurn();
+        if (online) emitAck({ event: "sync-data", payload: { team1, team2, turn, turnmeter, healthSteal } });
       }, 500);
-    if (online) setTimeout(() => emitAck({ event: "sync-data", payload: { team1, team2, turn, turnmeter, healthSteal } }), +(player.health <= 0 && 600));
+    else if (online) emitAck({ event: "sync-data", payload: { team1, team2, turn, turnmeter, healthSteal } });
   }, [isAttacking, turn]);
 
   function confirmBack() {
@@ -151,17 +152,8 @@ export default function Play({ router, isFullScreen }) {
   }
 
   function checkResult() {
-    let sum1 = 0,
-      sum2 = 0,
-      winner;
-    team1.forEach((player) => {
-      if (player.health <= 0) sum1++;
-    });
-    team2.forEach((player) => {
-      if (player.health <= 0) sum2++;
-    });
-    if (sum1 === playersPerTeam || sum2 === playersPerTeam) sum1 === playersPerTeam ? (winner = 2) : (winner = 1);
-    return winner;
+    if (team1.every((player) => player.health <= 0)) return 2;
+    if (team2.every((player) => player.health <= 0)) return 1;
   }
 
   function handleAttack(ability, index) {
@@ -287,7 +279,7 @@ export default function Play({ router, isFullScreen }) {
                         <Effect name={name} num={stack(player)} />
                         <span>: {description}</span>
                       </div>
-                    )
+                    ),
                 )}
               </div>
             </div>
@@ -302,7 +294,7 @@ export default function Play({ router, isFullScreen }) {
                       <div key={feature} className="detail-text">
                         <span className="capitalize">{feature}</span>: {ability[feature]}
                       </div>
-                    )
+                    ),
                 )}
               </div>
             </div>

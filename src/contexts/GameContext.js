@@ -92,16 +92,16 @@ const GameContext = ({ router, children }) => {
       setStorage("opponent", opponent);
     });
 
-    newSocket.on("left", ({ name, started, team }) => {
+    newSocket.on("left", ({ name, oldStatus, team }) => {
       toast.error(`${name} left the lobby.`);
       removeStorage("opponent");
       clearChat();
-      if (started) {
-        setStorage("winner", team);
-        router.replace("/result");
-      } else {
+      if (oldStatus === "ready") {
         setTeam(0);
         router.replace("/waiting-lobby");
+      } else {
+        setStorage("winner", team);
+        router.replace("/result");
       }
     });
 
@@ -110,7 +110,7 @@ const GameContext = ({ router, children }) => {
       else setTeam2(players);
     });
 
-    newSocket.on("ready", () => router.replace("/play"));
+    newSocket.on("start", () => router.replace("/play"));
 
     newSocket.on("sync-data", ({ team1, team2, turn, turnmeter, healthSteal }) => {
       setTeam1(team1);
@@ -120,13 +120,12 @@ const GameContext = ({ router, children }) => {
       setHealthSteal(healthSteal);
     });
 
-    newSocket.on("rejoin", (opponent, team) => {
+    newSocket.on("rejoin", ({ status, opponent }) => {
       setStorage("connection", true);
-      setStorage("opponent", opponent);
-      if (team) {
-        setTeam(team);
-        router.replace("/team-selection");
-      } else router.replace("/play");
+      if (opponent) setStorage("opponent", opponent);
+      if (status == "pending") router.replace("/waiting-lobby");
+      else if (status === "ready") router.replace("/team-selection");
+      else router.replace("/play");
     });
 
     newSocket.on("animation", animateBullet);
@@ -412,11 +411,13 @@ const GameContext = ({ router, children }) => {
         else turnmeter[index] = -1;
       });
     setTurnmeter(turnmeter);
+
     const max = maximumNumber(turnmeter);
     const indexes = turnmeter.flatMap((value, index) => (value == max ? [index] : []));
     const index = randomElement(indexes);
     const player = teams[index];
     const stun = hasEffect("stun", "debuff", player);
+
     if (oldTurn !== undefined) {
       const buffs = teams[oldTurn]?.buffs || {};
       const debuffs = teams[oldTurn]?.debuffs || {};
@@ -431,15 +432,17 @@ const GameContext = ({ router, children }) => {
         debuffs[i] = reduce(debuff);
       });
     }
+
     if (stun) {
       player.health += 25 * stackCount("health", "buff", player);
       player.health -= 25 * stackCount("health", "debuff", player);
       if (player.special?.cooldown) player.special.cooldown--;
-      newTurn(index);
-    } else {
-      setAttacking(false);
-      setTurn(index);
+      return newTurn(index);
     }
+
+    setAttacking(false);
+    setTurn(index);
+    return { turn: index, turnmeter };
   }
 
   function attack({ player, enemy, ability = "basic", isAssisting = false, isCountering = false, damageMultiplier = 1 }) {
@@ -475,7 +478,7 @@ const GameContext = ({ router, children }) => {
           if (unique.type !== "before") return;
           const uniqueData = abilities[name].unique?.({ enemy, enemyTeam }) || {};
           returnUnique = { ...returnUnique, ...uniqueData };
-        })
+        }),
       );
 
     enemy = returnUnique?.enemy || enemy;
@@ -500,7 +503,7 @@ const GameContext = ({ router, children }) => {
           if (unique.type !== type || (teamIndex && foresightArr[index] && !unique.foresight)) return;
           const uniqueData = abilities[name].unique?.(abilityObj) || {};
           returnUnique = { ...returnUnique, ...uniqueData };
-        })
+        }),
       );
 
     setTimeout(
@@ -541,7 +544,7 @@ const GameContext = ({ router, children }) => {
           }, returnUnique.wait || 50);
         }, wait || 50);
       },
-      animation ? 2000 : 50
+      animation ? 2000 : 50,
     );
   }
 
