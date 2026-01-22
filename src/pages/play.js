@@ -69,7 +69,8 @@ export default function Play({ router, isFullScreen }) {
 
   useEffect(() => {
     if (online && socket)
-      emitAck({ event: "get-data" }, ({ team, team1, team2, turn, initialData, turnmeter, healthSteal }) => {
+      emitAck({ event: "get-data" }, ({ status, team, team1, team2, turn, initialData, turnmeter, healthSteal }) => {
+        if (status !== "started") return;
         setTeam(team);
         setTeam1(team1);
         setTeam2(team2);
@@ -87,7 +88,7 @@ export default function Play({ router, isFullScreen }) {
   }, [isFullScreen]);
 
   useEffect(() => {
-    if (!loading && teams.length < maxPlayers) router.replace("/");
+    if (!loading && teams.length < maxPlayers) return router.replace("/");
     if (turn < 0) newTurn();
     const winner = checkResult();
     if (winner) {

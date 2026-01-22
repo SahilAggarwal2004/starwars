@@ -1,3 +1,3 @@
 import { toast } from "react-toastify";
 
-export const showConnectivityWarning = () => toast.warning("Please check your internet connectivity");
+export const showConnectivityWarning = (showToast = true) => showToast && toast.warning("Please check your internet connectivity");

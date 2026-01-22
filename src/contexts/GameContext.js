@@ -49,7 +49,6 @@ const GameContext = ({ router, children }) => {
     if (!online) return;
 
     const newSocket = io(server, { query: { userId: getStorage("userId", crypto.randomUUID()), userVersion: version } });
-    let reconnectWarningShown = false;
 
     // Default event handlers
     newSocket.on("connect", () => setSocket(newSocket));
@@ -60,28 +59,22 @@ const GameContext = ({ router, children }) => {
       }
       setSocket(null);
       if (!newSocket.active) newSocket.connect();
-      if (reconnectWarningShown) return;
       toast.warning("Connection lost, reconnecting...");
-      reconnectWarningShown = true;
     });
     newSocket.on("connect_error", () => {
       setSocket(null);
       if (!newSocket.active) newSocket.connect();
       toast.warning("Unable to connect, reconnecting...");
-      reconnectWarningShown = true;
     });
-    newSocket.io.on("reconnect", () => {
-      toast.success("Reconnected to the server.");
-      reconnectWarningShown = false;
-    });
+    newSocket.io.on("reconnect", () => toast.success("Reconnected to the server."));
 
     // Custom event handlers
-    newSocket.on("error", ({ message, type, version }) => {
+    newSocket.on("error", ({ message, type, data = {} }) => {
       if (type === "version") {
         resetSocket();
         const interval = setInterval(() => {
-          const newUserVersion = getStorage("version", undefined, true);
-          if (newUserVersion !== version) return;
+          const userVersion = getStorage("version", undefined, true);
+          if (userVersion !== data.version) return;
           clearInterval(interval);
           alert(message);
           window.location.reload();
@@ -97,15 +90,15 @@ const GameContext = ({ router, children }) => {
       setStorage("opponent", opponent);
     });
 
-    newSocket.on("left", ({ name, oldStatus, team }) => {
+    newSocket.on("left", ({ name, status, winner }) => {
       toast.error(`${name} left the lobby.`);
       removeStorage("opponent");
       clearChat();
-      if (oldStatus === "ready") {
+      if (status === "pending") {
         setTeam(0);
         router.replace("/waiting-lobby");
-      } else {
-        setStorage("winner", team);
+      } else if (status === "finished") {
+        setStorage("winner", winner);
         router.replace("/result");
       }
     });
@@ -125,12 +118,16 @@ const GameContext = ({ router, children }) => {
       setHealthSteal(healthSteal);
     });
 
-    newSocket.on("rejoin", ({ status, opponent }) => {
+    newSocket.on("rejoin", ({ status, data }) => {
       setStorage("connection", true);
-      if (opponent) setStorage("opponent", opponent);
+      if (data.opponent) setStorage("opponent", data.opponent);
       if (status == "pending") router.replace("/waiting-lobby");
       else if (status === "ready") router.replace("/team-selection");
-      else router.replace("/play");
+      else if (status === "started") router.replace("/play");
+      else if (status === "finished") {
+        setStorage("winner", data.winner);
+        router.replace("/result");
+      }
     });
 
     newSocket.on("animation", animateBullet);
@@ -335,24 +332,27 @@ const GameContext = ({ router, children }) => {
 
   const isGameStart = () => turnmeter.reduce((sum, speed) => sum + speed, 0) === 0;
 
-  function emitAck({ socketInstance = socket, event, payload }, ack) {
-    if (!socketInstance) return showConnectivityWarning();
+  function emitAck(
+    { socketInstance = socket, event, payload, showToast = true },
+    onSuccess,
+    onError = ({ message, type }) => {
+      if (message) toast.error(message);
+      if (type === "redirect") router.replace("/room");
+    },
+  ) {
+    if (!socketInstance) return showConnectivityWarning(showToast);
 
     const handler = (res) => {
       if (!res) {
         console.warn(`Ack timeout or server error: ${event}\nPayload: ${JSON.stringify(payload)}`);
-        return showConnectivityWarning();
+        return showConnectivityWarning(showToast);
       }
 
-      if (res.success) {
-        const { message } = res.data || {};
-        if (message) toast.success(message);
-        return ack?.(res.data);
-      }
+      if (!res.success) return onError(res.error ?? {});
 
-      const { message, type } = res.error || {};
-      if (message) toast.error(message);
-      if (type === "redirect") router.replace("/room");
+      const data = res.data ?? {};
+      if (data.message) toast.success(data.message);
+      onSuccess?.(data);
     };
 
     if (payload === undefined) socketInstance.emit(event, handler);
@@ -366,7 +366,7 @@ const GameContext = ({ router, children }) => {
   }
 
   function resetConnection(socketInstance = socket) {
-    if (socketInstance) emitAck({ socketInstance, event: "leave-room" });
+    if (socketInstance) emitAck({ socketInstance, event: "leave-room", showToast: false });
     setTeam(0);
     setStorage("connection", false);
     removeStorage("opponent");

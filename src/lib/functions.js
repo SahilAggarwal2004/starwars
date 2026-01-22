@@ -7,8 +7,6 @@ export const oppositeTeam = (team) => (team % 2) + 1;
 
 export const reduce = (arr) => arr.filter((e) => e !== 0);
 
-export const mapName = (player) => (typeof player === "string" ? player : player.name);
-
 export const findPlayer = (players, name) => players.find((player) => player.name === name);
 
 export function calculateDamage(baseDamage, player, enemy, damageMultiplier = 1) {

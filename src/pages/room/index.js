@@ -98,9 +98,7 @@ export default function Room({ router }) {
         </div>
       </div>
     </div>
-  ) : navigator.onLine ? (
-    <Loader timeout={5000} />
   ) : (
-    <Offline />
+    <Loader />
   );
 }

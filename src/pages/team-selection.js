@@ -10,7 +10,7 @@ import Loader from "../components/Loader";
 import PeerChat from "../components/PeerChat";
 import { allAbilities, details, features, modes } from "../constants";
 import { useGameContext } from "../contexts/GameContext";
-import { mapName, oppositeTeam } from "../lib/functions";
+import { findPlayer, oppositeTeam } from "../lib/functions";
 import { getStorage } from "../lib/storage";
 import { showConnectivityWarning } from "../lib/toast";
 import { playersPerTeam } from "../../public/players";
@@ -31,7 +31,8 @@ export default function TeamSelection({ router }) {
 
   useEffect(() => {
     if (online && socket)
-      emitAck({ event: "get-players" }, ({ team, team1, team2, players, first }) => {
+      emitAck({ event: "get-data" }, ({ status, team, team1, team2, players, first }) => {
+        if (status !== "ready") return;
         setTeam(team);
         setTeam1(team1);
         setTeam2(team2);
@@ -44,38 +45,41 @@ export default function TeamSelection({ router }) {
   useEffect(() => {
     if (players.length && count === maxPlayers) {
       if (!online) {
-        if (team1[0].leader?.type === "start") abilities[team1[0].name].leader?.({ allyTeam: team1, enemyTeam: team2 });
-        if (team2[0].leader?.type === "start") abilities[team2[0].name].leader?.({ allyTeam: team2, enemyTeam: team1 });
-        setTeam1(team1);
-        setTeam2(team2);
-        const initialData = teams.reduce((obj, { name, health, special: { cooldown } }) => {
+        const resolvedTeam1 = team1.map((name) => findPlayer(players, name));
+        const resolvedTeam2 = team2.map((name) => findPlayer(players, name));
+        if (resolvedTeam1[0].leader?.type === "start") abilities[resolvedTeam1[0].name].leader?.({ allyTeam: resolvedTeam1, enemyTeam: resolvedTeam2 });
+        if (resolvedTeam2[0].leader?.type === "start") abilities[resolvedTeam2[0].name].leader?.({ allyTeam: resolvedTeam2, enemyTeam: resolvedTeam1 });
+        const resolvedTeams = resolvedTeam1.concat(resolvedTeam2);
+        const initialData = resolvedTeams.reduce((obj, { name, health, special: { cooldown } }) => {
           obj[name] = { health, cooldown };
           return obj;
         }, {});
+        setTeam1(resolvedTeam1);
+        setTeam2(resolvedTeam2);
         setInitialData(initialData);
         router.replace("/play");
       } else if (myTeam === 1) emitAck({ event: "start-game" }, () => router.replace("/play"));
     } else if (mode === "computer" && currentTeam === 2) {
       do {
         var player = randomElement(players);
-      } while (teams.includes(player));
-      addPlayer(player);
+      } while (teams.includes(player.name));
+      addPlayer(player.name);
     }
   }, [count]);
 
-  function addPlayer(player) {
-    if (teams.includes(player) || count >= maxPlayers) return false;
-    if (currentTeam === 1) setTeam1((team) => team.concat(player));
-    else setTeam2((team) => team.concat(player));
+  function addPlayer(name) {
+    if (teams.includes(name) || count >= maxPlayers) return false;
+    if (currentTeam === 1) setTeam1((team) => team.concat(name));
+    else setTeam2((team) => team.concat(name));
     return true;
   }
 
-  function selectPlayer(player) {
+  function selectPlayer(name) {
     if (online) {
       if (currentTeam !== myTeam) return;
       if (!socket) return showConnectivityWarning();
-      if (addPlayer(player.name)) emitAck({ event: "select-player", payload: player.name });
-    } else addPlayer(player);
+      if (addPlayer(name)) emitAck({ event: "select-player", payload: { name } });
+    } else addPlayer(name);
   }
 
   function reset() {
@@ -89,7 +93,7 @@ export default function TeamSelection({ router }) {
       do {
         var player = randomElement(players);
       } while (selected.includes(player));
-      selected.push(player);
+      selected.push(player.name);
     }
     setTeam1(selected.slice(0, playersPerTeam));
     setTeam2(selected.slice(playersPerTeam));
@@ -112,14 +116,12 @@ export default function TeamSelection({ router }) {
                 key={player.name}
                 onPointerEnter={() => setHoverPlayer(player)}
                 onPointerLeave={() => setHoverPlayer()}
-                onClick={() => selectPlayer(player)}
+                onClick={() => selectPlayer(player.name)}
                 onContextMenu={(e) => e.preventDefault()}
               >
                 <img src={`/images/players/${player.name}.webp`} alt={player.name} width="120" className="rounded-xs aspect-square" />
-                {team1.map(mapName).includes(player.name) && <div className="absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-blue-500 z-10">1</div>}
-                {team2.map(mapName).includes(player.name) && (
-                  <div className="absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10">{mode === "computer" ? "C" : 2}</div>
-                )}
+                {team1.includes(player.name) && <div className="absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-blue-500 z-10">1</div>}
+                {team2.includes(player.name) && <div className="absolute top-0 right-0 rounded-[0.0625rem] px-1 text-white bg-red-500 z-10">{mode === "computer" ? "C" : 2}</div>}
               </div>
             ))}
           </div>

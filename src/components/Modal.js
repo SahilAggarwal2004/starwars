@@ -18,7 +18,7 @@ export default function Modal({ router }) {
   function handleJoin(room) {
     const name = props.tempName;
     setStorage("name", name, true);
-    emitAck({ event: "join-room", payload: { name, room, type } }, ({ opponent }) => {
+    emitAck({ event: "join-room", payload: { name, room } }, ({ opponent }) => {
       setModal({ active: false });
       setStorage("connection", true);
       setStorage("roomId", room);
@@ -32,8 +32,10 @@ export default function Modal({ router }) {
 
   function handleExit() {
     setModal({ active: false });
-    setStorage("winner", oppositeTeam(myTeam));
-    router.replace("/result");
+    emitAck({ event: "leave-room" }, () => {
+      setStorage("winner", oppositeTeam(myTeam));
+      router.replace("/result");
+    });
   }
 
   return (

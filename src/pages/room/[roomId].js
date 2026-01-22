@@ -37,9 +37,7 @@ export default function Room({ router }) {
         Join Room
       </button>
     </form>
-  ) : navigator.onLine ? (
-    <Loader timeout={5000} />
   ) : (
-    <Offline />
+    <Loader />
   );
 }
