@@ -37,12 +37,10 @@ function MyApp({ Component, pageProps }) {
     window.addEventListener("beforeunload", handleBeforeUnload);
 
     if ("serviceWorker" in navigator && window.serwist) {
-      const updateServiceWorker = () => window.serwist?.update();
       window.serwist.addEventListener("controlling", handleVersionUpdate);
-      window.serwist.register().then(() => window.addEventListener("online", updateServiceWorker));
+      window.serwist.register();
       return () => {
         window.serwist.removeEventListener("controlling", handleVersionUpdate);
-        window.removeEventListener("online", updateServiceWorker);
         document.removeEventListener("fullscreenchange", handleFullscreenChange);
         screen.orientation?.removeEventListener("change", handleOrientationChange);
         window.removeEventListener("beforeunload", handleBeforeUnload);

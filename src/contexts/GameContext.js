@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { createContext, useState, useEffect, useContext } from "react";
+import { createContext, useState, useEffect, useContext, useRef } from "react";
 import { toast } from "react-toastify";
 import { clearChat } from "react-peer-chat";
 import { io } from "socket.io-client";
@@ -34,6 +34,7 @@ const GameContext = ({ router, children }) => {
   const [turn, setTurn] = useState(-1);
   const [isAttacking, setAttacking] = useState(false);
   const [socket, setSocket] = useState(null);
+  const versionIntervalRef = useRef();
   const turnTeam = Math.ceil((turn + 1) / playersPerTeam);
   const online = mode === "online";
 
@@ -72,10 +73,20 @@ const GameContext = ({ router, children }) => {
     newSocket.on("error", ({ message, type, data = {} }) => {
       if (type === "version") {
         resetSocket();
-        const interval = setInterval(() => {
+        let retries = 0;
+        versionIntervalRef.current = setInterval(async () => {
           const userVersion = getStorage("version", undefined, true);
-          if (userVersion !== data.version) return;
-          clearInterval(interval);
+          if (userVersion !== data.version) {
+            if (navigator.onLine) {
+              if (!(++retries % 10)) window.location.reload();
+              else if (!(retries % 2)) {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration) await registration.update();
+              }
+            }
+            return;
+          }
+          clearInterval(versionIntervalRef.current);
           alert(message);
           window.location.reload();
         }, 1000);
@@ -362,6 +373,7 @@ const GameContext = ({ router, children }) => {
   function resetSocket(socketInstance = socket) {
     socketInstance?.removeAllListeners();
     socketInstance?.disconnect();
+    clearInterval(versionIntervalRef.current);
     setSocket(null);
   }
 
