@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // eslint-disable react-hooks/exhaustive-deps
 import Link from "next/link";
 import { useEffect, useState } from "react";
