@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint ."
   },
-  "packageManager": "pnpm@10.29.3",
+  "packageManager": "pnpm@10.30.3",
   "dependencies": {
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.9.1",
@@ -17,22 +17,22 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-icons": "^5.5.0",
-    "react-peer-chat": "^0.11.10",
+    "react-peer-chat": "^0.11.11",
     "react-qr-code": "^2.0.18",
     "react-toastify": "^11.0.5",
     "socket.io-client": "^4.8.3",
-    "utility-kit": "^0.10.0"
+    "utility-kit": "^0.10.2"
   },
   "devDependencies": {
     "@builder.io/partytown": "^0.10.3",
-    "@serwist/next": "^9.5.5",
-    "@tailwindcss/postcss": "^4.1.18",
+    "@serwist/next": "^9.5.6",
+    "@tailwindcss/postcss": "^4.2.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "9.39.2",
     "eslint-config-next": "16.1.6",
     "postcss": "^8.5.6",
     "prettier": "^3.8.1",
-    "serwist": "^9.5.5",
-    "tailwindcss": "^4.1.18"
+    "serwist": "^9.5.6",
+    "tailwindcss": "^4.2.1"
   }
 }
