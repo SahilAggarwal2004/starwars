@@ -2,8 +2,7 @@ onlyBuiltDependencies:
   - '@tsparticles/engine'
   - sharp
   - unrs-resolver
-
 overrides:
-  ajv@<6.14.0: '>=6.14.0'
-  minimatch@<3.1.3: '>=3.1.3'
+  flatted@<3.4.0: '>=3.4.0'
   minimatch@>=9.0.0 <9.0.6: '>=9.0.6'
+  minimatch@>=9.0.0 <9.0.7: '>=9.0.7'

@@ -1,4 +1,5 @@
 import Chat from "react-peer-chat";
+import "react-peer-chat/style.css";
 import { toast } from "react-toastify";
 
 import { peerOptions } from "../constants";
