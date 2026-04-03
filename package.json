@@ -8,31 +8,30 @@
     "start": "next start",
     "lint": "eslint ."
   },
-  "packageManager": "pnpm@10.32.1",
+  "packageManager": "pnpm@10.33.0",
   "dependencies": {
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.9.1",
-    "next": "16.1.6",
+    "next": "16.2.2",
     "qr-scanner": "^1.4.2",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-icons": "^5.6.0",
-    "react-peer-chat": "^0.12.0",
+    "react-peer-chat": "^0.13.0",
     "react-qr-code": "^2.0.18",
     "react-toastify": "^11.0.5",
     "socket.io-client": "^4.8.3",
-    "utility-kit": "^0.10.2"
+    "utility-kit": "^0.10.3"
   },
   "devDependencies": {
-    "@builder.io/partytown": "^0.10.3",
-    "@serwist/next": "^9.5.6",
-    "@tailwindcss/postcss": "^4.2.1",
+    "@serwist/next": "^9.5.7",
+    "@tailwindcss/postcss": "^4.2.2",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "9.39.2",
-    "eslint-config-next": "16.1.6",
+    "eslint-config-next": "16.2.2",
     "postcss": "^8.5.8",
     "prettier": "^3.8.1",
-    "serwist": "^9.5.6",
-    "tailwindcss": "^4.2.1"
+    "serwist": "^9.5.7",
+    "tailwindcss": "^4.2.2"
   }
 }
